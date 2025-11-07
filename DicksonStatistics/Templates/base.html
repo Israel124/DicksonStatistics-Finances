@@ -167,6 +167,29 @@
         .navbar-toggler-icon {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2837, 99, 235, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
+
+        /* Nuevos estilos para el dropdown de análisis */
+        .analysis-dropdown .dropdown-menu {
+            min-width: 280px;
+        }
+
+        .analysis-dropdown .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .analysis-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
     </style>
     
     {% block extra_css %}{% endblock %}
@@ -191,28 +214,125 @@
                 <!-- Navigation Links (visible cuando está logueado) -->
                 {% if user.is_authenticated %}
                 <ul class="navbar-nav me-auto">
+                    <!-- Dropdown para Análisis Financieros -->
+                    <li class="nav-item dropdown analysis-dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-chart-bar me-1"></i>Análisis Financieros
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item {% if request.resolver_match.url_name == 'horizontal' %}active{% endif %}" 
+                                   href="{% url 'horizontal' %}">
+                                    <div class="analysis-icon">
+                                        <i class="fas fa-arrows-alt-h"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Análisis Horizontal</div>
+                                        <small class="text-muted">Variación porcentual entre periodos</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {% if request.resolver_match.url_name == 'vertical' %}active{% endif %}" 
+                                   href="{% url 'vertical' %}">
+                                    <div class="analysis-icon">
+                                        <i class="fas fa-arrows-alt-v"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Análisis Vertical</div>
+                                        <small class="text-muted">Estructura porcentual del balance</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {% if request.resolver_match.url_name == 'eoaf' %}active{% endif %}" 
+                                   href="{% url 'eoaf' %}">
+                                    <div class="analysis-icon">
+                                        <i class="fas fa-file-invoice-dollar"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">EOAF</div>
+                                        <small class="text-muted">Estado de Origen y Aplicación de Fondos</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item {% if request.resolver_match.url_name == 'razones' %}active{% endif %}" 
+                                   href="{% url 'razones' %}">
+                                    <div class="analysis-icon">
+                                        <i class="fas fa-calculator"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Razones Financieras</div>
+                                        <small class="text-muted">Indicadores de liquidez, actividad, endeudamiento y rentabilidad</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {% if request.resolver_match.url_name == 'dupont' %}active{% endif %}" 
+                                   href="{% url 'dupont' %}">
+                                    <div class="analysis-icon">
+                                        <i class="fas fa-sitemap"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Análisis Dupont</div>
+                                        <small class="text-muted">Descomposición del rendimiento sobre patrimonio</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item {% if request.resolver_match.url_name == 'directo' %}active{% endif %}" 
+                                   href="{% url 'directo' %}">
+                                    <div class="analysis-icon">
+                                        <i class="fas fa-receipt"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Método Directo</div>
+                                        <small class="text-muted">Flujo de efectivo por cobros y pagos</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {% if request.resolver_match.url_name == 'indirecto' %}active{% endif %}" 
+                                   href="{% url 'indirecto' %}">
+                                    <div class="analysis-icon">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Método Indirecto</div>
+                                        <small class="text-muted">Flujo de efectivo por conciliación</small>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Enlaces directos para las razones financieras (opcional, puedes mantenerlos o eliminar) -->
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'liquidity' %}active{% endif %}" 
                            href="{% url 'liquidity' %}">
-                            <i class="fas fa-money-bill-wave me-1"></i>Razones de Liquidez
+                            <i class="fas fa-money-bill-wave me-1"></i>Liquidez
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'activity' %}active{% endif %}" 
                            href="{% url 'activity' %}">
-                            <i class="fas fa-sync-alt me-1"></i>Razones de Actividad
+                            <i class="fas fa-sync-alt me-1"></i>Actividad
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'debt' %}active{% endif %}" 
                            href="{% url 'debt' %}">
-                            <i class="fas fa-balance-scale me-1"></i>Razones de Endeudamiento
+                            <i class="fas fa-balance-scale me-1"></i>Endeudamiento
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'profitability' %}active{% endif %}" 
                            href="{% url 'profitability' %}">
-                            <i class="fas fa-chart-pie me-1"></i>Razones de Rentabilidad
+                            <i class="fas fa-chart-pie me-1"></i>Rentabilidad
                         </a>
                     </li>
                 </ul>
@@ -294,6 +414,37 @@
                 if (link.getAttribute('href') === currentUrl) {
                     link.classList.add('active');
                 }
+            });
+
+            // Manejar el estado activo para dropdown items
+            const dropdownItems = document.querySelectorAll('.dropdown-item');
+            dropdownItems.forEach(item => {
+                if (item.getAttribute('href') === currentUrl) {
+                    item.classList.add('active');
+                    // También marcar el dropdown padre como activo
+                    const dropdown = item.closest('.dropdown');
+                    if (dropdown) {
+                        const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
+                        if (dropdownToggle) {
+                            dropdownToggle.classList.add('active');
+                        }
+                    }
+                }
+            });
+        });
+
+        // Mejorar la experiencia del dropdown en móviles
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdowns = document.querySelectorAll('.navbar-nav .dropdown');
+            
+            dropdowns.forEach(dropdown => {
+                dropdown.addEventListener('show.bs.dropdown', function () {
+                    this.classList.add('showing');
+                });
+                
+                dropdown.addEventListener('hide.bs.dropdown', function () {
+                    this.classList.remove('showing');
+                });
             });
         });
     </script>
