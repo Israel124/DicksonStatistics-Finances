@@ -1,0 +1,1064 @@
+{% extends 'base.html' %}
+
+{% block title %}Análisis Vertical - DicksonStatistics{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #2563eb;
+        --secondary-color: #64748b;
+        --accent-color: #06d6a0;
+        --dark-color: #1e293b;
+        --light-color: #f8fafc;
+        --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .analysis-section {
+        padding: 2rem 0;
+        background: #f8fafc;
+        min-height: calc(100vh - 76px);
+    }
+    
+    .section-header {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .section-subtitle {
+        color: var(--secondary-color);
+        margin-bottom: 2rem;
+    }
+    
+    .control-panel {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .btn-modern {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-primary-modern {
+        background: var(--gradient);
+        color: white;
+    }
+    
+    .btn-primary-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .btn-outline-modern {
+        background: transparent;
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+    }
+    
+    .btn-outline-modern:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .btn-success-modern {
+        background: var(--accent-color);
+        color: white;
+    }
+    
+    .btn-success-modern:hover {
+        background: #05c391;
+        transform: translateY(-2px);
+        color: white;
+    }
+    
+    .analysis-table-container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 2rem;
+    }
+    
+    .table-modern {
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .table-modern thead th {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+        padding: 1.25rem 1rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .table-modern tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+        transition: all 0.2s ease;
+    }
+    
+    .table-modern tbody tr:hover td {
+        background: #f8fafc;
+    }
+    
+    .table-modern .account-name {
+        font-weight: 500;
+        color: var(--dark-color);
+        min-width: 250px;
+    }
+    
+    .editable-cell {
+        position: relative;
+    }
+    
+    .editable-input {
+        width: 120px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        text-align: right;
+    }
+    
+    .editable-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .period-header {
+        background: var(--gradient) !important;
+        color: white !important;
+        position: relative;
+    }
+    
+    .file-upload-area {
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .file-upload-area:hover {
+        border-color: var(--primary-color);
+        background: #f1f5f9;
+    }
+    
+    .file-upload-area.dragover {
+        border-color: var(--primary-color);
+        background: #e0e7ff;
+    }
+    
+    .upload-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .file-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .file-name {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--primary-color);
+        font-weight: 500;
+        word-break: break-all;
+    }
+    
+    .export-options {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .modal-modern .modal-content {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+    
+    .modal-modern .modal-header {
+        background: var(--gradient);
+        color: white;
+        border-radius: 16px 16px 0 0;
+        border: none;
+        padding: 1.5rem 2rem;
+    }
+    
+    .modal-modern .modal-title {
+        font-weight: 600;
+    }
+    
+    .modal-modern .btn-close {
+        filter: invert(1);
+    }
+    
+    .form-group-modern {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label-modern {
+        font-weight: 500;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control-modern {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control-modern:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .percentage-badge {
+        background: #10b981;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: inline-block;
+        margin-top: 0.5rem;
+    }
+    
+    .calculation-row {
+        background: #f0f9ff !important;
+        font-weight: 600;
+    }
+    
+    .calculation-row td {
+        border-top: 2px solid #e2e8f0;
+    }
+    
+    .empty-row {
+        text-align: center;
+        color: var(--secondary-color);
+        font-style: italic;
+        padding: 2rem !important;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+    
+    .btn-sm-modern {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+    }
+    
+    .report-type-selector {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e2e8f0;
+    }
+    
+    .report-type-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .report-type-btn {
+        flex: 1;
+        min-width: 200px;
+        padding: 1.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    
+    .report-type-btn.active {
+        border-color: var(--primary-color);
+        background: #f0f7ff;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.1);
+    }
+    
+    .report-type-btn:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+    
+    .report-icon {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .report-title {
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .report-description {
+        color: var(--secondary-color);
+        font-size: 0.9rem;
+    }
+    
+    .period-selector {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e2e8f0;
+    }
+    
+    .period-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+    
+    .period-badge {
+        background: var(--gradient);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        .table-responsive {
+            font-size: 0.8rem;
+        }
+        
+        .editable-input {
+            padding: 0.25rem 0.5rem;
+            width: 100px;
+        }
+        
+        .export-options {
+            flex-direction: column;
+        }
+        
+        .report-type-buttons {
+            flex-direction: column;
+        }
+        
+        .report-type-btn {
+            min-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="analysis-section">
+    <div class="container">
+        <!-- Header -->
+        <div class="section-header">
+            <h1 class="section-title">Análisis Vertical</h1>
+            <p class="section-subtitle">Analiza la estructura porcentual de los estados financieros</p>
+        </div>
+
+        <!-- Selector de Tipo de Reporte -->
+        <div class="report-type-selector">
+            <h5 class="form-label-modern mb-3">Seleccionar Tipo de Reporte</h5>
+            <div class="report-type-buttons">
+                <div class="report-type-btn active" data-report-type="balance">
+                    <div class="report-icon">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <div class="report-title">Balance General</div>
+                    <div class="report-description">Análisis vertical de activos, pasivos y patrimonio</div>
+                </div>
+                <div class="report-type-btn" data-report-type="income">
+                    <div class="report-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="report-title">Estado de Resultados</div>
+                    <div class="report-description">Análisis vertical de ingresos, costos y gastos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selector de Período -->
+        <div class="period-selector">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="form-label-modern">Período de Análisis</h5>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <select class="form-control-modern" id="periodSelect" style="min-width: 200px;">
+                            <option value="">Seleccionar período...</option>
+                            <option value="2024">Año 2024</option>
+                            <option value="2023">Año 2023</option>
+                            <option value="2022">Año 2022</option>
+                        </select>
+                        <button class="btn btn-outline-modern btn-modern" data-bs-toggle="modal" data-bs-target="#addPeriodModal">
+                            <i class="fas fa-plus"></i> Nuevo Período
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="export-options justify-content-md-end">
+                        <button class="btn btn-success-modern btn-modern" id="exportExcel">
+                            <i class="fas fa-file-excel"></i> Exportar Excel
+                        </button>
+                        <button class="btn btn-outline-modern btn-modern" id="exportPDF">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información del Período Seleccionado -->
+            <div class="period-info" id="periodInfo" style="display: none;">
+                <div class="period-badge" id="currentPeriodBadge">2024</div>
+                <div>
+                    <strong id="currentReportType">Balance General</strong>
+                    <div class="text-muted" id="periodDates">Período: Ene 2024 - Dic 2024</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Análisis Vertical -->
+        <div class="analysis-table-container">
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th class="account-name">Cuenta</th>
+                            <th class="period-header">
+                                <span id="tablePeriodTitle">Período</span>
+                                <br>
+                                <small id="tablePeriodSubtitle">Valores y Porcentajes</small>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="analysisTableBody">
+                        <!-- Filas se generan dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="control-panel">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-outline-modern btn-modern" id="addRowBtn">
+                            <i class="fas fa-plus-circle"></i> Agregar Fila
+                        </button>
+                        <button class="btn btn-outline-modern btn-modern" id="calculateBtn">
+                            <i class="fas fa-calculator"></i> Calcular Porcentajes
+                        </button>
+                        <button class="btn btn-outline-modern btn-modern" id="clearBtn">
+                            <i class="fas fa-broom"></i> Limpiar Tabla
+                        </button>
+                        <button class="btn btn-outline-modern btn-modern" data-bs-toggle="modal" data-bs-target="#importModal">
+                            <i class="fas fa-file-import"></i> Importar Datos
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <button class="btn btn-primary-modern btn-modern" id="saveAnalysis">
+                        <i class="fas fa-save"></i> Guardar Análisis
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal para Agregar Período -->
+<div class="modal fade modal-modern" id="addPeriodModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Nuevo Período</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="periodForm">
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Nombre del Período</label>
+                        <input type="text" class="form-control form-control-modern" id="periodName" 
+                               placeholder="Ej: Primer Trimestre 2024" required>
+                    </div>
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Año</label>
+                        <input type="number" class="form-control form-control-modern" id="periodYear" 
+                               min="2020" max="2030" value="2024" required>
+                    </div>
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Tipo de Período</label>
+                        <select class="form-control form-control-modern" id="periodType">
+                            <option value="annual">Anual</option>
+                            <option value="semester">Semestral</option>
+                            <option value="quarterly">Trimestral</option>
+                            <option value="monthly">Mensual</option>
+                        </select>
+                    </div>
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Moneda</label>
+                        <select class="form-control form-control-modern" id="currency">
+                            <option value="USD">Dólar Americano (USD)</option>
+                            <option value="EUR">Euro (EUR)</option>
+                            <option value="MXN">Peso Mexicano (MXN)</option>
+                            <option value="COP">Peso Colombiano (COP)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-modern btn-modern" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary-modern btn-modern" id="savePeriod">Agregar Período</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Importar Datos -->
+<div class="modal fade modal-modern" id="importModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Datos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="file-upload-area" id="excelUploadArea">
+                            <input type="file" class="file-input" id="excelFile" accept=".xlsx, .xls">
+                            <div class="upload-icon">
+                                <i class="fas fa-file-excel"></i>
+                            </div>
+                            <h5>Importar desde Excel</h5>
+                            <p class="text-muted">Haz clic aquí o arrastra tu archivo Excel</p>
+                            <div class="file-name" id="excelFileName"></div>
+                            <small class="text-muted">Formatos soportados: .xlsx, .xls</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="file-upload-area" id="pdfUploadArea">
+                            <input type="file" class="file-input" id="pdfFile" accept=".pdf">
+                            <div class="upload-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <h5>Importar desde PDF</h5>
+                            <p class="text-muted">Haz clic aquí o arrastra tu archivo PDF</p>
+                            <div class="file-name" id="pdfFileName"></div>
+                            <small class="text-muted">Formato soportado: .pdf</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Instrucciones de Importación:</h6>
+                    <ul class="text-muted">
+                        <li>Para Excel: La primera columna debe contener los nombres de las cuentas</li>
+                        <li>La segunda columna debe contener los valores numéricos</li>
+                        <li>Para PDF: El sistema extraerá automáticamente las tablas detectadas</li>
+                        <li>Los datos importados reemplazarán la información actual</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-modern btn-modern" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary-modern btn-modern" id="processImport">Procesar Archivos</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let analysisData = [];
+        let currentPeriod = '';
+        let currentReportType = 'balance'; // 'balance' or 'income'
+        let selectedFiles = {
+            excel: null,
+            pdf: null
+        };
+        
+        // Inicializar tabla
+        function initializeTable() {
+            updateTableData();
+            renderTable();
+            setupFileUpload();
+        }
+        
+        // Actualizar datos según el tipo de reporte
+        function updateTableData() {
+            if (currentReportType === 'balance') {
+                analysisData = [
+                    { account: 'ACTIVOS', values: {}, isHeader: true },
+                    { account: 'Activo Corriente', values: {} },
+                    { account: 'Efectivo y Equivalentes', values: {} },
+                    { account: 'Cuentas por Cobrar', values: {} },
+                    { account: 'Inventarios', values: {} },
+                    { account: 'Activo No Corriente', values: {}, isHeader: true },
+                    { account: 'Propiedad, Planta y Equipo', values: {} },
+                    { account: 'Activos Intangibles', values: {} },
+                    { account: 'TOTAL ACTIVOS', values: {}, isTotal: true },
+                    { account: 'PASIVOS Y PATRIMONIO', values: {}, isHeader: true },
+                    { account: 'Pasivo Corriente', values: {} },
+                    { account: 'Cuentas por Pagar', values: {} },
+                    { account: 'Préstamos a Corto Plazo', values: {} },
+                    { account: 'Pasivo No Corriente', values: {}, isHeader: true },
+                    { account: 'Préstamos a Largo Plazo', values: {} },
+                    { account: 'Patrimonio', values: {}, isHeader: true },
+                    { account: 'Capital Social', values: {} },
+                    { account: 'Utilidades Retenidas', values: {} },
+                    { account: 'TOTAL PASIVOS Y PATRIMONIO', values: {}, isTotal: true }
+                ];
+            } else {
+                analysisData = [
+                    { account: 'INGRESOS', values: {}, isHeader: true },
+                    { account: 'Ventas Netas', values: {} },
+                    { account: 'Otros Ingresos', values: {} },
+                    { account: 'TOTAL INGRESOS', values: {}, isTotal: true },
+                    { account: 'COSTOS Y GASTOS', values: {}, isHeader: true },
+                    { account: 'Costo de Ventas', values: {} },
+                    { account: 'Gastos Operativos', values: {} },
+                    { account: 'Gastos de Ventas', values: {} },
+                    { account: 'Gastos Administrativos', values: {} },
+                    { account: 'TOTAL COSTOS Y GASTOS', values: {}, isTotal: true },
+                    { account: 'UTILIDAD', values: {}, isHeader: true },
+                    { account: 'Utilidad Operativa', values: {}, isTotal: true },
+                    { account: 'Gastos Financieros', values: {} },
+                    { account: 'Impuestos', values: {} },
+                    { account: 'UTILIDAD NETA', values: {}, isTotal: true }
+                ];
+            }
+        }
+        
+        // Renderizar tabla
+        function renderTable() {
+            const tbody = document.getElementById('analysisTableBody');
+            tbody.innerHTML = '';
+            
+            if (!currentPeriod) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="2" class="empty-row">
+                            <i class="fas fa-calendar-alt me-2"></i>Selecciona un período para comenzar
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            if (analysisData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="2" class="empty-row">
+                            <i class="fas fa-table me-2"></i>No hay datos disponibles. Agrega filas o importa datos.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            analysisData.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                
+                if (row.isHeader) {
+                    tr.style.background = '#f8fafc';
+                    tr.style.fontWeight = '600';
+                } else if (row.isTotal) {
+                    tr.classList.add('calculation-row');
+                }
+                
+                const value = row.values[currentPeriod] || '';
+                const percentage = calculatePercentage(row);
+                
+                let accountCell = row.account;
+                if (row.isHeader) {
+                    accountCell = `<strong>${row.account}</strong>`;
+                }
+                
+                tr.innerHTML = `
+                    <td class="account-name">${accountCell}</td>
+                    <td class="editable-cell">
+                        ${!row.isHeader ? `
+                            <input type="text" 
+                                   class="editable-input" 
+                                   value="${value}" 
+                                   data-row="${index}"
+                                   placeholder="0.00"
+                                   ${row.isTotal ? 'readonly' : ''}>
+                            ${percentage ? `<div class="percentage-badge">${percentage}%</div>` : ''}
+                        ` : ''}
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+            
+            // Agregar event listeners a los inputs
+            attachInputListeners();
+        }
+        
+        // Calcular porcentaje vertical
+        function calculatePercentage(row) {
+            if (row.isHeader || row.isTotal) return '';
+            
+            // Encontrar el total correspondiente
+            let totalRow;
+            if (currentReportType === 'balance') {
+                if (row.account.includes('Activo')) {
+                    totalRow = analysisData.find(r => r.account === 'TOTAL ACTIVOS');
+                } else if (row.account.includes('Pasivo') || row.account.includes('Patrimonio')) {
+                    totalRow = analysisData.find(r => r.account === 'TOTAL PASIVOS Y PATRIMONIO');
+                }
+            } else {
+                if (row.account.includes('Ventas') || row.account.includes('Ingresos')) {
+                    totalRow = analysisData.find(r => r.account === 'TOTAL INGRESOS');
+                } else if (row.account.includes('Costo') || row.account.includes('Gastos')) {
+                    totalRow = analysisData.find(r => r.account === 'TOTAL COSTOS Y GASTOS');
+                } else if (row.account.includes('Utilidad')) {
+                    totalRow = analysisData.find(r => r.account === 'UTILIDAD NETA');
+                }
+            }
+            
+            if (!totalRow || !totalRow.values[currentPeriod]) return '';
+            
+            const value = parseFloat(row.values[currentPeriod]) || 0;
+            const total = parseFloat(totalRow.values[currentPeriod]) || 1;
+            const percentage = ((value / total) * 100).toFixed(1);
+            
+            return percentage !== 'NaN' ? percentage : '';
+        }
+        
+        // Adjuntar event listeners a los inputs
+        function attachInputListeners() {
+            document.querySelectorAll('.editable-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const rowIndex = parseInt(this.dataset.row);
+                    const value = this.value.trim();
+                    
+                    if (!analysisData[rowIndex].values) {
+                        analysisData[rowIndex].values = {};
+                    }
+                    
+                    analysisData[rowIndex].values[currentPeriod] = value === '' ? '' : parseFloat(value) || 0;
+                    
+                    // Re-renderizar para actualizar porcentajes
+                    renderTable();
+                });
+                
+                // Permitir solo números y punto decimal
+                input.addEventListener('keypress', function(e) {
+                    const char = String.fromCharCode(e.which);
+                    if (!/[\d.]/.test(char)) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        }
+        
+        // Configurar la subida de archivos
+        function setupFileUpload() {
+            const excelFileInput = document.getElementById('excelFile');
+            const pdfFileInput = document.getElementById('pdfFile');
+            const excelFileName = document.getElementById('excelFileName');
+            const pdfFileName = document.getElementById('pdfFileName');
+            
+            // Excel file handling
+            excelFileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    selectedFiles.excel = e.target.files[0];
+                    excelFileName.textContent = selectedFiles.excel.name;
+                    excelFileName.style.display = 'block';
+                    showAlert(`Archivo Excel "${selectedFiles.excel.name}" seleccionado`, 'info');
+                }
+            });
+            
+            // PDF file handling
+            pdfFileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    selectedFiles.pdf = e.target.files[0];
+                    pdfFileName.textContent = selectedFiles.pdf.name;
+                    pdfFileName.style.display = 'block';
+                    showAlert(`Archivo PDF "${selectedFiles.pdf.name}" seleccionado`, 'info');
+                }
+            });
+            
+            // Drag and drop functionality
+            const uploadAreas = document.querySelectorAll('.file-upload-area');
+            
+            uploadAreas.forEach(area => {
+                area.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    area.classList.add('dragover');
+                });
+                
+                area.addEventListener('dragleave', () => {
+                    area.classList.remove('dragover');
+                });
+                
+                area.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    area.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        const file = files[0];
+                        const isExcel = area.id === 'excelUploadArea';
+                        
+                        if (isExcel && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+                            selectedFiles.excel = file;
+                            excelFileName.textContent = file.name;
+                            excelFileName.style.display = 'block';
+                            showAlert(`Archivo Excel "${file.name}" seleccionado`, 'info');
+                        } else if (!isExcel && file.name.endsWith('.pdf')) {
+                            selectedFiles.pdf = file;
+                            pdfFileName.textContent = file.name;
+                            pdfFileName.style.display = 'block';
+                            showAlert(`Archivo PDF "${file.name}" seleccionado`, 'info');
+                        } else {
+                            showAlert('Tipo de archivo no válido', 'error');
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Selector de tipo de reporte
+        document.querySelectorAll('.report-type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.report-type-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                currentReportType = this.dataset.reportType;
+                updateTableData();
+                renderTable();
+                
+                // Actualizar información del período
+                updatePeriodInfo();
+            });
+        });
+        
+        // Selector de período
+        document.getElementById('periodSelect').addEventListener('change', function() {
+            currentPeriod = this.value;
+            renderTable();
+            updatePeriodInfo();
+        });
+        
+        // Actualizar información del período
+        function updatePeriodInfo() {
+            const periodInfo = document.getElementById('periodInfo');
+            const periodBadge = document.getElementById('currentPeriodBadge');
+            const reportType = document.getElementById('currentReportType');
+            const periodDates = document.getElementById('periodDates');
+            const tablePeriodTitle = document.getElementById('tablePeriodTitle');
+            const tablePeriodSubtitle = document.getElementById('tablePeriodSubtitle');
+            
+            if (currentPeriod) {
+                periodInfo.style.display = 'flex';
+                periodBadge.textContent = currentPeriod;
+                reportType.textContent = currentReportType === 'balance' ? 'Balance General' : 'Estado de Resultados';
+                periodDates.textContent = `Período: Ene ${currentPeriod} - Dic ${currentPeriod}`;
+                tablePeriodTitle.textContent = `Período ${currentPeriod}`;
+                tablePeriodSubtitle.textContent = 'Valores y Porcentajes Verticales';
+            } else {
+                periodInfo.style.display = 'none';
+            }
+        }
+        
+        // Agregar nueva fila
+        document.getElementById('addRowBtn').addEventListener('click', function() {
+            if (!currentPeriod) {
+                showAlert('Primero selecciona un período', 'error');
+                return;
+            }
+            
+            analysisData.splice(analysisData.length - 1, 0, {
+                account: 'Nueva Cuenta',
+                values: {}
+            });
+            renderTable();
+        });
+        
+        // Calcular porcentajes
+        document.getElementById('calculateBtn').addEventListener('click', function() {
+            if (!currentPeriod) {
+                showAlert('Primero selecciona un período', 'error');
+                return;
+            }
+            
+            renderTable();
+            showAlert('Porcentajes verticales calculados correctamente', 'success');
+        });
+        
+        // Limpiar tabla
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            if (!currentPeriod) {
+                showAlert('Primero selecciona un período', 'error');
+                return;
+            }
+            
+            if (confirm('¿Estás seguro de que deseas limpiar toda la tabla? Se perderán todos los datos.')) {
+                analysisData.forEach(row => {
+                    if (row.values) {
+                        row.values[currentPeriod] = '';
+                    }
+                });
+                renderTable();
+                showAlert('Tabla limpiada correctamente', 'info');
+            }
+        });
+        
+        // Procesar importación
+        document.getElementById('processImport').addEventListener('click', function() {
+            if (!selectedFiles.excel && !selectedFiles.pdf) {
+                showAlert('Por favor selecciona al menos un archivo para importar', 'error');
+                return;
+            }
+            
+            if (!currentPeriod) {
+                showAlert('Primero selecciona un período', 'error');
+                return;
+            }
+            
+            // Simular procesamiento de importación
+            const btn = this;
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                
+                // Agregar datos de ejemplo importados
+                if (currentReportType === 'balance') {
+                    analysisData = [
+                        { account: 'ACTIVOS', values: {}, isHeader: true },
+                        { account: 'Efectivo y Equivalentes', values: { [currentPeriod]: 150000 } },
+                        { account: 'Cuentas por Cobrar', values: { [currentPeriod]: 300000 } },
+                        { account: 'Inventarios', values: { [currentPeriod]: 200000 } },
+                        { account: 'TOTAL ACTIVOS CORRIENTES', values: { [currentPeriod]: 650000 }, isTotal: true },
+                        { account: 'Propiedad, Planta y Equipo', values: { [currentPeriod]: 850000 } },
+                        { account: 'Activos Intangibles', values: { [currentPeriod]: 100000 } },
+                        { account: 'TOTAL ACTIVOS', values: { [currentPeriod]: 1600000 }, isTotal: true }
+                    ];
+                } else {
+                    analysisData = [
+                        { account: 'INGRESOS', values: {}, isHeader: true },
+                        { account: 'Ventas Netas', values: { [currentPeriod]: 1200000 } },
+                        { account: 'TOTAL INGRESOS', values: { [currentPeriod]: 1200000 }, isTotal: true },
+                        { account: 'COSTOS Y GASTOS', values: {}, isHeader: true },
+                        { account: 'Costo de Ventas', values: { [currentPeriod]: 720000 } },
+                        { account: 'Gastos Operativos', values: { [currentPeriod]: 300000 } },
+                        { account: 'TOTAL COSTOS Y GASTOS', values: { [currentPeriod]: 1020000 }, isTotal: true },
+                        { account: 'UTILIDAD NETA', values: { [currentPeriod]: 180000 }, isTotal: true }
+                    ];
+                }
+                
+                renderTable();
+                
+                // Limpiar archivos seleccionados
+                selectedFiles.excel = null;
+                selectedFiles.pdf = null;
+                document.getElementById('excelFileName').style.display = 'none';
+                document.getElementById('pdfFileName').style.display = 'none';
+                document.getElementById('excelFile').value = '';
+                document.getElementById('pdfFile').value = '';
+                
+                bootstrap.Modal.getInstance(document.getElementById('importModal')).hide();
+                showAlert('Datos importados correctamente', 'success');
+            }, 2000);
+        });
+        
+        // Función para mostrar alertas
+        function showAlert(message, type) {
+            // Crear elemento de alerta
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            `;
+            alertDiv.innerHTML = `
+                <strong>${type === 'success' ? 'Éxito' : type === 'error' ? 'Error' : 'Info'}</strong>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remover después de 4 segundos
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 4000);
+        }
+        
+        // Inicializar
+        initializeTable();
+    });
+</script>
+{% endblock %}
