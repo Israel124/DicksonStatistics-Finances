@@ -95,6 +95,17 @@
         color: white;
     }
     
+    .btn-danger-modern {
+        background: #ef4444;
+        color: white;
+    }
+    
+    .btn-danger-modern:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+        color: white;
+    }
+    
     .analysis-table-container {
         background: white;
         border-radius: 16px;
@@ -378,6 +389,21 @@
         border-radius: 20px;
         font-weight: 600;
     }
+    
+    .selected-row {
+        background-color: #f0f9ff !important;
+        border-left: 3px solid var(--primary-color);
+        cursor: pointer;
+    }
+    
+    .selectable-row {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .selectable-row:hover {
+        background-color: #f8fafc !important;
+    }
 
     @media (max-width: 768px) {
         .table-responsive {
@@ -504,6 +530,9 @@
                         </button>
                         <button class="btn btn-outline-modern btn-modern" id="calculateBtn">
                             <i class="fas fa-calculator"></i> Calcular Porcentajes
+                        </button>
+                        <button class="btn btn-danger-modern btn-modern" id="deleteRowBtn" disabled>
+                            <i class="fas fa-trash"></i> Eliminar Fila Seleccionada
                         </button>
                         <button class="btn btn-outline-modern btn-modern" id="clearBtn">
                             <i class="fas fa-broom"></i> Limpiar Tabla
@@ -636,6 +665,7 @@
             excel: null,
             pdf: null
         };
+        let selectedRowIndex = -1; // Para rastrear la fila seleccionada
         
         // Inicializar tabla
         function initializeTable() {
@@ -719,6 +749,16 @@
             analysisData.forEach((row, index) => {
                 const tr = document.createElement('tr');
                 
+                // Agregar clase de selección si es la fila seleccionada
+                if (index === selectedRowIndex) {
+                    tr.classList.add('selected-row');
+                }
+                
+                // Agregar clase para filas seleccionables (no encabezados ni totales)
+                if (!row.isHeader && !row.isTotal) {
+                    tr.classList.add('selectable-row');
+                }
+                
                 if (row.isHeader) {
                     tr.style.background = '#f8fafc';
                     tr.style.fontWeight = '600';
@@ -729,10 +769,7 @@
                 const value = row.values[currentPeriod] || '';
                 const percentage = calculatePercentage(row);
                 
-                let accountCell = row.account;
-                if (row.isHeader) {
-                    accountCell = `<strong>${row.account}</strong>`;
-                }
+                let accountCell = row.isHeader ? <strong>${row.account}</strong> : row.account;
                 
                 tr.innerHTML = `
                     <td class="account-name">${accountCell}</td>
@@ -744,7 +781,7 @@
                                    data-row="${index}"
                                    placeholder="0.00"
                                    ${row.isTotal ? 'readonly' : ''}>
-                            ${percentage ? `<div class="percentage-badge">${percentage}%</div>` : ''}
+                            ${percentage ? <div class="percentage-badge">${percentage}%</div> : ''}
                         ` : ''}
                     </td>
                 `;
@@ -754,6 +791,12 @@
             
             // Agregar event listeners a los inputs
             attachInputListeners();
+            
+            // Agregar event listeners para selección de filas
+            attachRowSelectionListeners();
+            
+            // Actualizar estado del botón de eliminar
+            updateDeleteButtonState();
         }
         
         // Calcular porcentaje vertical
@@ -814,6 +857,61 @@
             });
         }
         
+        // Adjuntar event listeners para selección de filas
+        function attachRowSelectionListeners() {
+            document.querySelectorAll('.selectable-row').forEach((tr, index) => {
+                // Encontrar el índice real en analysisData
+                let realIndex = -1;
+                let count = 0;
+                for (let i = 0; i < analysisData.length; i++) {
+                    if (!analysisData[i].isHeader && !analysisData[i].isTotal) {
+                        if (count === index) {
+                            realIndex = i;
+                            break;
+                        }
+                        count++;
+                    }
+                }
+                
+                if (realIndex >= 0) {
+                    tr.addEventListener('click', function() {
+                        selectedRowIndex = realIndex;
+                        renderTable(); // Re-renderizar para mostrar la selección
+                    });
+                }
+            });
+        }
+        
+        // Eliminar fila
+        function deleteRow(index) {
+            if (index < 0 || index >= analysisData.length) return;
+            
+            // Confirmar eliminación
+            if (confirm('¿Estás seguro de que deseas eliminar esta fila?')) {
+                // Eliminar la fila del array
+                analysisData.splice(index, 1);
+                
+                // Resetear la selección
+                selectedRowIndex = -1;
+                
+                // Re-renderizar la tabla
+                renderTable();
+                
+                // Mostrar mensaje de éxito
+                showAlert('Fila eliminada correctamente', 'success');
+            }
+        }
+        
+        // Actualizar estado del botón de eliminar
+        function updateDeleteButtonState() {
+            const deleteButton = document.getElementById('deleteRowBtn');
+            if (selectedRowIndex >= 0) {
+                deleteButton.disabled = false;
+            } else {
+                deleteButton.disabled = true;
+            }
+        }
+        
         // Configurar la subida de archivos
         function setupFileUpload() {
             const excelFileInput = document.getElementById('excelFile');
@@ -827,7 +925,7 @@
                     selectedFiles.excel = e.target.files[0];
                     excelFileName.textContent = selectedFiles.excel.name;
                     excelFileName.style.display = 'block';
-                    showAlert(`Archivo Excel "${selectedFiles.excel.name}" seleccionado`, 'info');
+                    showAlert(Archivo Excel "${selectedFiles.excel.name}" seleccionado, 'info');
                 }
             });
             
@@ -837,7 +935,7 @@
                     selectedFiles.pdf = e.target.files[0];
                     pdfFileName.textContent = selectedFiles.pdf.name;
                     pdfFileName.style.display = 'block';
-                    showAlert(`Archivo PDF "${selectedFiles.pdf.name}" seleccionado`, 'info');
+                    showAlert(Archivo PDF "${selectedFiles.pdf.name}" seleccionado, 'info');
                 }
             });
             
@@ -867,12 +965,12 @@
                             selectedFiles.excel = file;
                             excelFileName.textContent = file.name;
                             excelFileName.style.display = 'block';
-                            showAlert(`Archivo Excel "${file.name}" seleccionado`, 'info');
+                            showAlert(Archivo Excel "${file.name}" seleccionado, 'info');
                         } else if (!isExcel && file.name.endsWith('.pdf')) {
                             selectedFiles.pdf = file;
                             pdfFileName.textContent = file.name;
                             pdfFileName.style.display = 'block';
-                            showAlert(`Archivo PDF "${file.name}" seleccionado`, 'info');
+                            showAlert(Archivo PDF "${file.name}" seleccionado, 'info');
                         } else {
                             showAlert('Tipo de archivo no válido', 'error');
                         }
@@ -888,6 +986,7 @@
                 this.classList.add('active');
                 
                 currentReportType = this.dataset.reportType;
+                selectedRowIndex = -1; // Resetear selección al cambiar tipo de reporte
                 updateTableData();
                 renderTable();
                 
@@ -899,6 +998,7 @@
         // Selector de período
         document.getElementById('periodSelect').addEventListener('change', function() {
             currentPeriod = this.value;
+            selectedRowIndex = -1; // Resetear selección al cambiar período
             renderTable();
             updatePeriodInfo();
         });
@@ -916,8 +1016,8 @@
                 periodInfo.style.display = 'flex';
                 periodBadge.textContent = currentPeriod;
                 reportType.textContent = currentReportType === 'balance' ? 'Balance General' : 'Estado de Resultados';
-                periodDates.textContent = `Período: Ene ${currentPeriod} - Dic ${currentPeriod}`;
-                tablePeriodTitle.textContent = `Período ${currentPeriod}`;
+                periodDates.textContent = Período: Ene ${currentPeriod} - Dic ${currentPeriod};
+                tablePeriodTitle.textContent = Período ${currentPeriod};
                 tablePeriodSubtitle.textContent = 'Valores y Porcentajes Verticales';
             } else {
                 periodInfo.style.display = 'none';
@@ -931,11 +1031,28 @@
                 return;
             }
             
-            analysisData.splice(analysisData.length - 1, 0, {
+            // Agregar nueva fila antes de la última fila (que es un total)
+            const insertIndex = analysisData.length - 1;
+            analysisData.splice(insertIndex, 0, {
                 account: 'Nueva Cuenta',
                 values: {}
             });
+            
+            // Resetear selección
+            selectedRowIndex = -1;
+            
             renderTable();
+            showAlert('Nueva fila agregada correctamente', 'success');
+        });
+        
+        // Eliminar fila seleccionada
+        document.getElementById('deleteRowBtn').addEventListener('click', function() {
+            if (selectedRowIndex < 0) {
+                showAlert('Primero selecciona una fila para eliminar', 'error');
+                return;
+            }
+            
+            deleteRow(selectedRowIndex);
         });
         
         // Calcular porcentajes
@@ -962,6 +1079,10 @@
                         row.values[currentPeriod] = '';
                     }
                 });
+                
+                // Resetear selección
+                selectedRowIndex = -1;
+                
                 renderTable();
                 showAlert('Tabla limpiada correctamente', 'info');
             }
@@ -1013,6 +1134,9 @@
                     ];
                 }
                 
+                // Resetear selección
+                selectedRowIndex = -1;
+                
                 renderTable();
                 
                 // Limpiar archivos seleccionados
@@ -1032,7 +1156,7 @@
         function showAlert(message, type) {
             // Crear elemento de alerta
             const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+            alertDiv.className = alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show;
             alertDiv.style.cssText = `
                 position: fixed;
                 top: 100px;
