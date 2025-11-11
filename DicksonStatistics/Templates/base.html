@@ -257,19 +257,6 @@
                                     </div>
                                 </a>
                             </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item {% if request.resolver_match.url_name == 'razones' %}active{% endif %}" 
-                                   href="{% url 'razones' %}">
-                                    <div class="analysis-icon">
-                                        <i class="fas fa-calculator"></i>
-                                    </div>
-                                    <div>
-                                        <div class="fw-semibold">Razones Financieras</div>
-                                        <small class="text-muted">Indicadores de liquidez, actividad, endeudamiento y rentabilidad</small>
-                                    </div>
-                                </a>
-                            </li>
                             <li>
                                 <a class="dropdown-item {% if request.resolver_match.url_name == 'dupont' %}active{% endif %}" 
                                    href="{% url 'dupont' %}">
