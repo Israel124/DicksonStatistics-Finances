@@ -311,38 +311,38 @@ def guardar_analisis_vertical(request):
     
     return JsonResponse({'success': False, 'message': 'Método no permitido'})
 
-#Analisis horizontal (pendiente)
+#Analisis horizontal (TODO: implementar lógica)
 @login_required
 def analisis_horizontal(request):
     return render(request, 'analisishorizontal.html')
 
-#EOAF (PENDIENTE)
+#EOAF (TODO: implementar lógica)
 
 @login_required
 def EOAF(request):
     return render(request, 'eoaf.html')
 
-#Razones financieras (pendiente)
+#Razones financieras (TODO: implementar lógica)
 @login_required
 def razones_financieras(request):
     return render(request, 'razones.html')
 
-#DUPONT (pendiente)
+#DUPONT (TODO: implementar lógica)
 @login_required
 def dupont(request):
     return render(request, 'dupont.html')
 
-#Metdodo Directo (pendiente)
+#Metdodo Directo (TODO: implementar lógica)
 @login_required
 def metodo_directo(request):
     return render(request, 'metododirecto.html')
 
-#Metodo Indirecto (pendiente)
+#Metodo Indirecto (TODO: implementar lógica)
 @login_required
 def metodo_indirecto(request):
     return render(request, 'metodoindirecto.html')
 
-#Liquidez (pendiente)
+#Liquidez (TODO: implementar lógica)
 @login_required
 def liquidez(request):
     return render(request, 'liquidity.html')
@@ -352,17 +352,17 @@ def liquidez(request):
 def actividades(request):
     return render(request, 'actividad.html')
 
-#debt pendiente
+#debt TODO: implementar lógica
 @login_required
 def DEBT(request):
     return render(request, 'debt.html')
 
-#profitability pendiente
+#profitability TODO: implementar lógica
 @login_required
 def profitability(request):
     return render(request, 'Profita.html')
 
-#perfil pendiente
+#perfil TODO: implementar lógica
 def perfil(request):
     return render(request, 'perfil.html')
 
