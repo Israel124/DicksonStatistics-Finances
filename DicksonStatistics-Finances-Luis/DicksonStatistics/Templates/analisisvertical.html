@@ -1,0 +1,1785 @@
+{% extends 'base.html' %}
+
+{% block title %}Análisis Vertical - DicksonStatistics{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #2563eb;
+        --primary-dark: #1e40af;
+        --secondary-color: #64748b;
+        --accent-color: #06d6a0;
+        --accent-dark: #05b384;
+        --dark-color: #1e293b;
+        --light-color: #f8fafc;
+        --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-dark: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --card-shadow-hover: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.06);
+    }
+    
+    .analysis-section {
+        padding: 2rem 0;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: calc(100vh - 76px);
+    }
+    
+    .section-header {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .section-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient);
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .section-subtitle {
+        color: var(--secondary-color);
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+    
+    .control-panel {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        transition: all 0.3s ease;
+    }
+    
+    .control-panel:hover {
+        box-shadow: var(--card-shadow-hover);
+    }
+    
+    .btn-modern {
+        padding: 0.875rem 1.75rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.95rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }
+    
+    .btn-modern:hover::before {
+        left: 100%;
+    }
+    
+    .btn-primary-modern {
+        background: var(--gradient);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-primary-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .btn-outline-modern {
+        background: transparent;
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+    }
+    
+    .btn-outline-modern:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(37, 99, 235, 0.2);
+    }
+    
+    .btn-success-modern {
+        background: var(--success-color);
+        color: white;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    .btn-success-modern:hover {
+        background: #059669;
+        transform: translateY(-3px);
+        color: white;
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    }
+    
+    .btn-danger-modern {
+        background: var(--danger-color);
+        color: white;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    
+    .btn-danger-modern:hover {
+        background: #dc2626;
+        transform: translateY(-3px);
+        color: white;
+        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+    }
+    
+    .btn-warning-modern {
+        background: var(--warning-color);
+        color: white;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+    
+    .btn-warning-modern:hover {
+        background: #d97706;
+        transform: translateY(-3px);
+        color: white;
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+    }
+    
+    .analysis-table-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .analysis-table-container:hover {
+        box-shadow: var(--card-shadow-hover);
+    }
+    
+    .table-modern {
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+    }
+    
+    .table-modern thead th {
+        background: var(--gradient);
+        border-bottom: none;
+        padding: 1.5rem 1rem;
+        font-weight: 700;
+        color: white;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 1.1rem;
+        position: relative;
+    }
+    
+    .table-modern thead th::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.5);
+    }
+    
+    .table-modern tbody td {
+        padding: 1.25rem 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+        transition: all 0.2s ease;
+    }
+    
+    .table-modern tbody tr:hover td {
+        background: #f8fafc;
+        transform: scale(1.01);
+    }
+    
+    .table-modern .account-name {
+        font-weight: 600;
+        color: var(--dark-color);
+        min-width: 250px;
+        font-size: 1rem;
+    }
+    
+    .editable-cell {
+        position: relative;
+    }
+    
+    .editable-input {
+        width: 140px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        text-align: right;
+        font-weight: 500;
+        background: #f8fafc;
+    }
+    
+    .editable-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        background: white;
+    }
+    
+    .period-header {
+        background: var(--gradient) !important;
+        color: white !important;
+        position: relative;
+    }
+    
+    .file-upload-area {
+        border: 2px dashed #cbd5e1;
+        border-radius: 16px;
+        padding: 2.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .file-upload-area:hover {
+        border-color: var(--primary-color);
+        background: #f1f5f9;
+        transform: translateY(-5px);
+    }
+    
+    .file-upload-area.dragover {
+        border-color: var(--primary-color);
+        background: #e0e7ff;
+        transform: scale(1.02);
+    }
+    
+    .upload-icon {
+        font-size: 3.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .file-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .file-name {
+        margin-top: 0.5rem;
+        font-size: 1rem;
+        color: var(--primary-color);
+        font-weight: 600;
+        word-break: break-all;
+    }
+    
+    .export-options {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .modal-modern .modal-content {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+    }
+    
+    .modal-modern .modal-header {
+        background: var(--gradient);
+        color: white;
+        border-radius: 20px 20px 0 0;
+        border: none;
+        padding: 1.75rem 2rem;
+    }
+    
+    .modal-modern .modal-title {
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+    
+    .modal-modern .btn-close {
+        filter: invert(1);
+        opacity: 0.8;
+    }
+    
+    .modal-modern .btn-close:hover {
+        opacity: 1;
+    }
+    
+    .form-group-modern {
+        margin-bottom: 1.75rem;
+    }
+    
+    .form-label-modern {
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+    
+    .form-control-modern {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.875rem 1.25rem;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+    
+    .form-control-modern:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .percentage-badge {
+        background: var(--success-color);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-top: 0.5rem;
+        box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3);
+    }
+    
+    .calculation-row {
+        background: #f0f9ff !important;
+        font-weight: 700;
+    }
+    
+    .calculation-row td {
+        border-top: 2px solid #e2e8f0;
+    }
+    
+    .empty-row {
+        text-align: center;
+        color: var(--secondary-color);
+        font-style: italic;
+        padding: 3rem !important;
+        font-size: 1.1rem;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+    }
+    
+    .btn-sm-modern {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+    
+    .report-type-selector {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        transition: all 0.3s ease;
+    }
+    
+    .report-type-selector:hover {
+        box-shadow: var(--card-shadow-hover);
+    }
+    
+    .report-type-buttons {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .report-type-btn {
+        flex: 1;
+        min-width: 220px;
+        padding: 2rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .report-type-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .report-type-btn.active {
+        border-color: var(--primary-color);
+        background: #f8faff;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.1);
+        transform: translateY(-5px);
+    }
+    
+    .report-type-btn.active::before {
+        transform: scaleX(1);
+    }
+    
+    .report-type-btn:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .report-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .report-title {
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+    }
+    
+    .report-description {
+        color: var(--secondary-color);
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    
+    .period-selector {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        transition: all 0.3s ease;
+    }
+    
+    .period-selector:hover {
+        box-shadow: var(--card-shadow-hover);
+    }
+    
+    .period-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        background: #f8fafc;
+        border-radius: 12px;
+        margin-top: 1.5rem;
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .period-badge {
+        background: var(--gradient);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 20px;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+    }
+    
+    .selected-row {
+        background-color: #f0f9ff !important;
+        border-left: 4px solid var(--primary-color);
+        cursor: pointer;
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+    }
+    
+    .selectable-row {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .selectable-row:hover {
+        background-color: #f8fafc !important;
+    }
+    
+    .account-header-row {
+        background-color: #f1f5f9 !important;
+        font-weight: 700;
+        color: var(--dark-color);
+        font-size: 1.1rem;
+    }
+    
+    .account-total-row {
+        background-color: #e0f2fe !important;
+        font-weight: 700;
+        color: var(--dark-color);
+        font-size: 1.1rem;
+    }
+    
+    .deleted-accounts-section {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        transition: all 0.3s ease;
+    }
+    
+    .deleted-accounts-section:hover {
+        box-shadow: var(--card-shadow-hover);
+    }
+    
+    .deleted-accounts-list {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    .deleted-account-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        transition: all 0.2s ease;
+    }
+    
+    .deleted-account-item:hover {
+        background: #f8fafc;
+        border-radius: 8px;
+    }
+    
+    .deleted-account-item:last-child {
+        border-bottom: none;
+    }
+    
+    .deleted-account-category {
+        font-size: 0.85rem;
+        color: var(--secondary-color);
+        background: #f1f5f9;
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .section-title {
+            font-size: 2.25rem;
+        }
+        
+        .report-type-btn {
+            min-width: 200px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .section-header {
+            padding: 2rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+        
+        .report-type-buttons {
+            gap: 1rem;
+        }
+        
+        .report-type-btn {
+            min-width: 180px;
+            padding: 1.5rem;
+        }
+        
+        .report-icon {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .analysis-section {
+            padding: 1rem 0;
+        }
+        
+        .section-header {
+            padding: 1.5rem;
+            border-radius: 16px;
+        }
+        
+        .section-title {
+            font-size: 1.75rem;
+        }
+        
+        .section-subtitle {
+            font-size: 1rem;
+        }
+        
+        .control-panel {
+            padding: 1.5rem;
+            border-radius: 16px;
+        }
+        
+        .table-responsive {
+            font-size: 0.9rem;
+        }
+        
+        .table-modern thead th,
+        .table-modern tbody td {
+            padding: 1rem 0.75rem;
+        }
+        
+        .table-modern .account-name {
+            min-width: 180px;
+        }
+        
+        .editable-input {
+            padding: 0.5rem 0.75rem;
+            width: 120px;
+            font-size: 0.9rem;
+        }
+        
+        .export-options {
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .export-options .btn-modern {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .report-type-buttons {
+            flex-direction: column;
+        }
+        
+        .report-type-btn {
+            min-width: 100%;
+        }
+        
+        .control-panel .d-flex {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .control-panel .btn-modern {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .period-info {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+        
+        .deleted-account-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .deleted-account-item .d-flex {
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        .btn-modern {
+            padding: 0.75rem 1.5rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .section-header {
+            padding: 1.25rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+        }
+        
+        .control-panel, .report-type-selector, .period-selector, .deleted-accounts-section {
+            padding: 1.25rem;
+            border-radius: 16px;
+        }
+        
+        .table-modern thead th,
+        .table-modern tbody td {
+            padding: 0.75rem 0.5rem;
+        }
+        
+        .table-modern .account-name {
+            min-width: 150px;
+            font-size: 0.9rem;
+        }
+        
+        .editable-input {
+            width: 100px;
+            padding: 0.4rem 0.6rem;
+        }
+        
+        .report-type-btn {
+            padding: 1.25rem;
+        }
+        
+        .report-icon {
+            font-size: 1.75rem;
+        }
+        
+        .report-title {
+            font-size: 1.1rem;
+        }
+        
+        .btn-modern {
+            font-size: 0.9rem;
+            padding: 0.7rem 1.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="analysis-section">
+    <div class="container">
+        <!-- Header -->
+        <div class="section-header">
+            <h1 class="section-title">Análisis Vertical</h1>
+            <p class="section-subtitle">Analiza la estructura porcentual de los estados financieros</p>
+        </div>
+
+        <!-- Selector de Tipo de Reporte -->
+        <div class="report-type-selector">
+            <h5 class="form-label-modern mb-3">Seleccionar Tipo de Reporte</h5>
+            <div class="report-type-buttons">
+                <div class="report-type-btn active" data-report-type="balance">
+                    <div class="report-icon">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <div class="report-title">Balance General</div>
+                    <div class="report-description">Análisis vertical de activos, pasivos y patrimonio</div>
+                </div>
+                <div class="report-type-btn" data-report-type="income">
+                    <div class="report-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="report-title">Estado de Resultados</div>
+                    <div class="report-description">Análisis vertical de ingresos, costos y gastos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selector de Período -->
+        <div class="period-selector">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="form-label-modern">Período de Análisis</h5>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <select class="form-control-modern" id="periodSelect" style="min-width: 200px;">
+                            <option value="">Seleccionar período...</option>
+                            <option value="2024">Año 2024</option>
+                            <option value="2023">Año 2023</option>
+                            <option value="2022">Año 2022</option>
+                        </select>
+                        <button class="btn btn-outline-modern btn-modern" data-bs-toggle="modal" data-bs-target="#addPeriodModal">
+                            <i class="fas fa-plus"></i> Nuevo Período
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="export-options justify-content-md-end">
+                        <button class="btn btn-success-modern btn-modern" id="exportExcel">
+                            <i class="fas fa-file-excel"></i> Exportar Excel
+                        </button>
+                        <button class="btn btn-outline-modern btn-modern" id="exportPDF">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información del Período Seleccionado -->
+            <div class="period-info" id="periodInfo" style="display: none;">
+                <div class="period-badge" id="currentPeriodBadge">2024</div>
+                <div>
+                    <strong id="currentReportType">Balance General</strong>
+                    <div class="text-muted" id="periodDates">Período: Ene 2024 - Dic 2024</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección para cuentas eliminadas -->
+        <div class="deleted-accounts-section" id="deletedAccountsSection">
+            <h5 class="form-label-modern">Cuentas Eliminadas</h5>
+            <p class="text-muted">Puedes restaurar cuentas que hayas eliminado anteriormente:</p>
+            <div class="deleted-accounts-list" id="deletedAccountsList">
+                <!-- Las cuentas eliminadas aparecerán aquí -->
+            </div>
+        </div>
+
+        <!-- Tabla de Análisis Vertical -->
+        <div class="analysis-table-container">
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th class="account-name">Cuenta</th>
+                            <th class="period-header">
+                                <span id="tablePeriodTitle">Período</span>
+                                <br>
+                                <small id="tablePeriodSubtitle">Valores y Porcentajes</small>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="analysisTableBody">
+                        <!-- Filas se generan dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="control-panel">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-outline-modern btn-modern" id="addRowBtn">
+                            <i class="fas fa-plus-circle"></i> Agregar Fila
+                        </button>
+                        <button class="btn btn-outline-modern btn-modern" id="calculateBtn">
+                            <i class="fas fa-calculator"></i> Calcular Porcentajes
+                        </button>
+                        <button class="btn btn-danger-modern btn-modern" id="deleteRowBtn" disabled>
+                            <i class="fas fa-trash"></i> Eliminar Cuenta
+                        </button>
+                        <button class="btn btn-outline-modern btn-modern" id="clearBtn">
+                            <i class="fas fa-broom"></i> Limpiar Tabla
+                        </button>
+                        <button class="btn btn-outline-modern btn-modern" data-bs-toggle="modal" data-bs-target="#importModal">
+                            <i class="fas fa-file-import"></i> Importar Datos
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <button class="btn btn-primary-modern btn-modern" id="saveAnalysis">
+                        <i class="fas fa-save"></i> Guardar Análisis
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal para Agregar Período -->
+<div class="modal fade modal-modern" id="addPeriodModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Nuevo Período</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="periodForm">
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Nombre del Período</label>
+                        <input type="text" class="form-control form-control-modern" id="periodName" 
+                               placeholder="Ej: Primer Trimestre 2024" required>
+                    </div>
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Año</label>
+                        <input type="number" class="form-control form-control-modern" id="periodYear" 
+                               min="2020" max="2030" value="2024" required>
+                    </div>
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Tipo de Período</label>
+                        <select class="form-control form-control-modern" id="periodType">
+                            <option value="annual">Anual</option>
+                            <option value="semester">Semestral</option>
+                            <option value="quarterly">Trimestral</option>
+                            <option value="monthly">Mensual</option>
+                        </select>
+                    </div>
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Moneda</label>
+                        <select class="form-control form-control-modern" id="currency">
+                            <option value="USD">Dólar Americano (USD)</option>
+                            <option value="EUR">Euro (EUR)</option>
+                            <option value="MXN">Peso Mexicano (MXN)</option>
+                            <option value="COP">Peso Colombiano (COP)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-modern btn-modern" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary-modern btn-modern" id="savePeriod">Agregar Período</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Importar Datos -->
+<div class="modal fade modal-modern" id="importModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Datos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="file-upload-area" id="excelUploadArea">
+                            <input type="file" class="file-input" id="excelFile" accept=".xlsx, .xls">
+                            <div class="upload-icon">
+                                <i class="fas fa-file-excel"></i>
+                            </div>
+                            <h5>Importar desde Excel</h5>
+                            <p class="text-muted">Haz clic aquí o arrastra tu archivo Excel</p>
+                            <div class="file-name" id="excelFileName"></div>
+                            <small class="text-muted">Formatos soportados: .xlsx, .xls</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="file-upload-area" id="pdfUploadArea">
+                            <input type="file" class="file-input" id="pdfFile" accept=".pdf">
+                            <div class="upload-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <h5>Importar desde PDF</h5>
+                            <p class="text-muted">Haz clic aquí o arrastra tu archivo PDF</p>
+                            <div class="file-name" id="pdfFileName"></div>
+                            <small class="text-muted">Formato soportado: .pdf</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Instrucciones de Importación:</h6>
+                    <ul class="text-muted">
+                        <li>Para Excel: La primera columna debe contener los nombres de las cuentas</li>
+                        <li>La segunda columna debe contener los valores numéricos</li>
+                        <li>Para PDF: El sistema extraerá automáticamente las tablas detectadas</li>
+                        <li>Los datos importados reemplazarán la información actual</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-modern btn-modern" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary-modern btn-modern" id="processImport">Procesar Archivos</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Variables globales
+        let analysisData = [];
+        let deletedAccounts = [];
+        let currentPeriod = '';
+        let currentReportType = 'balance'; // 'balance' or 'income'
+        let selectedFiles = {
+            excel: null,
+            pdf: null
+        };
+        let selectedRowIndex = -1; // Para rastrear la fila seleccionada
+        
+        // Inicializar aplicación
+        function initializeApp() {
+            updateTableData();
+            renderTable();
+            setupFileUpload();
+            setupEventListeners();
+            updateDeletedAccountsSection();
+        }
+        
+        // Actualizar datos según el tipo de reporte
+        function updateTableData() {
+            if (currentReportType === 'balance') {
+                analysisData = [
+                    { account: 'ACTIVOS', values: {}, isHeader: true, category: 'header' },
+                    { account: 'Activo Corriente', values: {}, category: 'current-assets' },
+                    { account: 'Efectivo y Equivalentes', values: {}, category: 'current-assets' },
+                    { account: 'Cuentas por Cobrar', values: {}, category: 'current-assets' },
+                    { account: 'Inventarios', values: {}, category: 'current-assets' },
+                    { account: 'Activo No Corriente', values: {}, isHeader: true, category: 'header' },
+                    { account: 'Propiedad, Planta y Equipo', values: {}, category: 'noncurrent-assets' },
+                    { account: 'Activos Intangibles', values: {}, category: 'noncurrent-assets' },
+                    { account: 'TOTAL ACTIVOS', values: {}, isTotal: true, category: 'total' },
+                    { account: 'PASIVOS Y PATRIMONIO', values: {}, isHeader: true, category: 'header' },
+                    { account: 'Pasivo Corriente', values: {}, category: 'current-liabilities' },
+                    { account: 'Cuentas por Pagar', values: {}, category: 'current-liabilities' },
+                    { account: 'Préstamos a Corto Plazo', values: {}, category: 'current-liabilities' },
+                    { account: 'Pasivo No Corriente', values: {}, isHeader: true, category: 'header' },
+                    { account: 'Préstamos a Largo Plazo', values: {}, category: 'noncurrent-liabilities' },
+                    { account: 'Patrimonio', values: {}, isHeader: true, category: 'header' },
+                    { account: 'Capital Social', values: {}, category: 'equity' },
+                    { account: 'Utilidades Retenidas', values: {}, category: 'equity' },
+                    { account: 'TOTAL PASIVOS Y PATRIMONIO', values: {}, isTotal: true, category: 'total' }
+                ];
+            } else {
+                analysisData = [
+                    { account: 'INGRESOS', values: {}, isHeader: true, category: 'header' },
+                    { account: 'Ventas Netas', values: {}, category: 'revenue' },
+                    { account: 'Otros Ingresos', values: {}, category: 'revenue' },
+                    { account: 'TOTAL INGRESOS', values: {}, isTotal: true, category: 'total' },
+                    { account: 'COSTOS Y GASTOS', values: {}, isHeader: true, category: 'header' },
+                    { account: 'Costo de Ventas', values: {}, category: 'expenses' },
+                    { account: 'Gastos Operativos', values: {}, category: 'expenses' },
+                    { account: 'Gastos de Ventas', values: {}, category: 'expenses' },
+                    { account: 'Gastos Administrativos', values: {}, category: 'expenses' },
+                    { account: 'TOTAL COSTOS Y GASTOS', values: {}, isTotal: true, category: 'total' },
+                    { account: 'UTILIDAD', values: {}, isHeader: true, category: 'header' },
+                    { account: 'Utilidad Operativa', values: {}, isTotal: true, category: 'total' },
+                    { account: 'Gastos Financieros', values: {}, category: 'expenses' },
+                    { account: 'Impuestos', values: {}, category: 'expenses' },
+                    { account: 'UTILIDAD NETA', values: {}, isTotal: true, category: 'total' }
+                ];
+            }
+        }
+        
+        // Renderizar tabla
+        function renderTable() {
+            const tbody = document.getElementById('analysisTableBody');
+            tbody.innerHTML = '';
+            
+            if (!currentPeriod) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="2" class="empty-row">
+                            <i class="fas fa-calendar-alt me-2"></i>Selecciona un período para comenzar
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            if (analysisData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="2" class="empty-row">
+                            <i class="fas fa-table me-2"></i>No hay datos disponibles. Agrega filas o importa datos.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            analysisData.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                
+                // Agregar clase de selección si es la fila seleccionada
+                if (index === selectedRowIndex) {
+                    tr.classList.add('selected-row');
+                }
+                
+                // Agregar clases según el tipo de fila
+                if (row.isHeader) {
+                    tr.classList.add('account-header-row');
+                } else if (row.isTotal) {
+                    tr.classList.add('account-total-row');
+                } else {
+                    tr.classList.add('selectable-row');
+                }
+                
+                const value = row.values[currentPeriod] || '';
+                const percentage = calculatePercentage(row);
+                
+                let accountCell = row.account;
+                if (row.isHeader || row.isTotal) {
+                    accountCell = `<strong>${row.account}</strong>`;
+                }
+                
+                tr.innerHTML = `
+                    <td class="account-name">${accountCell}</td>
+                    <td class="editable-cell">
+                        ${!row.isHeader ? `
+                            <input type="text" 
+                                   class="editable-input" 
+                                   value="${value}" 
+                                   data-row="${index}"
+                                   placeholder="0.00"
+                                   ${row.isTotal ? 'readonly' : ''}>
+                            ${percentage ? `<div class="percentage-badge">${percentage}%</div>` : ''}
+                        ` : ''}
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+            
+            // Agregar event listeners a los inputs
+            attachInputListeners();
+            
+            // Agregar event listeners para selección de filas
+            attachRowSelectionListeners();
+            
+            // Actualizar estado del botón de eliminar
+            updateDeleteButtonState();
+            
+            // Actualizar sección de cuentas eliminadas
+            updateDeletedAccountsSection();
+        }
+        
+        // Calcular porcentaje vertical
+        function calculatePercentage(row) {
+            if (row.isHeader || row.isTotal) return '';
+            
+            // Encontrar el total correspondiente
+            let totalRow;
+            if (currentReportType === 'balance') {
+                if (row.category.includes('assets')) {
+                    totalRow = analysisData.find(r => r.account === 'TOTAL ACTIVOS');
+                } else if (row.category.includes('liabilities') || row.category.includes('equity')) {
+                    totalRow = analysisData.find(r => r.account === 'TOTAL PASIVOS Y PATRIMONIO');
+                }
+            } else {
+                if (row.category === 'revenue') {
+                    totalRow = analysisData.find(r => r.account === 'TOTAL INGRESOS');
+                } else if (row.category === 'expenses') {
+                    totalRow = analysisData.find(r => r.account === 'TOTAL COSTOS Y GASTOS');
+                } else if (row.account.includes('Utilidad')) {
+                    totalRow = analysisData.find(r => r.account === 'UTILIDAD NETA');
+                }
+            }
+            
+            if (!totalRow || !totalRow.values[currentPeriod]) return '';
+            
+            const value = parseFloat(row.values[currentPeriod]) || 0;
+            const total = parseFloat(totalRow.values[currentPeriod]) || 1;
+            const percentage = ((value / total) * 100).toFixed(1);
+            
+            return percentage !== 'NaN' ? percentage : '';
+        }
+        
+        // Adjuntar event listeners a los inputs
+        function attachInputListeners() {
+            document.querySelectorAll('.editable-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const rowIndex = parseInt(this.dataset.row);
+                    const value = this.value.trim();
+                    
+                    if (!analysisData[rowIndex].values) {
+                        analysisData[rowIndex].values = {};
+                    }
+                    
+                    analysisData[rowIndex].values[currentPeriod] = value === '' ? '' : parseFloat(value) || 0;
+                    
+                    // Re-renderizar para actualizar porcentajes
+                    renderTable();
+                });
+                
+                // Permitir solo números y punto decimal
+                input.addEventListener('keypress', function(e) {
+                    const char = String.fromCharCode(e.which);
+                    if (!/[\d.]/.test(char)) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        }
+        
+        // Adjuntar event listeners para selección de filas
+        function attachRowSelectionListeners() {
+            document.querySelectorAll('.selectable-row').forEach((tr, index) => {
+                // Encontrar el índice real en analysisData
+                let realIndex = -1;
+                let count = 0;
+                for (let i = 0; i < analysisData.length; i++) {
+                    if (!analysisData[i].isHeader && !analysisData[i].isTotal) {
+                        if (count === index) {
+                            realIndex = i;
+                            break;
+                        }
+                        count++;
+                    }
+                }
+                
+                if (realIndex >= 0) {
+                    tr.addEventListener('click', function() {
+                        selectedRowIndex = realIndex;
+                        renderTable(); // Re-renderizar para mostrar la selección
+                    });
+                }
+            });
+        }
+        
+        // Eliminar cuenta
+        function deleteAccount(index) {
+            if (index < 0 || index >= analysisData.length) return;
+            
+            const accountToDelete = analysisData[index];
+            
+            // Confirmar eliminación
+            if (confirm(`¿Estás seguro de que deseas eliminar la cuenta "${accountToDelete.account}"?`)) {
+                // Mover la cuenta a la lista de eliminadas
+                deletedAccounts.push({
+                    ...accountToDelete,
+                    deletedAt: new Date().toISOString()
+                });
+                
+                // Eliminar la cuenta del array
+                analysisData.splice(index, 1);
+                
+                // Resetear la selección
+                selectedRowIndex = -1;
+                
+                // Re-renderizar la tabla
+                renderTable();
+                
+                // Mostrar mensaje de éxito
+                showAlert(`Cuenta "${accountToDelete.account}" eliminada correctamente`, 'success');
+            }
+        }
+        
+        // Restaurar cuenta
+        function restoreAccount(accountIndex) {
+            if (accountIndex < 0 || accountIndex >= deletedAccounts.length) return;
+            
+            const accountToRestore = deletedAccounts[accountIndex];
+            
+            // Determinar la posición correcta para insertar la cuenta
+            let insertIndex = findInsertionIndex(accountToRestore);
+            
+            // Insertar la cuenta en la posición correcta
+            analysisData.splice(insertIndex, 0, accountToRestore);
+            
+            // Eliminar la cuenta de la lista de eliminadas
+            deletedAccounts.splice(accountIndex, 1);
+            
+            // Re-renderizar la tabla
+            renderTable();
+            
+            // Mostrar mensaje de éxito
+            showAlert(`Cuenta "${accountToRestore.account}" restaurada correctamente`, 'success');
+        }
+        
+        // Encontrar la posición correcta para insertar una cuenta
+        function findInsertionIndex(account) {
+            if (currentReportType === 'balance') {
+                // Para Balance General
+                switch(account.category) {
+                    case 'current-assets':
+                        return findCategoryInsertionIndex('current-assets');
+                    case 'noncurrent-assets':
+                        return findCategoryInsertionIndex('noncurrent-assets');
+                    case 'current-liabilities':
+                        return findCategoryInsertionIndex('current-liabilities');
+                    case 'noncurrent-liabilities':
+                        return findCategoryInsertionIndex('noncurrent-liabilities');
+                    case 'equity':
+                        return findCategoryInsertionIndex('equity');
+                    default:
+                        return analysisData.length - 1;
+                }
+            } else {
+                // Para Estado de Resultados
+                switch(account.category) {
+                    case 'revenue':
+                        return findCategoryInsertionIndex('revenue');
+                    case 'expenses':
+                        return findCategoryInsertionIndex('expenses');
+                    default:
+                        return analysisData.length - 1;
+                }
+            }
+        }
+        
+        // Encontrar índice de inserción para una categoría específica
+        function findCategoryInsertionIndex(category) {
+            for (let i = 0; i < analysisData.length; i++) {
+                if (analysisData[i].category === category) {
+                    // Encontrar el último elemento de esta categoría
+                    let lastIndex = i;
+                    for (let j = i + 1; j < analysisData.length; j++) {
+                        if (analysisData[j].category === category) {
+                            lastIndex = j;
+                        } else {
+                            break;
+                        }
+                    }
+                    return lastIndex + 1;
+                }
+            }
+            return analysisData.length - 1;
+        }
+        
+        // Actualizar estado del botón de eliminar
+        function updateDeleteButtonState() {
+            const deleteButton = document.getElementById('deleteRowBtn');
+            if (selectedRowIndex >= 0 && !analysisData[selectedRowIndex].isHeader && !analysisData[selectedRowIndex].isTotal) {
+                deleteButton.disabled = false;
+            } else {
+                deleteButton.disabled = true;
+            }
+        }
+        
+        // Actualizar sección de cuentas eliminadas
+        function updateDeletedAccountsSection() {
+            const deletedSection = document.getElementById('deletedAccountsSection');
+            const deletedList = document.getElementById('deletedAccountsList');
+            
+            if (deletedAccounts.length > 0) {
+                deletedSection.style.display = 'block';
+                deletedList.innerHTML = '';
+                
+                deletedAccounts.forEach((account, index) => {
+                    const accountItem = document.createElement('div');
+                    accountItem.className = 'deleted-account-item';
+                    
+                    const categoryName = getCategoryName(account.category);
+                    
+                    accountItem.innerHTML = `
+                        <div class="d-flex justify-content-between w-100">
+                            <div>
+                                <strong>${account.account}</strong>
+                                <div class="deleted-account-category">${categoryName}</div>
+                            </div>
+                            <button class="btn btn-success-modern btn-sm-modern restore-account" data-index="${index}">
+                                <i class="fas fa-undo"></i> Restaurar
+                            </button>
+                        </div>
+                    `;
+                    
+                    deletedList.appendChild(accountItem);
+                });
+                
+                // Agregar event listeners a los botones de restaurar
+                document.querySelectorAll('.restore-account').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const accountIndex = parseInt(this.dataset.index);
+                        restoreAccount(accountIndex);
+                    });
+                });
+            } else {
+                deletedSection.style.display = 'none';
+            }
+        }
+        
+        // Obtener nombre legible de la categoría
+        function getCategoryName(category) {
+            const categoryNames = {
+                'current-assets': 'Activo Corriente',
+                'noncurrent-assets': 'Activo No Corriente',
+                'current-liabilities': 'Pasivo Corriente',
+                'noncurrent-liabilities': 'Pasivo No Corriente',
+                'equity': 'Patrimonio',
+                'revenue': 'Ingresos',
+                'expenses': 'Gastos',
+                'header': 'Encabezado',
+                'total': 'Total'
+            };
+            
+            return categoryNames[category] || category;
+        }
+        
+        // Configurar la subida de archivos
+        function setupFileUpload() {
+            const excelFileInput = document.getElementById('excelFile');
+            const pdfFileInput = document.getElementById('pdfFile');
+            const excelFileName = document.getElementById('excelFileName');
+            const pdfFileName = document.getElementById('pdfFileName');
+            
+            // Excel file handling
+            excelFileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    selectedFiles.excel = e.target.files[0];
+                    excelFileName.textContent = selectedFiles.excel.name;
+                    excelFileName.style.display = 'block';
+                    showAlert(`Archivo Excel "${selectedFiles.excel.name}" seleccionado`, 'info');
+                }
+            });
+            
+            // PDF file handling
+            pdfFileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    selectedFiles.pdf = e.target.files[0];
+                    pdfFileName.textContent = selectedFiles.pdf.name;
+                    pdfFileName.style.display = 'block';
+                    showAlert(`Archivo PDF "${selectedFiles.pdf.name}" seleccionado`, 'info');
+                }
+            });
+            
+            // Drag and drop functionality
+            const uploadAreas = document.querySelectorAll('.file-upload-area');
+            
+            uploadAreas.forEach(area => {
+                area.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    area.classList.add('dragover');
+                });
+                
+                area.addEventListener('dragleave', () => {
+                    area.classList.remove('dragover');
+                });
+                
+                area.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    area.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        const file = files[0];
+                        const isExcel = area.id === 'excelUploadArea';
+                        
+                        if (isExcel && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+                            selectedFiles.excel = file;
+                            excelFileName.textContent = file.name;
+                            excelFileName.style.display = 'block';
+                            showAlert(`Archivo Excel "${file.name}" seleccionado`, 'info');
+                        } else if (!isExcel && file.name.endsWith('.pdf')) {
+                            selectedFiles.pdf = file;
+                            pdfFileName.textContent = file.name;
+                            pdfFileName.style.display = 'block';
+                            showAlert(`Archivo PDF "${file.name}" seleccionado`, 'info');
+                        } else {
+                            showAlert('Tipo de archivo no válido', 'error');
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Selector de tipo de reporte
+            document.querySelectorAll('.report-type-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.report-type-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    currentReportType = this.dataset.reportType;
+                    selectedRowIndex = -1; // Resetear selección al cambiar tipo de reporte
+                    deletedAccounts = []; // Limpiar cuentas eliminadas
+                    updateTableData();
+                    renderTable();
+                    
+                    // Actualizar información del período
+                    updatePeriodInfo();
+                });
+            });
+            
+            // Selector de período
+            document.getElementById('periodSelect').addEventListener('change', function() {
+                currentPeriod = this.value;
+                selectedRowIndex = -1; // Resetear selección al cambiar período
+                renderTable();
+                updatePeriodInfo();
+            });
+            
+            // Agregar nueva fila
+            document.getElementById('addRowBtn').addEventListener('click', function() {
+                if (!currentPeriod) {
+                    showAlert('Primero selecciona un período', 'error');
+                    return;
+                }
+                
+                // Solicitar nombre de la nueva cuenta
+                const accountName = prompt('Ingresa el nombre de la nueva cuenta:');
+                if (!accountName) return;
+                
+                // Solicitar categoría
+                let categoryOptions = [];
+                if (currentReportType === 'balance') {
+                    categoryOptions = [
+                        { value: 'current-assets', text: 'Activo Corriente' },
+                        { value: 'noncurrent-assets', text: 'Activo No Corriente' },
+                        { value: 'current-liabilities', text: 'Pasivo Corriente' },
+                        { value: 'noncurrent-liabilities', text: 'Pasivo No Corriente' },
+                        { value: 'equity', text: 'Patrimonio' }
+                    ];
+                } else {
+                    categoryOptions = [
+                        { value: 'revenue', text: 'Ingresos' },
+                        { value: 'expenses', text: 'Gastos' }
+                    ];
+                }
+                
+                let categoryOptionsHTML = '';
+                categoryOptions.forEach(option => {
+                    categoryOptionsHTML += `<option value="${option.value}">${option.text}</option>`;
+                });
+                
+                const categorySelect = `
+                    <select id="newAccountCategory" class="form-control-modern mt-2">
+                        ${categoryOptionsHTML}
+                    </select>
+                `;
+                
+                if (confirm(`¿Deseas agregar la cuenta "${accountName}"?\n\nSelecciona la categoría:\n${categorySelect}`)) {
+                    const category = document.getElementById('newAccountCategory')?.value || categoryOptions[0].value;
+                    
+                    // Agregar nueva cuenta en la posición correcta
+                    const insertIndex = findCategoryInsertionIndex(category);
+                    analysisData.splice(insertIndex, 0, {
+                        account: accountName,
+                        values: {},
+                        category: category
+                    });
+                    
+                    // Resetear selección
+                    selectedRowIndex = -1;
+                    
+                    renderTable();
+                    showAlert(`Cuenta "${accountName}" agregada correctamente`, 'success');
+                }
+            });
+            
+            // Eliminar cuenta seleccionada
+            document.getElementById('deleteRowBtn').addEventListener('click', function() {
+                if (selectedRowIndex < 0) {
+                    showAlert('Primero selecciona una cuenta para eliminar', 'error');
+                    return;
+                }
+                
+                deleteAccount(selectedRowIndex);
+            });
+            
+            // Calcular porcentajes
+            document.getElementById('calculateBtn').addEventListener('click', function() {
+                if (!currentPeriod) {
+                    showAlert('Primero selecciona un período', 'error');
+                    return;
+                }
+                
+                renderTable();
+                showAlert('Porcentajes verticales calculados correctamente', 'success');
+            });
+            
+            // Limpiar tabla
+            document.getElementById('clearBtn').addEventListener('click', function() {
+                if (!currentPeriod) {
+                    showAlert('Primero selecciona un período', 'error');
+                    return;
+                }
+                
+                if (confirm('¿Estás seguro de que deseas limpiar toda la tabla? Se perderán todos los datos.')) {
+                    analysisData.forEach(row => {
+                        if (row.values) {
+                            row.values[currentPeriod] = '';
+                        }
+                    });
+                    
+                    // Resetear selección
+                    selectedRowIndex = -1;
+                    
+                    renderTable();
+                    showAlert('Tabla limpiada correctamente', 'info');
+                }
+            });
+            
+            // Procesar importación
+            document.getElementById('processImport').addEventListener('click', function() {
+                if (!selectedFiles.excel && !selectedFiles.pdf) {
+                    showAlert('Por favor selecciona al menos un archivo para importar', 'error');
+                    return;
+                }
+                
+                if (!currentPeriod) {
+                    showAlert('Primero selecciona un período', 'error');
+                    return;
+                }
+                
+                // Simular procesamiento de importación
+                const btn = this;
+                const originalText = btn.innerHTML;
+                
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    
+                    // Agregar datos de ejemplo importados
+                    if (currentReportType === 'balance') {
+                        analysisData = [
+                            { account: 'ACTIVOS', values: {}, isHeader: true, category: 'header' },
+                            { account: 'Efectivo y Equivalentes', values: { [currentPeriod]: 150000 }, category: 'current-assets' },
+                            { account: 'Cuentas por Cobrar', values: { [currentPeriod]: 300000 }, category: 'current-assets' },
+                            { account: 'Inventarios', values: { [currentPeriod]: 200000 }, category: 'current-assets' },
+                            { account: 'TOTAL ACTIVOS CORRIENTES', values: { [currentPeriod]: 650000 }, isTotal: true, category: 'total' },
+                            { account: 'Propiedad, Planta y Equipo', values: { [currentPeriod]: 850000 }, category: 'noncurrent-assets' },
+                            { account: 'Activos Intangibles', values: { [currentPeriod]: 100000 }, category: 'noncurrent-assets' },
+                            { account: 'TOTAL ACTIVOS', values: { [currentPeriod]: 1600000 }, isTotal: true, category: 'total' }
+                        ];
+                    } else {
+                        analysisData = [
+                            { account: 'INGRESOS', values: {}, isHeader: true, category: 'header' },
+                            { account: 'Ventas Netas', values: { [currentPeriod]: 1200000 }, category: 'revenue' },
+                            { account: 'TOTAL INGRESOS', values: { [currentPeriod]: 1200000 }, isTotal: true, category: 'total' },
+                            { account: 'COSTOS Y GASTOS', values: {}, isHeader: true, category: 'header' },
+                            { account: 'Costo de Ventas', values: { [currentPeriod]: 720000 }, category: 'expenses' },
+                            { account: 'Gastos Operativos', values: { [currentPeriod]: 300000 }, category: 'expenses' },
+                            { account: 'TOTAL COSTOS Y GASTOS', values: { [currentPeriod]: 1020000 }, isTotal: true, category: 'total' },
+                            { account: 'UTILIDAD NETA', values: { [currentPeriod]: 180000 }, isTotal: true, category: 'total' }
+                        ];
+                    }
+                    
+                    // Resetear selección
+                    selectedRowIndex = -1;
+                    
+                    renderTable();
+                    
+                    // Limpiar archivos seleccionados
+                    selectedFiles.excel = null;
+                    selectedFiles.pdf = null;
+                    document.getElementById('excelFileName').style.display = 'none';
+                    document.getElementById('pdfFileName').style.display = 'none';
+                    document.getElementById('excelFile').value = '';
+                    document.getElementById('pdfFile').value = '';
+                    
+                    bootstrap.Modal.getInstance(document.getElementById('importModal')).hide();
+                    showAlert('Datos importados correctamente', 'success');
+                }, 2000);
+            });
+            
+            // Guardar análisis
+            document.getElementById('saveAnalysis').addEventListener('click', function() {
+                if (!currentPeriod) {
+                    showAlert('Primero selecciona un período', 'error');
+                    return;
+                }
+                
+                // Simular guardado
+                const btn = this;
+                const originalText = btn.innerHTML;
+                
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    showAlert('Análisis guardado correctamente', 'success');
+                }, 1500);
+            });
+            
+            // Exportar a Excel
+            document.getElementById('exportExcel').addEventListener('click', function() {
+                if (!currentPeriod) {
+                    showAlert('Primero selecciona un período', 'error');
+                    return;
+                }
+                
+                showAlert('Preparando descarga de Excel...', 'info');
+                // Aquí iría la lógica real de exportación a Excel
+            });
+            
+            // Exportar a PDF
+            document.getElementById('exportPDF').addEventListener('click', function() {
+                if (!currentPeriod) {
+                    showAlert('Primero selecciona un período', 'error');
+                    return;
+                }
+                
+                showAlert('Preparando descarga de PDF...', 'info');
+                // Aquí iría la lógica real de exportación a PDF
+            });
+        }
+        
+        // Actualizar información del período
+        function updatePeriodInfo() {
+            const periodInfo = document.getElementById('periodInfo');
+            const periodBadge = document.getElementById('currentPeriodBadge');
+            const reportType = document.getElementById('currentReportType');
+            const periodDates = document.getElementById('periodDates');
+            const tablePeriodTitle = document.getElementById('tablePeriodTitle');
+            const tablePeriodSubtitle = document.getElementById('tablePeriodSubtitle');
+            
+            if (currentPeriod) {
+                periodInfo.style.display = 'flex';
+                periodBadge.textContent = currentPeriod;
+                reportType.textContent = currentReportType === 'balance' ? 'Balance General' : 'Estado de Resultados';
+                periodDates.textContent = `Período: Ene ${currentPeriod} - Dic ${currentPeriod}`;
+                tablePeriodTitle.textContent = `Período ${currentPeriod}`;
+                tablePeriodSubtitle.textContent = 'Valores y Porcentajes Verticales';
+            } else {
+                periodInfo.style.display = 'none';
+            }
+        }
+        
+        // Función para mostrar alertas
+        function showAlert(message, type) {
+            // Crear elemento de alerta
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                border-radius: 12px;
+                border: none;
+            `;
+            alertDiv.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                    <div>
+                        <strong class="d-block">${type === 'success' ? 'Éxito' : type === 'error' ? 'Error' : 'Información'}</strong>
+                        ${message}
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remover después de 4 segundos
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 4000);
+        }
+        
+        // Inicializar
+        initializeApp();
+    });
+</script>
+{% endblock %}
