@@ -5,14 +5,14 @@ from django.urls import include
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('login/', views.login_view, name='login'),
+    path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('register/', views.register, name='register'),
     path('vertical/', views.analisis_vertical, name='vertical'),
     path('cargar-periodos/', views.cargar_periodos, name='cargar_periodos'),
     path('guardar-analisis/', views.guardar_analisis_vertical, name='guardar_analisis'),
-    path('horizontal/', views.analisis_vertical, name='horizontal'),
+    path('horizontal/', views.analisis_horizontal, name='horizontal'),
     path('eoaf/', views.EOAF, name='eoaf'),
     path('razones/', views.razones_financieras, name='razones'),
     path('dupont/', views.dupont, name='dupont'),

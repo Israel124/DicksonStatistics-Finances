@@ -1,0 +1,1453 @@
+{% extends 'base.html' %}
+
+{% block title %}Estado de Origen y Aplicación de Fondos - DicksonStatistics{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #2563eb;
+        --secondary-color: #64748b;
+        --accent-color: #06d6a0;
+        --warning-color: #f59e0b;
+        --dark-color: #1e293b;
+        --light-color: #f8fafc;
+        --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .analysis-section {
+        padding: 2rem 0;
+        background: #f8fafc;
+        min-height: calc(100vh - 76px);
+    }
+    
+    .section-header {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .section-subtitle {
+        color: var(--secondary-color);
+        margin-bottom: 2rem;
+    }
+    
+    .control-panel {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .btn-modern {
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-primary-modern {
+        background: var(--gradient);
+        color: white;
+    }
+    
+    .btn-primary-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .btn-outline-modern {
+        background: transparent;
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+    }
+    
+    .btn-outline-modern:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .btn-success-modern {
+        background: var(--accent-color);
+        color: white;
+    }
+    
+    .btn-success-modern:hover {
+        background: #05c391;
+        transform: translateY(-2px);
+        color: white;
+    }
+    
+    .btn-warning-modern {
+        background: var(--warning-color);
+        color: white;
+    }
+    
+    .btn-warning-modern:hover {
+        background: #e69008;
+        transform: translateY(-2px);
+        color: white;
+    }
+    
+    .analysis-table-container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 2rem;
+    }
+    
+    .table-modern {
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .table-modern thead th {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+        padding: 1.25rem 1rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .table-modern tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+        transition: all 0.2s ease;
+    }
+    
+    .table-modern tbody tr:hover td {
+        background: #f8fafc;
+    }
+    
+    .table-modern .account-name {
+        font-weight: 500;
+        color: var(--dark-color);
+        min-width: 250px;
+    }
+    
+    .editable-cell {
+        position: relative;
+    }
+    
+    .editable-input {
+        width: 120px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        text-align: right;
+    }
+    
+    .editable-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .period-header {
+        background: var(--gradient) !important;
+        color: white !important;
+        position: relative;
+    }
+    
+    .file-upload-area {
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .file-upload-area:hover {
+        border-color: var(--primary-color);
+        background: #f1f5f9;
+    }
+    
+    .file-upload-area.dragover {
+        border-color: var(--primary-color);
+        background: #e0e7ff;
+    }
+    
+    .upload-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .file-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .file-name {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--primary-color);
+        font-weight: 500;
+        word-break: break-all;
+    }
+    
+    .export-options {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .modal-modern .modal-content {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+    
+    .modal-modern .modal-header {
+        background: var(--gradient);
+        color: white;
+        border-radius: 16px 16px 0 0;
+        border: none;
+        padding: 1.5rem 2rem;
+    }
+    
+    .modal-modern .modal-title {
+        font-weight: 600;
+    }
+    
+    .modal-modern .btn-close {
+        filter: invert(1);
+    }
+    
+    .form-group-modern {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label-modern {
+        font-weight: 500;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control-modern {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control-modern:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .percentage-badge {
+        background: #10b981;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: inline-block;
+        margin-top: 0.5rem;
+    }
+    
+    .calculation-row {
+        background: #f0f9ff !important;
+        font-weight: 600;
+    }
+    
+    .calculation-row td {
+        border-top: 2px solid #e2e8f0;
+    }
+    
+    .empty-row {
+        text-align: center;
+        color: var(--secondary-color);
+        font-style: italic;
+        padding: 2rem !important;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+    
+    .btn-sm-modern {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        border-radius: 6px;
+    }
+    
+    .period-selector {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e2e8f0;
+    }
+    
+    .period-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+    
+    .period-badge {
+        background: var(--gradient);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .comparison-section {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .comparison-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+    }
+    
+    .comparison-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .comparison-card {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .comparison-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .comparison-label {
+        color: var(--secondary-color);
+        font-size: 0.9rem;
+    }
+    
+    .positive-value {
+        color: #10b981;
+    }
+    
+    .negative-value {
+        color: #ef4444;
+    }
+    
+    .funds-origin {
+        border-left: 4px solid #10b981;
+    }
+    
+    .funds-application {
+        border-left: 4px solid #ef4444;
+    }
+    
+    .funds-change {
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .section-divider {
+        height: 1px;
+        background: #e2e8f0;
+        margin: 1rem 0;
+    }
+    
+    .table-section-header {
+        background: #f1f5f9 !important;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .data-source-selector {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e2e8f0;
+    }
+    
+    .data-source-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .data-source-btn {
+        flex: 1;
+        min-width: 200px;
+        padding: 1.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    
+    .data-source-btn.active {
+        border-color: var(--primary-color);
+        background: #f0f7ff;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.1);
+    }
+    
+    .data-source-btn:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+    
+    .data-source-icon {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .data-source-title {
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .data-source-description {
+        color: var(--secondary-color);
+        font-size: 0.9rem;
+    }
+    
+    .period-comparison {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .period-comparison-item {
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    @media (max-width: 768px) {
+        .table-responsive {
+            font-size: 0.8rem;
+        }
+        
+        .editable-input {
+            padding: 0.25rem 0.5rem;
+            width: 100px;
+        }
+        
+        .export-options {
+            flex-direction: column;
+        }
+        
+        .comparison-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .data-source-buttons {
+            flex-direction: column;
+        }
+        
+        .data-source-btn {
+            min-width: 100%;
+        }
+        
+        .period-comparison {
+            flex-direction: column;
+        }
+        
+        .period-comparison-item {
+            min-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="analysis-section">
+    <div class="container">
+        <!-- Header -->
+        <div class="section-header">
+            <h1 class="section-title">Estado de Origen y Aplicación de Fondos</h1>
+            <p class="section-subtitle">Analiza las fuentes y usos de los fondos de la empresa</p>
+        </div>
+
+        <!-- Selector de Fuente de Datos -->
+        <div class="data-source-selector">
+            <h5 class="form-label-modern mb-3">Fuente de Datos Financieros</h5>
+            <div class="data-source-buttons">
+                <div class="data-source-btn active" data-source="manual">
+                    <div class="data-source-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <div class="data-source-title">Ingreso Manual</div>
+                    <div class="data-source-description">Ingresa los datos manualmente</div>
+                </div>
+                <div class="data-source-btn" data-source="balance">
+                    <div class="data-source-icon">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <div class="data-source-title">Desde Balance General</div>
+                    <div class="data-source-description">Carga datos del balance general</div>
+                </div>
+                <div class="data-source-btn" data-source="income">
+                    <div class="data-source-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="data-source-title">Desde Estado de Resultados</div>
+                    <div class="data-source-description">Carga datos del estado de resultados</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Selector de Período -->
+        <div class="period-selector">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="form-label-modern">Período de Análisis</h5>
+                    <div class="period-comparison">
+                        <div class="period-comparison-item">
+                            <label class="form-label-modern">Período Inicial</label>
+                            <select class="form-control form-control-modern" id="initialPeriodSelect">
+                                <option value="">Seleccionar período...</option>
+                                <option value="2023">Año 2023</option>
+                                <option value="2024" selected>Año 2024</option>
+                            </select>
+                        </div>
+                        <div class="period-comparison-item">
+                            <label class="form-label-modern">Período Final</label>
+                            <select class="form-control form-control-modern" id="finalPeriodSelect">
+                                <option value="">Seleccionar período...</option>
+                                <option value="2023">Año 2023</option>
+                                <option value="2024" selected>Año 2024</option>
+                            </select>
+                        </div>
+                        <div class="period-comparison-item">
+                            <button class="btn btn-outline-modern btn-modern mt-4" data-bs-toggle="modal" data-bs-target="#addPeriodModal">
+                                <i class="fas fa-plus"></i> Nuevo Período
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="export-options justify-content-md-end">
+                        <button class="btn btn-success-modern btn-modern" id="exportExcel">
+                            <i class="fas fa-file-excel"></i> Exportar Excel
+                        </button>
+                        <button class="btn btn-outline-modern btn-modern" id="exportPDF">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información del Período Seleccionado -->
+            <div class="period-info" id="periodInfo" style="display: none;">
+                <div class="period-badge" id="currentPeriodBadge">2023-2024</div>
+                <div>
+                    <strong id="currentReportType">Estado de Origen y Aplicación de Fondos</strong>
+                    <div class="text-muted" id="periodDates">Comparación: Ene 2023 - Dic 2023 vs Ene 2024 - Dic 2024</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen de Comparación -->
+        <div class="comparison-section">
+            <h5 class="comparison-title">Resumen Financiero</h5>
+            <div class="comparison-grid">
+                <div class="comparison-card funds-origin">
+                    <div class="comparison-value positive-value" id="totalOrigin">$0.00</div>
+                    <div class="comparison-label">Total Origen de Fondos</div>
+                </div>
+                <div class="comparison-card funds-application">
+                    <div class="comparison-value negative-value" id="totalApplication">$0.00</div>
+                    <div class="comparison-label">Total Aplicación de Fondos</div>
+                </div>
+                <div class="comparison-card funds-change">
+                    <div class="comparison-value" id="netChange">$0.00</div>
+                    <div class="comparison-label">Cambio Neto en Fondos</div>
+                </div>
+                <div class="comparison-card">
+                    <div class="comparison-value" id="workingCapital">$0.00</div>
+                    <div class="comparison-label">Capital de Trabajo</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Origen y Aplicación de Fondos -->
+        <div class="analysis-table-container">
+            <div class="table-responsive">
+                <table class="table table-modern">
+                    <thead>
+                        <tr>
+                            <th class="account-name">Concepto</th>
+                            <th class="period-header">
+                                <span id="tablePeriodTitle">Período</span>
+                                <br>
+                                <small id="tablePeriodSubtitle">Origen y Aplicación de Fondos</small>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="analysisTableBody">
+                        <!-- Se generará dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="control-panel">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-outline-modern btn-modern" id="addRowBtn">
+                            <i class="fas fa-plus-circle"></i> Agregar Fila
+                        </button>
+                        <button class="btn btn-warning-modern btn-modern" id="calculateBtn">
+                            <i class="fas fa-calculator"></i> Calcular Totales
+                        </button>
+                        <button class="btn btn-outline-modern btn-modern" id="clearBtn">
+                            <i class="fas fa-broom"></i> Limpiar Tabla
+                        </button>
+                        <button class="btn btn-outline-modern btn-modern" data-bs-toggle="modal" data-bs-target="#importModal">
+                            <i class="fas fa-file-import"></i> Importar Datos
+                        </button>
+                        <button class="btn btn-success-modern btn-modern" id="loadFinancialData">
+                            <i class="fas fa-database"></i> Cargar Datos Financieros
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <button class="btn btn-primary-modern btn-modern" id="saveAnalysis">
+                        <i class="fas fa-save"></i> Guardar Análisis
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal para Agregar Período -->
+<div class="modal fade modal-modern" id="addPeriodModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Nuevo Período</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="periodForm">
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Nombre del Período</label>
+                        <input type="text" class="form-control form-control-modern" id="periodName" 
+                               placeholder="Ej: Primer Trimestre 2024" required>
+                    </div>
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Año</label>
+                        <input type="number" class="form-control form-control-modern" id="periodYear" 
+                               min="2020" max="2030" value="2024" required>
+                    </div>
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Tipo de Período</label>
+                        <select class="form-control form-control-modern" id="periodType">
+                            <option value="annual">Anual</option>
+                            <option value="semester">Semestral</option>
+                            <option value="quarterly">Trimestral</option>
+                            <option value="monthly">Mensual</option>
+                        </select>
+                    </div>
+                    <div class="form-group-modern">
+                        <label class="form-label-modern">Moneda</label>
+                        <select class="form-control form-control-modern" id="currency">
+                            <option value="USD">Dólar Americano (USD)</option>
+                            <option value="EUR">Euro (EUR)</option>
+                            <option value="MXN">Peso Mexicano (MXN)</option>
+                            <option value="COP">Peso Colombiano (COP)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-modern btn-modern" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary-modern btn-modern" id="savePeriod">Agregar Período</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Importar Datos -->
+<div class="modal fade modal-modern" id="importModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Importar Datos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="file-upload-area" id="excelUploadArea">
+                            <input type="file" class="file-input" id="excelFile" accept=".xlsx, .xls">
+                            <div class="upload-icon">
+                                <i class="fas fa-file-excel"></i>
+                            </div>
+                            <h5>Importar desde Excel</h5>
+                            <p class="text-muted">Haz clic aquí o arrastra tu archivo Excel</p>
+                            <div class="file-name" id="excelFileName"></div>
+                            <small class="text-muted">Formatos soportados: .xlsx, .xls</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="file-upload-area" id="pdfUploadArea">
+                            <input type="file" class="file-input" id="pdfFile" accept=".pdf">
+                            <div class="upload-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <h5>Importar desde PDF</h5>
+                            <p class="text-muted">Haz clic aquí o arrastra tu archivo PDF</p>
+                            <div class="file-name" id="pdfFileName"></div>
+                            <small class="text-muted">Formato soportado: .pdf</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Instrucciones de Importación:</h6>
+                    <ul class="text-muted">
+                        <li>Para Excel: La primera columna debe contener los conceptos</li>
+                        <li>La segunda columna debe contener los valores numéricos</li>
+                        <li>Para PDF: El sistema extraerá automáticamente las tablas detectadas</li>
+                        <li>Los datos importados reemplazarán la información actual</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-modern btn-modern" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary-modern btn-modern" id="processImport">Procesar Archivos</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Cargar Datos Financieros -->
+<div class="modal fade modal-modern" id="financialDataModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cargar Datos Financieros</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="data-source-card" data-source-type="balance">
+                            <div class="data-source-icon">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <h5>Balance General</h5>
+                            <p class="text-muted">Cargar datos del balance general</p>
+                            <button class="btn btn-outline-modern btn-modern mt-2 load-balance-data">
+                                <i class="fas fa-upload"></i> Cargar Balance
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="data-source-card" data-source-type="income">
+                            <div class="data-source-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h5>Estado de Resultados</h5>
+                            <p class="text-muted">Cargar datos del estado de resultados</p>
+                            <button class="btn btn-outline-modern btn-modern mt-2 load-income-data">
+                                <i class="fas fa-upload"></i> Cargar Estado de Resultados
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Datos Cargados:</h6>
+                    <div class="loaded-data-preview" id="loadedDataPreview">
+                        <p class="text-muted">No se han cargado datos financieros</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-modern btn-modern" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary-modern btn-modern" id="applyFinancialData">Aplicar Datos</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let fundsData = [];
+        let initialPeriod = '2023';
+        let finalPeriod = '2024';
+        let selectedFiles = {
+            excel: null,
+            pdf: null
+        };
+        
+        // Datos de ejemplo para Balance General y Estado de Resultados
+        const financialData = {
+            balance: {
+                '2023': {
+                    'Activo Corriente': 850000,
+                    'Efectivo y Equivalentes': 150000,
+                    'Cuentas por Cobrar': 300000,
+                    'Inventarios': 200000,
+                    'Activo No Corriente': 1150000,
+                    'Propiedad, Planta y Equipo': 950000,
+                    'Activos Intangibles': 200000,
+                    'TOTAL ACTIVOS': 2000000,
+                    'Pasivo Corriente': 450000,
+                    'Cuentas por Pagar': 250000,
+                    'Préstamos a Corto Plazo': 200000,
+                    'Pasivo No Corriente': 750000,
+                    'Préstamos a Largo Plazo': 750000,
+                    'Patrimonio': 800000,
+                    'Capital Social': 500000,
+                    'Utilidades Retenidas': 300000,
+                    'TOTAL PASIVOS Y PATRIMONIO': 2000000
+                },
+                '2024': {
+                    'Activo Corriente': 950000,
+                    'Efectivo y Equivalentes': 200000,
+                    'Cuentas por Cobrar': 350000,
+                    'Inventarios': 250000,
+                    'Activo No Corriente': 1300000,
+                    'Propiedad, Planta y Equipo': 1100000,
+                    'Activos Intangibles': 200000,
+                    'TOTAL ACTIVOS': 2250000,
+                    'Pasivo Corriente': 500000,
+                    'Cuentas por Pagar': 280000,
+                    'Préstamos a Corto Plazo': 220000,
+                    'Pasivo No Corriente': 850000,
+                    'Préstamos a Largo Plazo': 850000,
+                    'Patrimonio': 900000,
+                    'Capital Social': 550000,
+                    'Utilidades Retenidas': 350000,
+                    'TOTAL PASIVOS Y PATRIMONIO': 2250000
+                }
+            },
+            income: {
+                '2023': {
+                    'Ventas Netas': 1800000,
+                    'Costo de Ventas': 1080000,
+                    'Utilidad Bruta': 720000,
+                    'Gastos Operativos': 450000,
+                    'Gastos de Ventas': 200000,
+                    'Gastos Administrativos': 250000,
+                    'Utilidad Operativa': 270000,
+                    'Gastos Financieros': 50000,
+                    'Utilidad Antes de Impuestos': 220000,
+                    'Impuestos': 66000,
+                    'Utilidad Neta': 154000
+                },
+                '2024': {
+                    'Ventas Netas': 2200000,
+                    'Costo de Ventas': 1320000,
+                    'Utilidad Bruta': 880000,
+                    'Gastos Operativos': 520000,
+                    'Gastos de Ventas': 240000,
+                    'Gastos Administrativos': 280000,
+                    'Utilidad Operativa': 360000,
+                    'Gastos Financieros': 60000,
+                    'Utilidad Antes de Impuestos': 300000,
+                    'Impuestos': 90000,
+                    'Utilidad Neta': 210000
+                }
+            }
+        };
+        
+        // Inicializar tabla
+        function initializeTable() {
+            updateTableData();
+            renderTable();
+            setupFileUpload();
+            updateSummary();
+        }
+        
+        // Actualizar datos de la tabla
+        function updateTableData() {
+            fundsData = [
+                { concept: 'ORIGEN DE FONDOS', values: {}, isHeader: true },
+                { concept: 'Utilidad Neta del Ejercicio', values: {}, isOrigin: true, dataSource: 'income', account: 'Utilidad Neta' },
+                { concept: 'Depreciación y Amortización', values: {}, isOrigin: true, dataSource: 'income', account: 'Depreciación' },
+                { concept: 'Aumento de Pasivos a Largo Plazo', values: {}, isOrigin: true, dataSource: 'balance', account: 'Pasivo No Corriente' },
+                { concept: 'Disminución de Activos No Corrientes', values: {}, isOrigin: true, dataSource: 'balance', account: 'Activo No Corriente' },
+                { concept: 'Emisión de Capital', values: {}, isOrigin: true, dataSource: 'balance', account: 'Capital Social' },
+                { concept: 'Otros Orígenes', values: {}, isOrigin: true },
+                { concept: 'TOTAL ORIGEN DE FONDOS', values: {}, isTotal: true, isOrigin: true },
+                { concept: 'APLICACIÓN DE FONDOS', values: {}, isHeader: true },
+                { concept: 'Adquisición de Activos Fijos', values: {}, isApplication: true, dataSource: 'balance', account: 'Propiedad, Planta y Equipo' },
+                { concept: 'Pago de Dividendos', values: {}, isApplication: true, dataSource: 'calculated' },
+                { concept: 'Disminución de Pasivos a Largo Plazo', values: {}, isApplication: true, dataSource: 'balance', account: 'Pasivo No Corriente' },
+                { concept: 'Aumento de Activos No Corrientes', values: {}, isApplication: true, dataSource: 'balance', account: 'Activo No Corriente' },
+                { concept: 'Pérdida Neta del Ejercicio', values: {}, isApplication: true, dataSource: 'income', account: 'Utilidad Neta' },
+                { concept: 'Otros Usos', values: {}, isApplication: true },
+                { concept: 'TOTAL APLICACIÓN DE FONDOS', values: {}, isTotal: true, isApplication: true },
+                { concept: 'AUMENTO (DISMINUCIÓN) NETO EN FONDOS', values: {}, isNetChange: true }
+            ];
+        }
+        
+        // Renderizar tabla
+        function renderTable() {
+            const tbody = document.getElementById('analysisTableBody');
+            tbody.innerHTML = '';
+            
+            if (!initialPeriod || !finalPeriod) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="2" class="empty-row">
+                            <i class="fas fa-calendar-alt me-2"></i>Selecciona períodos para comenzar
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            if (fundsData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="2" class="empty-row">
+                            <i class="fas fa-table me-2"></i>No hay datos disponibles. Agrega filas o importa datos.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            fundsData.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                
+                if (row.isHeader) {
+                    tr.classList.add('table-section-header');
+                } else if (row.isTotal || row.isNetChange) {
+                    tr.classList.add('calculation-row');
+                }
+                
+                const value = row.values[finalPeriod] || '';
+                const formattedValue = value !== '' ? formatCurrency(value) : '';
+                
+                let conceptCell = row.concept;
+                if (row.isHeader) {
+                    conceptCell = `<strong>${row.concept}</strong>`;
+                }
+                
+                // Mostrar fuente de datos si está disponible
+                let dataSourceBadge = '';
+                if (row.dataSource && row.account) {
+                    dataSourceBadge = `<small class="text-muted d-block">Fuente: ${row.dataSource === 'balance' ? 'Balance' : 'Estado de Resultados'} - ${row.account}</small>`;
+                } else if (row.dataSource === 'calculated') {
+                    dataSourceBadge = `<small class="text-muted d-block">Calculado automáticamente</small>`;
+                }
+                
+                tr.innerHTML = `
+                    <td class="account-name">
+                        ${conceptCell}
+                        ${dataSourceBadge}
+                    </td>
+                    <td class="editable-cell">
+                        ${!row.isHeader ? `
+                            <input type="text" 
+                                   class="editable-input" 
+                                   value="${value}" 
+                                   data-row="${index}"
+                                   placeholder="0.00"
+                                   ${row.isTotal || row.isNetChange ? 'readonly' : ''}>
+                            ${formattedValue ? `<div class="percentage-badge">${formattedValue}</div>` : ''}
+                        ` : ''}
+                    </td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+            
+            // Agregar event listeners a los inputs
+            attachInputListeners();
+            
+            // Actualizar resumen
+            updateSummary();
+        }
+        
+        // Formatear moneda
+        function formatCurrency(value) {
+            if (value === '' || isNaN(value)) return '';
+            return new Intl.NumberFormat('es-MX', {
+                style: 'currency',
+                currency: 'MXN'
+            }).format(value);
+        }
+        
+        // Adjuntar event listeners a los inputs
+        function attachInputListeners() {
+            document.querySelectorAll('.editable-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const rowIndex = parseInt(this.dataset.row);
+                    const value = this.value.trim();
+                    
+                    if (!fundsData[rowIndex].values) {
+                        fundsData[rowIndex].values = {};
+                    }
+                    
+                    fundsData[rowIndex].values[finalPeriod] = value === '' ? '' : parseFloat(value) || 0;
+                    
+                    // Recalcular totales
+                    calculateTotals();
+                    
+                    // Re-renderizar para actualizar valores
+                    renderTable();
+                });
+                
+                // Permitir solo números y punto decimal
+                input.addEventListener('keypress', function(e) {
+                    const char = String.fromCharCode(e.which);
+                    if (!/[\d.]/.test(char)) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        }
+        
+        // Calcular totales
+        function calculateTotals() {
+            if (!initialPeriod || !finalPeriod) return;
+            
+            // Calcular total de origen
+            const originItems = fundsData.filter(row => row.isOrigin && !row.isTotal);
+            let totalOrigin = 0;
+            
+            originItems.forEach(item => {
+                const value = parseFloat(item.values[finalPeriod]) || 0;
+                totalOrigin += value;
+            });
+            
+            // Actualizar total de origen
+            const totalOriginRow = fundsData.find(row => row.isTotal && row.isOrigin);
+            if (totalOriginRow) {
+                totalOriginRow.values[finalPeriod] = totalOrigin;
+            }
+            
+            // Calcular total de aplicación
+            const applicationItems = fundsData.filter(row => row.isApplication && !row.isTotal);
+            let totalApplication = 0;
+            
+            applicationItems.forEach(item => {
+                const value = parseFloat(item.values[finalPeriod]) || 0;
+                totalApplication += value;
+            });
+            
+            // Actualizar total de aplicación
+            const totalApplicationRow = fundsData.find(row => row.isTotal && row.isApplication);
+            if (totalApplicationRow) {
+                totalApplicationRow.values[finalPeriod] = totalApplication;
+            }
+            
+            // Calcular cambio neto
+            const netChangeRow = fundsData.find(row => row.isNetChange);
+            if (netChangeRow) {
+                netChangeRow.values[finalPeriod] = totalOrigin - totalApplication;
+            }
+        }
+        
+        // Actualizar resumen
+        function updateSummary() {
+            if (!initialPeriod || !finalPeriod) return;
+            
+            const totalOriginRow = fundsData.find(row => row.isTotal && row.isOrigin);
+            const totalApplicationRow = fundsData.find(row => row.isTotal && row.isApplication);
+            const netChangeRow = fundsData.find(row => row.isNetChange);
+            
+            const totalOrigin = totalOriginRow ? parseFloat(totalOriginRow.values[finalPeriod]) || 0 : 0;
+            const totalApplication = totalApplicationRow ? parseFloat(totalApplicationRow.values[finalPeriod]) || 0 : 0;
+            const netChange = netChangeRow ? parseFloat(netChangeRow.values[finalPeriod]) || 0 : 0;
+            
+            // Actualizar elementos del resumen
+            document.getElementById('totalOrigin').textContent = formatCurrency(totalOrigin);
+            document.getElementById('totalApplication').textContent = formatCurrency(totalApplication);
+            
+            const netChangeElement = document.getElementById('netChange');
+            netChangeElement.textContent = formatCurrency(netChange);
+            netChangeElement.className = `comparison-value ${netChange >= 0 ? 'positive-value' : 'negative-value'}`;
+            
+            // Calcular capital de trabajo
+            const currentAssetsInitial = financialData.balance[initialPeriod] ? financialData.balance[initialPeriod]['Activo Corriente'] || 0 : 0;
+            const currentLiabilitiesInitial = financialData.balance[initialPeriod] ? financialData.balance[initialPeriod]['Pasivo Corriente'] || 0 : 0;
+            const workingCapital = currentAssetsInitial - currentLiabilitiesInitial;
+            document.getElementById('workingCapital').textContent = formatCurrency(workingCapital);
+        }
+        
+        // Cargar datos financieros
+        function loadFinancialData() {
+            if (!financialData.balance[initialPeriod] || !financialData.balance[finalPeriod] || 
+                !financialData.income[initialPeriod] || !financialData.income[finalPeriod]) {
+                showAlert('No hay datos financieros disponibles para los períodos seleccionados', 'error');
+                return;
+            }
+            
+            // Calcular valores para el estado de origen y aplicación de fondos
+            fundsData.forEach(row => {
+                if (row.dataSource && row.account) {
+                    if (row.dataSource === 'balance') {
+                        const initialValue = financialData.balance[initialPeriod][row.account] || 0;
+                        const finalValue = financialData.balance[finalPeriod][row.account] || 0;
+                        
+                        if (row.concept === 'Aumento de Pasivos a Largo Plazo' || 
+                            row.concept === 'Emisión de Capital') {
+                            // Para estos conceptos, el aumento es origen
+                            row.values[finalPeriod] = Math.max(0, finalValue - initialValue);
+                        } else if (row.concept === 'Disminución de Activos No Corrientes') {
+                            // La disminución es origen
+                            row.values[finalPeriod] = Math.max(0, initialValue - finalValue);
+                        } else if (row.concept === 'Adquisición de Activos Fijos' || 
+                                  row.concept === 'Aumento de Activos No Corrientes') {
+                            // El aumento es aplicación
+                            row.values[finalPeriod] = Math.max(0, finalValue - initialValue);
+                        } else if (row.concept === 'Disminución de Pasivos a Largo Plazo') {
+                            // La disminución es aplicación
+                            row.values[finalPeriod] = Math.max(0, initialValue - finalValue);
+                        }
+                    } else if (row.dataSource === 'income') {
+                        if (row.concept === 'Utilidad Neta del Ejercicio') {
+                            row.values[finalPeriod] = financialData.income[finalPeriod][row.account] || 0;
+                        } else if (row.concept === 'Depreciación y Amortización') {
+                            // Estimación de depreciación (en un caso real, vendría de los estados financieros)
+                            row.values[finalPeriod] = financialData.income[finalPeriod]['Utilidad Operativa'] * 0.1 || 0;
+                        } else if (row.concept === 'Pérdida Neta del Ejercicio') {
+                            const netIncome = financialData.income[finalPeriod][row.account] || 0;
+                            row.values[finalPeriod] = netIncome < 0 ? Math.abs(netIncome) : 0;
+                        }
+                    }
+                } else if (row.dataSource === 'calculated' && row.concept === 'Pago de Dividendos') {
+                    // Calcular dividendos pagados
+                    const initialRetainedEarnings = financialData.balance[initialPeriod]['Utilidades Retenidas'] || 0;
+                    const finalRetainedEarnings = financialData.balance[finalPeriod]['Utilidades Retenidas'] || 0;
+                    const netIncome = financialData.income[finalPeriod]['Utilidad Neta'] || 0;
+                    
+                    // Fórmula: Utilidades Retenidas Iniciales + Utilidad Neta - Dividendos = Utilidades Retenidas Finales
+                    const dividends = initialRetainedEarnings + netIncome - finalRetainedEarnings;
+                    row.values[finalPeriod] = Math.max(0, dividends);
+                }
+            });
+            
+            // Calcular totales
+            calculateTotals();
+            
+            // Re-renderizar tabla
+            renderTable();
+            
+            showAlert('Datos financieros cargados correctamente', 'success');
+        }
+        
+        // Configurar la subida de archivos
+        function setupFileUpload() {
+            const excelFileInput = document.getElementById('excelFile');
+            const pdfFileInput = document.getElementById('pdfFile');
+            const excelFileName = document.getElementById('excelFileName');
+            const pdfFileName = document.getElementById('pdfFileName');
+            
+            // Excel file handling
+            excelFileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    selectedFiles.excel = e.target.files[0];
+                    excelFileName.textContent = selectedFiles.excel.name;
+                    excelFileName.style.display = 'block';
+                    showAlert(`Archivo Excel "${selectedFiles.excel.name}" seleccionado`, 'info');
+                }
+            });
+            
+            // PDF file handling
+            pdfFileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    selectedFiles.pdf = e.target.files[0];
+                    pdfFileName.textContent = selectedFiles.pdf.name;
+                    pdfFileName.style.display = 'block';
+                    showAlert(`Archivo PDF "${selectedFiles.pdf.name}" seleccionado`, 'info');
+                }
+            });
+            
+            // Drag and drop functionality
+            const uploadAreas = document.querySelectorAll('.file-upload-area');
+            
+            uploadAreas.forEach(area => {
+                area.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    area.classList.add('dragover');
+                });
+                
+                area.addEventListener('dragleave', () => {
+                    area.classList.remove('dragover');
+                });
+                
+                area.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    area.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        const file = files[0];
+                        const isExcel = area.id === 'excelUploadArea';
+                        
+                        if (isExcel && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+                            selectedFiles.excel = file;
+                            excelFileName.textContent = file.name;
+                            excelFileName.style.display = 'block';
+                            showAlert(`Archivo Excel "${file.name}" seleccionado`, 'info');
+                        } else if (!isExcel && file.name.endsWith('.pdf')) {
+                            selectedFiles.pdf = file;
+                            pdfFileName.textContent = file.name;
+                            pdfFileName.style.display = 'block';
+                            showAlert(`Archivo PDF "${file.name}" seleccionado`, 'info');
+                        } else {
+                            showAlert('Tipo de archivo no válido', 'error');
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Selector de fuente de datos
+        document.querySelectorAll('.data-source-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.data-source-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Selectores de período
+        document.getElementById('initialPeriodSelect').addEventListener('change', function() {
+            initialPeriod = this.value;
+            updatePeriodInfo();
+            renderTable();
+        });
+        
+        document.getElementById('finalPeriodSelect').addEventListener('change', function() {
+            finalPeriod = this.value;
+            updatePeriodInfo();
+            renderTable();
+        });
+        
+        // Actualizar información del período
+        function updatePeriodInfo() {
+            const periodInfo = document.getElementById('periodInfo');
+            const periodBadge = document.getElementById('currentPeriodBadge');
+            const periodDates = document.getElementById('periodDates');
+            const tablePeriodTitle = document.getElementById('tablePeriodTitle');
+            const tablePeriodSubtitle = document.getElementById('tablePeriodSubtitle');
+            
+            if (initialPeriod && finalPeriod) {
+                periodInfo.style.display = 'flex';
+                periodBadge.textContent = `${initialPeriod}-${finalPeriod}`;
+                periodDates.textContent = `Comparación: Ene ${initialPeriod} - Dic ${initialPeriod} vs Ene ${finalPeriod} - Dic ${finalPeriod}`;
+                tablePeriodTitle.textContent = `Período ${finalPeriod}`;
+                tablePeriodSubtitle.textContent = 'Origen y Aplicación de Fondos';
+            } else {
+                periodInfo.style.display = 'none';
+            }
+        }
+        
+        // Agregar nueva fila
+        document.getElementById('addRowBtn').addEventListener('click', function() {
+            if (!initialPeriod || !finalPeriod) {
+                showAlert('Primero selecciona períodos', 'error');
+                return;
+            }
+            
+            // Agregar antes de la fila de total de aplicación
+            const applicationIndex = fundsData.findIndex(row => row.isTotal && row.isApplication);
+            fundsData.splice(applicationIndex, 0, {
+                concept: 'Nuevo Concepto',
+                values: {},
+                isOrigin: false,
+                isApplication: true
+            });
+            renderTable();
+        });
+        
+        // Calcular totales
+        document.getElementById('calculateBtn').addEventListener('click', function() {
+            if (!initialPeriod || !finalPeriod) {
+                showAlert('Primero selecciona períodos', 'error');
+                return;
+            }
+            
+            calculateTotals();
+            renderTable();
+            showAlert('Totales calculados correctamente', 'success');
+        });
+        
+        // Limpiar tabla
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            if (!initialPeriod || !finalPeriod) {
+                showAlert('Primero selecciona períodos', 'error');
+                return;
+            }
+            
+            if (confirm('¿Estás seguro de que deseas limpiar toda la tabla? Se perderán todos los datos.')) {
+                fundsData.forEach(row => {
+                    if (row.values) {
+                        row.values[finalPeriod] = '';
+                    }
+                });
+                renderTable();
+                showAlert('Tabla limpiada correctamente', 'info');
+            }
+        });
+        
+        // Cargar datos financieros
+        document.getElementById('loadFinancialData').addEventListener('click', function() {
+            if (!initialPeriod || !finalPeriod) {
+                showAlert('Primero selecciona períodos', 'error');
+                return;
+            }
+            
+            loadFinancialData();
+        });
+        
+        // Procesar importación
+        document.getElementById('processImport').addEventListener('click', function() {
+            if (!selectedFiles.excel && !selectedFiles.pdf) {
+                showAlert('Por favor selecciona al menos un archivo para importar', 'error');
+                return;
+            }
+            
+            if (!initialPeriod || !finalPeriod) {
+                showAlert('Primero selecciona períodos', 'error');
+                return;
+            }
+            
+            // Simular procesamiento de importación
+            const btn = this;
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                
+                // Agregar datos de ejemplo importados
+                fundsData = [
+                    { concept: 'ORIGEN DE FONDOS', values: {}, isHeader: true },
+                    { concept: 'Utilidad Neta del Ejercicio', values: { [finalPeriod]: 210000 }, isOrigin: true, dataSource: 'income', account: 'Utilidad Neta' },
+                    { concept: 'Depreciación y Amortización', values: { [finalPeriod]: 36000 }, isOrigin: true, dataSource: 'income', account: 'Depreciación' },
+                    { concept: 'Aumento de Pasivos a Largo Plazo', values: { [finalPeriod]: 100000 }, isOrigin: true, dataSource: 'balance', account: 'Pasivo No Corriente' },
+                    { concept: 'Disminución de Activos No Corrientes', values: { [finalPeriod]: 0 }, isOrigin: true, dataSource: 'balance', account: 'Activo No Corriente' },
+                    { concept: 'Emisión de Capital', values: { [finalPeriod]: 50000 }, isOrigin: true, dataSource: 'balance', account: 'Capital Social' },
+                    { concept: 'Otros Orígenes', values: { [finalPeriod]: 30000 }, isOrigin: true },
+                    { concept: 'TOTAL ORIGEN DE FONDOS', values: { [finalPeriod]: 426000 }, isTotal: true, isOrigin: true },
+                    { concept: 'APLICACIÓN DE FONDOS', values: {}, isHeader: true },
+                    { concept: 'Adquisición de Activos Fijos', values: { [finalPeriod]: 150000 }, isApplication: true, dataSource: 'balance', account: 'Propiedad, Planta y Equipo' },
+                    { concept: 'Pago de Dividendos', values: { [finalPeriod]: 160000 }, isApplication: true, dataSource: 'calculated' },
+                    { concept: 'Disminución de Pasivos a Largo Plazo', values: { [finalPeriod]: 0 }, isApplication: true, dataSource: 'balance', account: 'Pasivo No Corriente' },
+                    { concept: 'Aumento de Activos No Corrientes', values: { [finalPeriod]: 150000 }, isApplication: true, dataSource: 'balance', account: 'Activo No Corriente' },
+                    { concept: 'Pérdida Neta del Ejercicio', values: { [finalPeriod]: 0 }, isApplication: true, dataSource: 'income', account: 'Utilidad Neta' },
+                    { concept: 'Otros Usos', values: { [finalPeriod]: 50000 }, isApplication: true },
+                    { concept: 'TOTAL APLICACIÓN DE FONDOS', values: { [finalPeriod]: 360000 }, isTotal: true, isApplication: true },
+                    { concept: 'AUMENTO (DISMINUCIÓN) NETO EN FONDOS', values: { [finalPeriod]: 66000 }, isNetChange: true }
+                ];
+                
+                renderTable();
+                
+                // Limpiar archivos seleccionados
+                selectedFiles.excel = null;
+                selectedFiles.pdf = null;
+                document.getElementById('excelFileName').style.display = 'none';
+                document.getElementById('pdfFileName').style.display = 'none';
+                document.getElementById('excelFile').value = '';
+                document.getElementById('pdfFile').value = '';
+                
+                bootstrap.Modal.getInstance(document.getElementById('importModal')).hide();
+                showAlert('Datos importados correctamente', 'success');
+            }, 2000);
+        });
+        
+        // Función para mostrar alertas
+        function showAlert(message, type) {
+            // Crear elemento de alerta
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            `;
+            alertDiv.innerHTML = `
+                <strong>${type === 'success' ? 'Éxito' : type === 'error' ? 'Error' : 'Info'}</strong>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remover después de 4 segundos
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 4000);
+        }
+        
+        // Inicializar
+        initializeTable();
+        updatePeriodInfo();
+    });
+</script>
+{% endblock %}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Análisis Financiero{% endblock %}</title>
+    <title>{% block title %}Análisis Financiero Inteligente{% endblock %}</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -23,40 +23,49 @@
             --dark-color: #1e293b;
             --light-color: #f8fafc;
             --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --navbar-bg: #1a1a2e;
+            --navbar-text: #ffffff;
+            --hero-bg: linear-gradient(135deg, #0c0c1b 0%, #1a1a2e 50%, #16213e 100%);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-white: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.7);
+            --accent-purple: #C0B7E8;
         }
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
+            background-color: #0c0c1b;
+            color: var(--text-white);
             padding-top: 76px;
         }
         
         .navbar-modern {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--navbar-bg) !important;
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
             padding: 0.8rem 0;
         }
         
         .navbar-modern.scrolled {
-            background: rgba(255, 255, 255, 0.98);
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            background: var(--navbar-bg) !important;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
         }
         
         .navbar-brand {
             font-weight: 700;
             font-size: 1.5rem;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--navbar-text) !important;
+        }
+        
+        .navbar-brand i {
+            color: var(--navbar-text);
         }
         
         .nav-link {
             font-weight: 500;
-            color: var(--dark-color) !important;
+            color: var(--navbar-text) !important;
             margin: 0 0.3rem;
             padding: 0.5rem 1rem !important;
             border-radius: 8px;
@@ -65,14 +74,14 @@
         }
         
         .nav-link:hover {
-            color: var(--primary-color) !important;
-            background: rgba(37, 99, 235, 0.1);
+            color: var(--accent-purple) !important;
+            background: rgba(192, 183, 232, 0.1);
             transform: translateY(-1px);
         }
         
         .nav-link.active {
-            color: var(--primary-color) !important;
-            background: rgba(37, 99, 235, 0.1);
+            color: var(--accent-purple) !important;
+            background: rgba(192, 183, 232, 0.1);
         }
         
         .nav-link.active::after {
@@ -82,7 +91,7 @@
             left: 1rem;
             right: 1rem;
             height: 2px;
-            background: var(--primary-color);
+            background: var(--accent-purple);
             border-radius: 2px;
         }
         
@@ -98,34 +107,36 @@
         
         .btn-login {
             background: transparent;
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
+            color: var(--navbar-text);
+            border: 2px solid var(--navbar-text);
         }
         
         .btn-login:hover {
-            background: var(--primary-color);
-            color: white;
+            background: var(--navbar-text);
+            color: var(--navbar-bg);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
         }
         
         .btn-register {
-            background: var(--gradient);
-            color: white;
+            background: linear-gradient(90deg, #8176AF 0%, #C0B7E8 100%);
+            color: var(--navbar-bg);
         }
         
         .btn-register:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-            color: white;
+            box-shadow: 0 6px 20px rgba(192, 183, 232, 0.4);
+            color: var(--navbar-bg);
         }
         
         .dropdown-menu {
             border: none;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             padding: 0.5rem;
             margin-top: 0.5rem;
+            background: var(--navbar-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .dropdown-item {
@@ -133,17 +144,18 @@
             border-radius: 8px;
             font-weight: 500;
             transition: all 0.2s ease;
+            color: var(--navbar-text);
         }
         
         .dropdown-item:hover {
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--primary-color);
+            background: rgba(192, 183, 232, 0.1);
+            color: var(--accent-purple) !important;
             transform: translateX(5px);
         }
         
         .user-dropdown .dropdown-toggle {
-            background: var(--gradient);
-            color: white;
+            background: linear-gradient(90deg, #8176AF 0%, #C0B7E8 100%);
+            color: var(--navbar-bg);
             border: none;
             border-radius: 8px;
             padding: 0.6rem 1.2rem;
@@ -152,7 +164,7 @@
         
         .user-dropdown .dropdown-toggle:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(192, 183, 232, 0.3);
         }
         
         .navbar-toggler {
@@ -165,10 +177,9 @@
         }
         
         .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2837, 99, 235, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
         }
 
-        /* Nuevos estilos para el dropdown de análisis */
         .analysis-dropdown .dropdown-menu {
             min-width: 280px;
         }
@@ -186,9 +197,301 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--primary-color);
+            background: rgba(192, 183, 232, 0.2);
+            color: var(--accent-purple);
             font-size: 0.9rem;
+        }
+        
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+        
+        .dropdown-divider {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .text-danger {
+            color: #ff6b6b !important;
+        }
+
+        /* Hero Section Styles */
+        .hero-section {
+            background: var(--hero-bg);
+            color: var(--text-white);
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 70% 20%, rgba(129, 118, 175, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            background: rgba(192, 183, 232, 0.1);
+            color: var(--accent-purple);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(192, 183, 232, 0.3);
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+        
+        .hero-title span {
+            background: linear-gradient(90deg, #8176AF 0%, #C0B7E8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-explore {
+            background: linear-gradient(90deg, #8176AF 0%, #C0B7E8 100%);
+            color: #1a1a2e;
+            font-weight: 600;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-explore:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(192, 183, 232, 0.4);
+            color: #1a1a2e;
+        }
+        
+        .btn-outline-light {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: var(--text-white);
+            font-weight: 600;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-light:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-3px);
+            color: var(--text-white);
+        }
+        
+        .hero-image {
+            position: relative;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        .hero-image img {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Features Section */
+        .features-section {
+            padding: 100px 0;
+            background: #0c0c1b;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 4rem;
+        }
+        
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            height: 100%;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(192, 183, 232, 0.3);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #8176AF 0%, #C0B7E8 100%);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            color: #1a1a2e;
+        }
+        
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-white);
+        }
+        
+        .feature-description {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #8176AF 0%, #C0B7E8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 0;
+            background: #0c0c1b;
+            text-align: center;
+        }
+        
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .cta-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #0a0a14;
+            padding: 60px 0 30px;
+            color: var(--text-muted);
+        }
+        
+        .footer-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-white);
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent-purple);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-explore, .btn-outline-light {
+                width: 100%;
+                max-width: 250px;
+            }
         }
     </style>
     
@@ -199,22 +502,17 @@
     {% block navbar %}
     <nav class="navbar navbar-expand-lg navbar-modern fixed-top">
         <div class="container">
-            <!-- Brand -->
             <a class="navbar-brand" href="{% url 'home' %}">
                 <i class="fas fa-chart-line me-2"></i>RazoNix
             </a>
             
-            <!-- Toggle button -->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
-            <!-- Navbar content -->
             <div class="collapse navbar-collapse" id="navbarContent">
-                <!-- Navigation Links (visible cuando está logueado) -->
                 {% if user.is_authenticated %}
                 <ul class="navbar-nav me-auto">
-                    <!-- Dropdown para Análisis Financieros -->
                     <li class="nav-item dropdown analysis-dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" 
                            data-bs-toggle="dropdown" aria-expanded="false">
@@ -254,19 +552,6 @@
                                     <div>
                                         <div class="fw-semibold">EOAF</div>
                                         <small class="text-muted">Estado de Origen y Aplicación de Fondos</small>
-                                    </div>
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item {% if request.resolver_match.url_name == 'razones' %}active{% endif %}" 
-                                   href="{% url 'razones' %}">
-                                    <div class="analysis-icon">
-                                        <i class="fas fa-calculator"></i>
-                                    </div>
-                                    <div>
-                                        <div class="fw-semibold">Razones Financieras</div>
-                                        <small class="text-muted">Indicadores de liquidez, actividad, endeudamiento y rentabilidad</small>
                                     </div>
                                 </a>
                             </li>
@@ -310,7 +595,6 @@
                         </ul>
                     </li>
 
-                    <!-- Enlaces directos para las razones financieras (opcional, puedes mantenerlos o eliminar) -->
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'liquidity' %}active{% endif %}" 
                            href="{% url 'liquidity' %}">
@@ -338,10 +622,8 @@
                 </ul>
                 {% endif %}
                 
-                <!-- User Actions -->
                 <div class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
-                        <!-- User dropdown cuando está logueado -->
                         <div class="nav-item dropdown user-dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" 
                                data-bs-toggle="dropdown" aria-expanded="false">
@@ -368,7 +650,6 @@
                             </ul>
                         </div>
                     {% else %}
-                        <!-- Botones de login/register cuando no está logueado -->
                         <div class="d-flex gap-2">
                             <a href="{% url 'login' %}" class="btn btn-login btn-modern">
                                 <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
@@ -387,8 +668,226 @@
     <!-- Main Content -->
     <main>
         {% block content %}
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="hero-content">
+                            <div class="hero-badge">
+                                <i class="fas fa-rocket me-2"></i>LANDING PAGE TEMPLATE
+                            </div>
+                            <h1 class="hero-title">
+                                Análisis Financiero <span>Inteligente</span> para Toma de Decisiones
+                            </h1>
+                            <p class="hero-subtitle">
+                                RazoNix transforma datos financieros complejos en insights accionables. Obtén análisis profundos de liquidez, actividad, endeudamiento y rentabilidad en tiempo real.
+                            </p>
+                            <div class="hero-buttons">
+                                <a href="#features" class="btn btn-explore">
+                                    <i class="fas fa-chart-line me-2"></i>EXPLORE
+                                </a>
+                                <a href="#demo" class="btn btn-outline-light">
+                                    <i class="fas fa-play-circle me-2"></i>Ver Demo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="hero-image">
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Dashboard Financiero" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features-section">
+            <div class="container">
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <h2 class="section-title">THE FUTURE</h2>
+                        <p class="section-subtitle">
+                            Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam
+                        </p>
+                    </div>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <h3 class="feature-title">Análisis en Tiempo Real</h3>
+                            <p class="feature-description">
+                                Monitorea el desempeño financiero de tu empresa con dashboards interactivos y reportes automatizados.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <h3 class="feature-title">Indicadores Clave</h3>
+                            <p class="feature-description">
+                                Obtén métricas esenciales de liquidez, rentabilidad, endeudamiento y eficiencia operativa.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-project-diagram"></i>
+                            </div>
+                            <h3 class="feature-title">Pronósticos Precisos</h3>
+                            <p class="feature-description">
+                                Utiliza inteligencia artificial para predecir tendencias y tomar decisiones informadas.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+                            <h3 class="feature-title">Estado de Flujos</h3>
+                            <p class="feature-description">
+                                Genera automáticamente estados de flujo de efectivo por métodos directo e indirecto.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-sitemap"></i>
+                            </div>
+                            <h3 class="feature-title">Análisis Dupont</h3>
+                            <p class="feature-description">
+                                Descompón el rendimiento sobre el patrimonio para identificar drivers de rentabilidad.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3 class="feature-title">Seguridad de Datos</h3>
+                            <p class="feature-description">
+                                Tus datos financieros están protegidos con encriptación de grado bancario.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3 col-6">
+                        <div class="stat-item">
+                            <div class="stat-number">98%</div>
+                            <div class="stat-label">Precisión en Pronósticos</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-item">
+                            <div class="stat-number">500+</div>
+                            <div class="stat-label">Empresas Confían</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-item">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">Soporte Disponible</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-item">
+                            <div class="stat-number">3.5x</div>
+                            <div class="stat-label">ROI Promedio</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section id="demo" class="cta-section">
+            <div class="container">
+                <h2 class="cta-title">Comienza a Transformar tus Finanzas Hoy</h2>
+                <p class="cta-subtitle">
+                    Únete a miles de empresas que ya están tomando mejores decisiones financieras con RazoNix.
+                </p>
+                <div class="hero-buttons justify-content-center">
+                    <a href="{% url 'register' %}" class="btn btn-explore">
+                        <i class="fas fa-rocket me-2"></i>Comenzar Gratis
+                    </a>
+                    <a href="#" class="btn btn-outline-light">
+                        <i class="fas fa-calendar me-2"></i>Agendar Demo
+                    </a>
+                </div>
+            </div>
+        </section>
         {% endblock %}
     </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h3 class="footer-title">
+                        <i class="fas fa-chart-line me-2"></i>RazoNix
+                    </h3>
+                    <p>Transformando datos financieros en decisiones inteligentes para empresas de todos los tamaños.</p>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h4 class="footer-title">Producto</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Características</a></li>
+                        <li><a href="#">Precios</a></li>
+                        <li><a href="#">Casos de Éxito</a></li>
+                        <li><a href="#">Demo</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h4 class="footer-title">Recursos</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Documentación</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Webinars</a></li>
+                        <li><a href="#">Soporte</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h4 class="footer-title">Empresa</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Nosotros</a></li>
+                        <li><a href="#">Carreras</a></li>
+                        <li><a href="#">Contacto</a></li>
+                        <li><a href="#">Términos</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 mb-4">
+                    <h4 class="footer-title">Síguenos</h4>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-muted"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-muted"><i class="fab fa-linkedin fa-lg"></i></a>
+                        <a href="#" class="text-muted"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-muted"><i class="fab fa-instagram fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 RazoNix. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -416,12 +915,10 @@
                 }
             });
 
-            // Manejar el estado activo para dropdown items
             const dropdownItems = document.querySelectorAll('.dropdown-item');
             dropdownItems.forEach(item => {
                 if (item.getAttribute('href') === currentUrl) {
                     item.classList.add('active');
-                    // También marcar el dropdown padre como activo
                     const dropdown = item.closest('.dropdown');
                     if (dropdown) {
                         const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
@@ -433,18 +930,17 @@
             });
         });
 
-        // Mejorar la experiencia del dropdown en móviles
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropdowns = document.querySelectorAll('.navbar-nav .dropdown');
-            
-            dropdowns.forEach(dropdown => {
-                dropdown.addEventListener('show.bs.dropdown', function () {
-                    this.classList.add('showing');
-                });
-                
-                dropdown.addEventListener('hide.bs.dropdown', function () {
-                    this.classList.remove('showing');
-                });
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
             });
         });
     </script>
