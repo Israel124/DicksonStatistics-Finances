@@ -1,116 +1,261 @@
 {% extends 'base.html' %}
 
-{% block title %}DicksonStatistics - Análisis Financiero Inteligente{% endblock %}
+{% block title %}RazoNix - Análisis Financiero Inteligente{% endblock %}
 
 {% block extra_css %}
 <style>
     :root {
-        --primary-color: #2563eb;
-        --secondary-color: #64748b;
-        --accent-color: #06d6a0;
-        --dark-color: #1e293b;
-        --light-color: #f8fafc;
-        --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --dark-bg: #0a0a12;
+        --darker-bg: #07070f;
+        --dark-card: #121225;
+        --neon-purple: #8b5cf6;
+        --neon-blue: #3b82f6;
+        --neon-cyan: #06b6d4;
+        --neon-pink: #ec4899;
+        --white: #ffffff;
+        --light-text: #f1f5f9;
+        --medium-text: #94a3b8;
+        --glow-purple: 0 0 20px rgba(139, 92, 246, 0.7);
+        --glow-blue: 0 0 20px rgba(59, 130, 246, 0.7);
     }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--light-text);
+        line-height: 1.6;
+        background-color: var(--dark-bg);
+        overflow-x: hidden;
+    }
+    
+    /* Background Animation */
+    .bg-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+    }
+    
+    .floating-shapes {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(139, 92, 246, 0.1);
+        animation: float 15s infinite linear;
+    }
+    
+    .shape:nth-child(1) {
+        width: 80px;
+        height: 80px;
+        top: 20%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+    
+    .shape:nth-child(2) {
+        width: 120px;
+        height: 120px;
+        top: 60%;
+        left: 80%;
+        animation-delay: -5s;
+    }
+    
+    .shape:nth-child(3) {
+        width: 60px;
+        height: 60px;
+        top: 80%;
+        left: 20%;
+        animation-delay: -10s;
+    }
+    
+    @keyframes float {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translateY(-20px) rotate(180deg);
+            opacity: 0.8;
+        }
+        100% {
+            transform: translateY(0) rotate(360deg);
+            opacity: 0.5;
+        }
+    }
+    
+    /* Header/Navigation - Se usará el navbar de base.html */
     
     /* Hero Section */
     .hero-section {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-        padding: 120px 0 80px;
+        padding: 150px 0 100px;
         position: relative;
         overflow: hidden;
     }
     
-    .hero-section::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -10%;
-        width: 600px;
-        height: 600px;
-        background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
-        border-radius: 50%;
-        z-index: 0;
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        color: var(--white);
+        position: relative;
+        animation: fadeInUp 1s ease-out;
     }
     
-    .hero-title {
-        font-size: 3.5rem;
-        font-weight: 700;
-        line-height: 1.1;
-        margin-bottom: 1.5rem;
-        background: linear-gradient(135deg, #1e293b 0%, #2563eb 100%);
+    .hero-title .highlight {
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+        text-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
     }
     
     .hero-subtitle {
-        font-size: 1.25rem;
-        color: var(--secondary-color);
+        font-size: 1.3rem;
+        color: var(--medium-text);
         margin-bottom: 2rem;
-        line-height: 1.6;
+        animation: fadeInUp 1s ease-out 0.2s both;
     }
     
     .hero-buttons {
         display: flex;
         gap: 1rem;
         margin-top: 2rem;
+        animation: fadeInUp 1s ease-out 0.4s both;
     }
     
     .btn-primary-lg {
         padding: 0.8rem 2rem;
-        font-size: 1.1rem;
-        background: var(--gradient);
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
         border: none;
-        border-radius: 10px;
+        border-radius: 8px;
+        color: white;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    }
+    
+    .btn-primary-lg::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
     }
     
     .btn-primary-lg:hover {
         transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+    }
+    
+    .btn-primary-lg:hover::before {
+        left: 100%;
     }
     
     .btn-outline-lg {
         padding: 0.8rem 2rem;
-        font-size: 1.1rem;
         background: transparent;
-        border: 2px solid var(--primary-color);
-        color: var(--primary-color);
-        border-radius: 10px;
+        border: 2px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+        border-radius: 8px;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-outline-lg::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        background: var(--neon-cyan);
+        transition: width 0.3s ease;
+        z-index: -1;
     }
     
     .btn-outline-lg:hover {
-        background: var(--primary-color);
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        color: var(--dark-bg);
     }
     
-    .hero-image {
-        position: relative;
-        z-index: 1;
+    .btn-outline-lg:hover::before {
+        width: 100%;
     }
     
+    /* Dashboard Preview */
     .dashboard-preview {
-        background: white;
+        background: rgba(255, 255, 255, 0.95);
         border-radius: 16px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.2);
         overflow: hidden;
-        transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
-        transition: transform 0.5s ease;
+        transform: perspective(1000px) rotateY(-8deg) rotateX(5deg);
+        transition: all 0.5s ease;
+        animation: floatCard 6s ease-in-out infinite;
+        position: relative;
+    }
+    
+    .dashboard-preview::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, var(--neon-purple), var(--neon-cyan), var(--neon-blue), var(--neon-purple));
+        z-index: -1;
+        border-radius: 18px;
+        animation: borderGlow 3s linear infinite;
+        background-size: 400%;
+    }
+    
+    @keyframes borderGlow {
+        0% {
+            background-position: 0 0;
+        }
+        50% {
+            background-position: 100% 0;
+        }
+        100% {
+            background-position: 0 0;
+        }
+    }
+    
+    @keyframes floatCard {
+        0%, 100% {
+            transform: perspective(1000px) rotateY(-8deg) rotateX(5deg) translateY(0);
+        }
+        50% {
+            transform: perspective(1000px) rotateY(-8deg) rotateX(5deg) translateY(-10px);
+        }
     }
     
     .dashboard-preview:hover {
-        transform: perspective(1000px) rotateY(0) rotateX(0);
+        transform: perspective(1000px) rotateY(0) rotateX(0) translateY(-5px);
+        animation: none;
     }
     
     .dashboard-header {
         height: 40px;
-        background: #f1f5f9;
+        background: #f8fafc;
         display: flex;
         align-items: center;
         padding: 0 1rem;
@@ -141,217 +286,266 @@
     }
     
     .dashboard-content {
-        height: 300px;
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        height: 320px;
+        background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
+        overflow: hidden;
     }
     
-    .chart-placeholder {
-        width: 80%;
-        height: 80%;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
+    /* Gráficas futuristas avanzadas */
+    .futuristic-chart {
+        width: 95%;
+        height: 95%;
+        position: relative;
     }
     
-    /* Features Section */
-    .features-section {
-        padding: 100px 0;
-        background: white;
-    }
-    
-    .section-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 1rem;
-        color: var(--dark-color);
-    }
-    
-    .section-subtitle {
-        font-size: 1.1rem;
-        text-align: center;
-        color: var(--secondary-color);
-        max-width: 600px;
-        margin: 0 auto 4rem;
-    }
-    
-    .feature-card {
-        background: white;
-        border-radius: 16px;
-        padding: 2rem;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
+    .chart-grid {
+        position: absolute;
+        width: 100%;
         height: 100%;
-        border: 1px solid #f1f5f9;
-    }
-    
-    .feature-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    }
-    
-    .feature-icon {
-        width: 70px;
-        height: 70px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1.5rem;
-        font-size: 1.8rem;
-        background: var(--gradient);
-        color: white;
-    }
-    
-    .feature-title {
-        font-size: 1.3rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        color: var(--dark-color);
-    }
-    
-    .feature-description {
-        color: var(--secondary-color);
-        line-height: 1.6;
-    }
-    
-    /* Analytics Section */
-    .analytics-section {
-        padding: 100px 0;
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.03) 0%, rgba(118, 75, 162, 0.03) 100%);
-    }
-    
-    .analytics-card {
-        background: white;
-        border-radius: 16px;
-        padding: 2.5rem;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-        border: 1px solid #f1f5f9;
-    }
-    
-    .analytics-stats {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
-        margin-top: 2rem;
+        grid-template-columns: repeat(12, 1fr);
+        grid-template-rows: repeat(12, 1fr);
+        gap: 1px;
     }
     
-    .stat-item {
-        text-align: center;
-        padding: 1.5rem;
-        border-radius: 12px;
-        background: #f8fafc;
-        transition: all 0.3s ease;
+    .grid-line {
+        background: rgba(0, 0, 0, 0.03);
     }
     
-    .stat-item:hover {
-        background: var(--gradient);
-        color: white;
-        transform: translateY(-5px);
+    .data-line {
+        position: absolute;
+        width: 100%;
+        height: 100%;
     }
     
-    .stat-item:hover .stat-value,
-    .stat-item:hover .stat-label {
-        color: white;
+    .line-1 {
+        fill: none;
+        stroke: url(#gradient1);
+        stroke-width: 3;
+        stroke-linecap: round;
+        filter: drop-shadow(0 0 8px var(--neon-purple));
+        animation: drawLine 2s ease-out forwards;
     }
     
-    .stat-value {
-        font-size: 2.5rem;
+    .line-2 {
+        fill: none;
+        stroke: url(#gradient2);
+        stroke-width: 3;
+        stroke-linecap: round;
+        filter: drop-shadow(0 0 8px var(--neon-cyan));
+        animation: drawLine 2s ease-out 0.5s forwards;
+    }
+    
+    @keyframes drawLine {
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+    
+    .data-point {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--neon-purple);
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 15px var(--neon-purple);
+        animation: pulsePoint 2s infinite;
+    }
+    
+    .data-point.blue {
+        background: var(--neon-cyan);
+        box-shadow: 0 0 15px var(--neon-cyan);
+    }
+    
+    @keyframes pulsePoint {
+        0%, 100% {
+            transform: translate(-50%, -50%) scale(1);
+        }
+        50% {
+            transform: translate(-50%, -50%) scale(1.3);
+        }
+    }
+    
+    .pulse {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--neon-purple);
+        transform: translate(-50%, -50%);
+        animation: pulseRing 2s infinite;
+    }
+    
+    .pulse.blue {
+        background: var(--neon-cyan);
+    }
+    
+    @keyframes pulseRing {
+        0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(3);
+            opacity: 0;
+        }
+    }
+    
+    .chart-label {
+        position: absolute;
+        color: #2d3748;
+        font-size: 0.7rem;
         font-weight: 700;
-        color: var(--primary-color);
-        margin-bottom: 0.5rem;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 4px 8px;
+        border-radius: 6px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 1s ease-out 1s both;
     }
     
-    .stat-label {
-        font-size: 1rem;
-        color: var(--secondary-color);
-        font-weight: 500;
+    /* Divider */
+    .divider {
+        height: 2px;
+        background: linear-gradient(90deg, transparent 0%, var(--neon-purple) 50%, transparent 100%);
+        margin: 80px 0;
+        position: relative;
+        animation: glowLine 3s ease-in-out infinite;
     }
     
-    /* CTA Section */
-    .cta-section {
+    @keyframes glowLine {
+        0%, 100% {
+            opacity: 0.7;
+        }
+        50% {
+            opacity: 1;
+        }
+    }
+    
+    .divider-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: var(--dark-bg);
+        padding: 0 2rem;
+        font-weight: 800;
+        color: var(--neon-purple);
+        font-size: 1.3rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-shadow: var(--glow-purple);
+    }
+    
+    /* Contact Section */
+    .contact-section {
         padding: 100px 0;
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-        text-align: center;
+        background: rgba(7, 7, 15, 0.7);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(139, 92, 246, 0.2);
+        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
     }
     
-    .cta-title {
+    .contact-title {
         font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1.5rem;
-        color: var(--dark-color);
+        font-weight: 800;
+        margin-bottom: 3rem;
+        color: var(--white);
+        text-align: center;
+        text-shadow: var(--glow-purple);
+        animation: fadeInUp 1s ease-out;
     }
     
-    .cta-description {
+    .contact-item {
+        margin-bottom: 2rem;
+        text-align: center;
+        padding: 0 1.5rem;
+        animation: fadeInUp 1s ease-out 0.3s both;
+    }
+    
+    .contact-item h4 {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--neon-cyan);
+        font-size: 1.4rem;
+        text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+    }
+    
+    .contact-item p {
+        color: var(--medium-text);
         font-size: 1.1rem;
-        color: var(--secondary-color);
-        max-width: 600px;
-        margin: 0 auto 3rem;
     }
     
     /* Footer */
     .footer {
-        background: var(--dark-color);
-        color: white;
-        padding: 60px 0 30px;
+        background: var(--darker-bg);
+        color: var(--light-text);
+        padding: 50px 0 20px;
+        text-align: center;
+        border-top: 1px solid rgba(139, 92, 246, 0.2);
     }
     
-    .footer-brand {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        background: var(--gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-    
-    .footer-description {
-        color: #94a3b8;
-        margin-bottom: 2rem;
-        line-height: 1.6;
-    }
-    
-    .footer-heading {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        color: white;
+    .footer p {
+        margin-bottom: 0.5rem;
+        color: var(--medium-text);
     }
     
     .footer-links {
-        list-style: none;
-        padding: 0;
-    }
-    
-    .footer-links li {
-        margin-bottom: 0.8rem;
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1.5rem;
     }
     
     .footer-links a {
-        color: #94a3b8;
+        color: var(--medium-text);
         text-decoration: none;
-        transition: color 0.3s ease;
+        transition: all 0.3s;
+        position: relative;
+    }
+    
+    .footer-links a::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--neon-purple);
+        transition: width 0.3s ease;
     }
     
     .footer-links a:hover {
-        color: white;
+        color: var(--neon-purple);
     }
     
-    .footer-bottom {
-        border-top: 1px solid #334155;
-        padding-top: 2rem;
-        margin-top: 3rem;
-        text-align: center;
-        color: #94a3b8;
+    .footer-links a:hover::after {
+        width: 100%;
+    }
+    
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
     }
     
     /* Responsive */
@@ -362,29 +556,40 @@
         
         .hero-buttons {
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
         }
         
         .dashboard-preview {
             transform: none;
             margin-top: 3rem;
+            animation: none;
         }
         
-        .analytics-stats {
-            grid-template-columns: 1fr;
+        .footer-links {
+            flex-direction: column;
+            gap: 1rem;
         }
     }
 </style>
 {% endblock %}
 
 {% block content %}
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+    </div>
+
     <!-- Hero Section -->
-    <section class="hero-section">
+    <section class="hero-section" id="inicio">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <h1 class="hero-title">Análisis Financiero Inteligente para Toma de Decisiones</h1>
-                    <p class="hero-subtitle">DicksonStatistics transforma datos financieros complejos en insights accionables. Obtén análisis profundos de liquidez, actividad, endeudamiento y rentabilidad en tiempo real.</p>
+                    <h1 class="hero-title">Análisis Financiero <span class="highlight">Inteligente</span> para Toma de Decisiones</h1>
+                    <p class="hero-subtitle">RazoNix transforma datos financieros complejos en insights accionables. Obtén análisis profundos de liquidez, actividad, endeudamiento y rentabilidad en tiempo real.</p>
                     <div class="hero-buttons">
                         <a href="#" class="btn btn-primary-lg">Comenzar Gratis</a>
                         <a href="#" class="btn btn-outline-lg">
@@ -394,26 +599,47 @@
                     <div class="mt-4">
                         <small class="text-muted">
                             <i class="fas fa-shield-alt me-1"></i>Seguro y confiable • 
-                            <i class="fas fa-sync-alt me-1"></i>Actualización en tiempo real
+                            <i class="fas fa-sync-alt me-1"></i>Actualización en tiempo real •
+                            <i class="fas fa-rocket me-1"></i>Tecnología avanzada
                         </small>
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="hero-image">
-                        <div class="dashboard-preview">
-                            <div class="dashboard-header">
-                                <div class="dashboard-dots">
-                                    <div class="dashboard-dot red"></div>
-                                    <div class="dashboard-dot yellow"></div>
-                                    <div class="dashboard-dot green"></div>
-                                </div>
+                    <div class="dashboard-preview">
+                        <div class="dashboard-header">
+                            <div class="dashboard-dots">
+                                <div class="dashboard-dot red"></div>
+                                <div class="dashboard-dot yellow"></div>
+                                <div class="dashboard-dot green"></div>
                             </div>
-                            <div class="dashboard-content">
-                                <div class="chart-placeholder">
-                                    <i class="fas fa-chart-bar text-primary mb-3" style="font-size: 3rem;"></i>
-                                    <h5 class="fw-bold">Dashboard Interactivo</h5>
-                                    <p class="text-muted mb-0">Visualización en tiempo real</p>
+                        </div>
+                        <div class="dashboard-content">
+                            <div class="futuristic-chart">
+                                <svg width="0" height="0">
+                                    <defs>
+                                        <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#8b5cf6" />
+                                            <stop offset="100%" stop-color="#ec4899" />
+                                        </linearGradient>
+                                        <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stop-color="#3b82f6" />
+                                            <stop offset="100%" stop-color="#06b6d4" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="chart-grid">
+                                    <!-- Grid lines will be generated by JS -->
                                 </div>
+                                <svg class="data-line" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                    <path class="line-1" d="M0,80 L20,60 L40,70 L60,30 L80,50 L100,20" />
+                                    <path class="line-2" d="M0,60 L20,40 L40,50 L60,10 L80,30 L100,10" />
+                                </svg>
+                                <!-- Data points will be generated by JS -->
+                                <!-- Pulse effects will be generated by JS -->
+                                <div class="chart-label" style="top: 10%; left: 10%;">Rentabilidad</div>
+                                <div class="chart-label" style="top: 30%; left: 30%;">Liquidez</div>
+                                <div class="chart-label" style="top: 50%; left: 50%;">Endeudamiento</div>
+                                <div class="chart-label" style="top: 70%; left: 70%;">Actividad</div>
                             </div>
                         </div>
                     </div>
@@ -422,133 +648,37 @@
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="features-section" id="features">
+    <!-- Divider -->
+    <div class="container">
+        <div class="divider">
+            <div class="divider-text">CONSTRUYE TU MUNDO</div>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contacto">
         <div class="container">
+            <h2 class="contact-title">Visítanos</h2>
+            
             <div class="row">
-                <div class="col-12 text-center">
-                    <h2 class="section-title">Potencia tu Análisis Financiero</h2>
-                    <p class="section-subtitle">Descubre todas las herramientas que necesitas para tomar decisiones financieras informadas</p>
-                </div>
-            </div>
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-money-bill-wave"></i>
-                        </div>
-                        <h4 class="feature-title">Razones de Liquidez</h4>
-                        <p class="feature-description">Analiza la capacidad de tu empresa para cumplir con obligaciones a corto plazo con indicadores precisos y en tiempo real.</p>
+                <div class="col-md-4">
+                    <div class="contact-item">
+                        <h4><i class="fas fa-map-marker-alt me-2"></i>Visítanos</h4>
+                        <p>Universidad Nacional de Ingeniería (UNI), Nicaragua</p>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-sync-alt"></i>
-                        </div>
-                        <h4 class="feature-title">Razones de Actividad</h4>
-                        <p class="feature-description">Evalúa la eficiencia operativa y la gestión de activos con métricas avanzadas de rotación y ciclo de conversión.</p>
+                <div class="col-md-4">
+                    <div class="contact-item">
+                        <h4><i class="fas fa-phone me-2"></i>Llámanos</h4>
+                        <p>(+505) 8648-5252</p>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-balance-scale"></i>
-                        </div>
-                        <h4 class="feature-title">Razones de Endeudamiento</h4>
-                        <p class="feature-description">Controla la estructura de capital y el apalancamiento financiero con análisis detallados de deuda y cobertura.</p>
+                <div class="col-md-4">
+                    <div class="contact-item">
+                        <h4><i class="fas fa-envelope me-2"></i>Envíanos un Mensaje</h4>
+                        <p>Contact@RazoNix.com</p>
                     </div>
                 </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-chart-pie"></i>
-                        </div>
-                        <h4 class="feature-title">Razones de Rentabilidad</h4>
-                        <p class="feature-description">Mide el desempeño financiero y la generación de valor con indicadores de margen y retorno sobre inversión.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Analytics Section -->
-    <section class="analytics-section" id="analisis">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <div class="analytics-card">
-                        <h2 class="section-title text-start">Resultados que Importan</h2>
-                        <p class="section-subtitle text-start mb-4">Empresas que utilizan DicksonStatistics experimentan mejoras significativas en su gestión financiera</p>
-                        
-                        <div class="analytics-stats">
-                            <div class="stat-item">
-                                <div class="stat-value">45%</div>
-                                <div class="stat-label">Mejora en análisis</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">3.2x</div>
-                                <div class="stat-label">Más eficiencia</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">89%</div>
-                                <div class="stat-label">Decisiones acertadas</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">24/7</div>
-                                <div class="stat-label">Monitoreo continuo</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="ps-lg-5">
-                        <h3 class="fw-bold mb-4">Tecnología Avanzada para Finanzas Inteligentes</h3>
-                        <div class="d-flex mb-4">
-                            <div class="me-3">
-                                <i class="fas fa-bolt text-primary" style="font-size: 1.5rem;"></i>
-                            </div>
-                            <div>
-                                <h5 class="fw-semibold">Procesamiento en Tiempo Real</h5>
-                                <p class="text-muted mb-0">Actualizaciones instantáneas de todos tus indicadores financieros</p>
-                            </div>
-                        </div>
-                        <div class="d-flex mb-4">
-                            <div class="me-3">
-                                <i class="fas fa-shield-alt text-primary" style="font-size: 1.5rem;"></i>
-                            </div>
-                            <div>
-                                <h5 class="fw-semibold">Seguridad de Grado Empresarial</h5>
-                                <p class="text-muted mb-0">Tus datos financieros protegidos con encriptación de última generación</p>
-                            </div>
-                        </div>
-                        <div class="d-flex mb-4">
-                            <div class="me-3">
-                                <i class="fas fa-mobile-alt text-primary" style="font-size: 1.5rem;"></i>
-                            </div>
-                            <div>
-                                <h5 class="fw-semibold">Acceso Multiplataforma</h5>
-                                <p class="text-muted mb-0">Gestiona tus finanzas desde cualquier dispositivo, en cualquier momento</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="container">
-            <h2 class="cta-title">Comienza a Transformar tus Finanzas Hoy</h2>
-            <p class="cta-description">Únete a miles de empresas que ya confían en DicksonStatistics para su análisis financiero. Prueba gratis durante 14 días.</p>
-            <div class="d-flex gap-3 justify-content-center flex-wrap">
-                <a href="#" class="btn btn-primary-lg">
-                    <i class="fas fa-rocket me-2"></i>Comenzar Prueba Gratuita
-                </a>
-                <a href="#" class="btn btn-outline-lg">
-                    <i class="fas fa-calendar me-2"></i>Agendar Demo
-                </a>
             </div>
         </div>
     </section>
@@ -556,48 +686,12 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-4 mb-5 mb-lg-0">
-                    <div class="footer-brand">RazoNix</div>
-                    <p class="footer-description">
-                        Plataforma líder en análisis financiero inteligente. Transformamos datos complejos en decisiones simples.
-                    </p>
-                    <div class="d-flex gap-3">
-                        <a href="#" class="text-white"><i class="fab fa-twitter fa-lg"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-linkedin fa-lg"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-facebook fa-lg"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-4 mb-5 mb-md-0">
-                    <h5 class="footer-heading">Producto</h5>
-                    <ul class="footer-links">
-                        <li><a href="#">Características</a></li>
-                        <li><a href="#">Precios</a></li>
-                        <li><a href="#">Casos de Éxito</a></li>
-                        <li><a href="#">Demo</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-4 mb-5 mb-md-0">
-                    <h5 class="footer-heading">Recursos</h5>
-                    <ul class="footer-links">
-                        <li><a href="#">Documentación</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Webinars</a></li>
-                        <li><a href="#">Soporte</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-2 col-md-4">
-                    <h5 class="footer-heading">Empresa</h5>
-                    <ul class="footer-links">
-                        <li><a href="#">Nosotros</a></li>
-                        <li><a href="#">Carreras</a></li>
-                        <li><a href="#">Contacto</a></li>
-                        <li><a href="#">Privacidad</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 RazoNix Todos los derechos reservados.</p>
+            <p>&copy; 2025 RazoNix. Todos los derechos reservados.</p>
+            <p>Análisis Financiero Inteligente</p>
+            <div class="footer-links">
+                <a href="#">Términos de Servicio</a>
+                <a href="#">Política de Privacidad</a>
+                <a href="#">Soporte</a>
             </div>
         </div>
     </footer>
@@ -605,16 +699,6 @@
 
 {% block extra_js %}
 <script>
-    // Navbar scroll effect
-    window.addEventListener('scroll', function() {
-        const navbar = document.querySelector('.navbar-modern');
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
-
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -629,35 +713,82 @@
         });
     });
 
-    // Animation on scroll
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
+    // Create grid for futuristic chart
+    const chartGrid = document.querySelector('.chart-grid');
+    for (let i = 0; i < 144; i++) {
+        const gridLine = document.createElement('div');
+        gridLine.classList.add('grid-line');
+        chartGrid.appendChild(gridLine);
+    }
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
+    // Create data points for the chart
+    const dataPoints = [
+        {x: 0, y: 80, color: 'purple'},
+        {x: 20, y: 60, color: 'purple'},
+        {x: 40, y: 70, color: 'purple'},
+        {x: 60, y: 30, color: 'purple'},
+        {x: 80, y: 50, color: 'purple'},
+        {x: 100, y: 20, color: 'purple'},
+        {x: 0, y: 60, color: 'blue'},
+        {x: 20, y: 40, color: 'blue'},
+        {x: 40, y: 50, color: 'blue'},
+        {x: 60, y: 10, color: 'blue'},
+        {x: 80, y: 30, color: 'blue'},
+        {x: 100, y: 10, color: 'blue'}
+    ];
+
+    const futuristicChart = document.querySelector('.futuristic-chart');
+    
+    // Animate chart lines
+    const paths = document.querySelectorAll('.line-1, .line-2');
+    paths.forEach(path => {
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = length;
+        path.style.strokeDashoffset = length;
+    });
+
+    // Add data points with delay
+    setTimeout(() => {
+        dataPoints.forEach((point, index) => {
+            setTimeout(() => {
+                const dataPoint = document.createElement('div');
+                dataPoint.classList.add('data-point');
+                if (point.color === 'blue') dataPoint.classList.add('blue');
+                dataPoint.style.left = `${point.x}%`;
+                dataPoint.style.top = `${point.y}%`;
+                futuristicChart.appendChild(dataPoint);
+                
+                // Add pulse effect to some points
+                if (Math.random() > 0.5) {
+                    const pulse = document.createElement('div');
+                    pulse.classList.add('pulse');
+                    if (point.color === 'blue') pulse.classList.add('blue');
+                    pulse.style.left = `${point.x}%`;
+                    pulse.style.top = `${point.y}%`;
+                    pulse.style.animationDelay = `${Math.random() * 2}s`;
+                    futuristicChart.appendChild(pulse);
+                }
+            }, index * 150);
         });
-    }, observerOptions);
+    }, 1000);
 
-    // Observe feature cards
-    document.querySelectorAll('.feature-card').forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(30px)';
-        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(card);
-    });
+    // Add floating particles to background
+    function createParticles() {
+        const bgAnimation = document.querySelector('.floating-shapes');
+        for (let i = 0; i < 15; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('shape');
+            particle.style.width = `${Math.random() * 40 + 20}px`;
+            particle.style.height = particle.style.width;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.background = `rgba(${Math.random() > 0.5 ? '139, 92, 246' : '59, 130, 246'}, ${Math.random() * 0.1 + 0.05})`;
+            particle.style.animationDuration = `${Math.random() * 10 + 10}s`;
+            particle.style.animationDelay = `${Math.random() * 10}s`;
+            bgAnimation.appendChild(particle);
+        }
+    }
 
-    // Observe stats
-    document.querySelectorAll('.stat-item').forEach(stat => {
-        stat.style.opacity = '0';
-        stat.style.transform = 'translateY(20px)';
-        stat.style.transition = 'opacity 0.4s ease, transform 0.4s ease, background 0.3s ease';
-        observer.observe(stat);
-    });
+    createParticles();
 </script>
 {% endblock %}
