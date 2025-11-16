@@ -4,462 +4,671 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema Dupont - DicksonStatistics</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #2563eb;
-            --secondary-color: #64748b;
-            --accent-color: #06d6a0;
-            --dark-color: #1e293b;
-            --light-color: #f8fafc;
-            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary: #1a3c6e;
+            --secondary: #2c5282;
+            --accent: #3182ce;
+            --light-bg: #f7fafc;
+            --card-bg: #ffffff;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --success: #38a169;
+            --warning: #dd6b20;
+            --danger: #e53e3e;
+            --border: #e2e8f0;
         }
         
-        .analysis-section {
-            padding: 2rem 0;
-            background: #f8fafc;
-            min-height: calc(100vh - 76px);
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
         }
         
-        .section-header {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-            border: 1px solid #e2e8f0;
+        .navbar {
+            background: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .section-title {
-            font-size: 2rem;
+        .navbar-brand {
             font-weight: 700;
-            color: var(--dark-color);
-            margin-bottom: 0.5rem;
-        }
-        
-        .section-subtitle {
-            color: var(--secondary-color);
-            margin-bottom: 2rem;
-        }
-        
-        .control-panel {
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .btn-modern {
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: none;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .btn-primary-modern {
-            background: var(--gradient);
-            color: white;
-        }
-        
-        .btn-primary-modern:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-            color: white;
-        }
-        
-        .btn-outline-modern {
-            background: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-        }
-        
-        .btn-outline-modern:hover {
-            background: var(--primary-color);
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        .btn-success-modern {
-            background: var(--accent-color);
-            color: white;
-        }
-        
-        .btn-success-modern:hover {
-            background: #05c391;
-            transform: translateY(-2px);
-            color: white;
-        }
-        
-        .analysis-table-container {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 2rem;
-        }
-        
-        .table-modern {
-            margin: 0;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-        
-        .table-modern thead th {
-            background: #f8fafc;
-            border-bottom: 2px solid #e2e8f0;
-            padding: 1.25rem 1rem;
-            font-weight: 600;
-            color: var(--dark-color);
-            text-align: center;
-            vertical-align: middle;
-        }
-        
-        .table-modern tbody td {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            vertical-align: middle;
-            transition: all 0.2s ease;
-        }
-        
-        .table-modern tbody tr:hover td {
-            background: #f8fafc;
-        }
-        
-        .table-modern .account-name {
-            font-weight: 500;
-            color: var(--dark-color);
-            min-width: 250px;
-        }
-        
-        .editable-input {
-            width: 120px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            text-align: right;
-        }
-        
-        .editable-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-        
-        .period-header {
-            background: var(--gradient) !important;
             color: white !important;
-            position: relative;
-            min-width: 150px;
         }
         
-        .form-group-modern {
-            margin-bottom: 1.5rem;
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
         
-        .form-label-modern {
-            font-weight: 500;
-            color: var(--dark-color);
-            margin-bottom: 0.5rem;
-        }
-        
-        .form-control-modern {
-            border: 2px solid #e2e8f0;
+        .page-header {
+            background: var(--card-bg);
             border-radius: 10px;
-            padding: 0.75rem 1rem;
-            transition: all 0.3s ease;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--accent);
         }
         
-        .form-control-modern:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        .page-title {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 5px;
         }
         
-        .calculation-row {
-            background: #f0f9ff !important;
+        .page-subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+        
+        .card-custom {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .card-custom:hover {
+            transform: translateY(-3px);
+        }
+        
+        .card-header-custom {
+            background: var(--primary);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 15px 20px;
             font-weight: 600;
         }
         
-        .calculation-row td {
-            border-top: 2px solid #e2e8f0;
+        .form-label-custom {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
         }
         
-        .result-section {
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-            border: 1px solid #e2e8f0;
+        .form-control-custom {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 10px 15px;
+            transition: all 0.3s;
         }
         
-        .result-item {
-            margin-bottom: 1rem;
-            padding: 1rem;
+        .form-control-custom:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        }
+        
+        .btn-custom {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary-custom {
+            background: var(--primary);
+            border: none;
+            color: white;
+        }
+        
+        .btn-primary-custom:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-outline-custom {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline-custom:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .summary-card {
+            background: var(--card-bg);
             border-radius: 10px;
-            background: #f8fafc;
-            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--accent);
+            height: 100%;
+        }
+        
+        .summary-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+        
+        .summary-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            height: 100%;
+            border-top: 4px solid var(--success);
+        }
+        
+        .result-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 10px;
         }
         
         .result-value {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: var(--primary-color);
+            color: var(--primary);
         }
         
         .result-formula {
-            font-size: 0.9rem;
-            color: var(--secondary-color);
+            font-size: 0.85rem;
+            color: var(--text-light);
         }
         
         .final-result {
-            background: var(--gradient);
+            background: var(--primary);
             color: white;
-            padding: 1.5rem;
-            border-radius: 12px;
+            border-radius: 10px;
+            padding: 25px;
             text-align: center;
-            margin-top: 1rem;
+            margin: 20px 0;
         }
         
-        .final-result h4 {
-            margin-bottom: 0.5rem;
+        .final-result-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 10px 0;
         }
         
-        .final-result .result {
-            font-size: 2rem;
+        .final-result-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .formula-box {
+            background: var(--light-bg);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 3px solid var(--accent);
+        }
+        
+        .formula-text {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .explanation-box {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .explanation-title {
             font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .period-selector {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         
         @media (max-width: 768px) {
-            .table-responsive {
-                font-size: 0.8rem;
+            .main-container {
+                padding: 10px;
             }
             
-            .editable-input {
-                padding: 0.25rem 0.5rem;
-                width: 100px;
+            .summary-value {
+                font-size: 1.5rem;
             }
             
-            .export-options {
-                flex-direction: column;
-            }
-            
-            .report-type-buttons {
-                flex-direction: column;
-            }
-            
-            .report-type-btn {
-                min-width: 100%;
-            }
-            
-            .period-header {
-                min-width: 120px;
+            .final-result-value {
+                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navigation Bar (simplified) -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--gradient);">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="#">
-                <i class="fas fa-chart-line me-2"></i>
-                DicksonStatistics
+                <i class="fas fa-chart-line me-2"></i>DicksonStatistics
             </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Análisis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Reportes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Configuración</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
-    <section class="analysis-section">
-        <div class="container">
-            <!-- Header -->
-            <div class="section-header">
-                <h1 class="section-title">Sistema Dupont</h1>
-                <p class="section-subtitle">Analiza la rentabilidad de la empresa mediante el sistema Dupont</p>
-            </div>
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Sistema Dupont</h1>
+            <p class="page-subtitle">Analiza la rentabilidad de la empresa mediante el sistema de análisis financiero Dupont</p>
+        </div>
 
-            <!-- Formulario de entrada de datos -->
-            <div class="control-panel">
-                <h5 class="form-label-modern mb-3">Ingrese los Datos Financieros</h5>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group-modern">
-                            <label class="form-label-modern" for="utilidad_neta">Utilidad Neta</label>
-                            <input type="number" step="0.01" class="form-control form-control-modern" id="utilidad_neta" placeholder="Ej: 150000">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group-modern">
-                            <label class="form-label-modern" for="ventas">Ventas</label>
-                            <input type="number" step="0.01" class="form-control form-control-modern" id="ventas" placeholder="Ej: 250000">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group-modern">
-                            <label class="form-label-modern" for="activo_total">Activo Total</label>
-                            <input type="number" step="0.01" class="form-control form-control-modern" id="activo_total" placeholder="Ej: 100000">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group-modern">
-                            <label class="form-label-modern" for="patrimonio">Patrimonio</label>
-                            <input type="number" step="0.01" class="form-control form-control-modern" id="patrimonio" placeholder="Ej: 30000">
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <button class="btn btn-primary-modern btn-modern" id="calcularBtn">
-                        <i class="fas fa-calculator"></i> Calcular
-                    </button>
-                    <button class="btn btn-outline-modern btn-modern" id="limpiarBtn">
-                        <i class="fas fa-broom"></i> Limpiar
-                    </button>
+        <!-- Financial Summary -->
+        <div class="row mb-4">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="summary-card">
+                    <div class="summary-label">Margen Neto</div>
+                    <div class="summary-value" id="summary-margin">0.60</div>
+                    <div class="summary-label">Utilidad Neta / Ventas</div>
                 </div>
             </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="summary-card">
+                    <div class="summary-label">Rotación Activos</div>
+                    <div class="summary-value" id="summary-rotation">2.50</div>
+                    <div class="summary-label">Ventas / Activo Total</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="summary-card">
+                    <div class="summary-label">Apalancamiento</div>
+                    <div class="summary-value" id="summary-leverage">3.33</div>
+                    <div class="summary-label">Activo Total / Patrimonio</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="summary-card">
+                    <div class="summary-label">ROE (Dupont)</div>
+                    <div class="summary-value" id="summary-roe">4.99</div>
+                    <div class="summary-label">Rentabilidad Patrimonio</div>
+                </div>
+            </div>
+        </div>
 
-            <!-- Resultados -->
-            <div class="result-section" id="resultados" style="display: none;">
-                <h5 class="form-label-modern mb-3">Resultados del Sistema Dupont</h5>
-                
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="result-item">
-                            <div class="result-formula">Utilidad Neta / Ventas</div>
-                            <div id="margen_formula" class="mb-2"></div>
-                            <div class="result-value" id="margen_valor"></div>
-                        </div>
+        <div class="row">
+            <!-- Input Panel -->
+            <div class="col-lg-8">
+                <div class="card-custom">
+                    <div class="card-header-custom">
+                        <i class="fas fa-calculator me-2"></i>Ingresar Datos Financieros
                     </div>
-                    <div class="col-md-4">
-                        <div class="result-item">
-                            <div class="result-formula">Ventas / Activo Total</div>
-                            <div id="rotacion_formula" class="mb-2"></div>
-                            <div class="result-value" id="rotacion_valor"></div>
+                    <div class="card-body">
+                        <!-- Period Selector -->
+                        <div class="period-selector">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label-custom">Periodo de Análisis</label>
+                                        <select class="form-control form-control-custom" id="periodSelect">
+                                            <option value="2024">Año 2024</option>
+                                            <option value="2023">Año 2023</option>
+                                            <option value="2022">Año 2022</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label-custom">Moneda</label>
+                                        <select class="form-control form-control-custom" id="currencySelect">
+                                            <option value="MXN">Peso Mexicano (MXN)</option>
+                                            <option value="USD">Dólar Americano (USD)</option>
+                                            <option value="EUR">Euro (EUR)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="result-item">
-                            <div class="result-formula">Activo Total / Patrimonio</div>
-                            <div id="apalancamiento_formula" class="mb-2"></div>
-                            <div class="result-value" id="apalancamiento_valor"></div>
+
+                        <!-- Data Inputs -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="utilidadNeta" class="form-label-custom">Utilidad Neta</label>
+                                    <input type="number" class="form-control form-control-custom" id="utilidadNeta" 
+                                           placeholder="Ej: 150000" min="0" step="0.01" value="150000">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="ventas" class="form-label-custom">Ventas</label>
+                                    <input type="number" class="form-control form-control-custom" id="ventas" 
+                                           placeholder="Ej: 250000" min="0" step="0.01" value="250000">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="activoTotal" class="form-label-custom">Activo Total</label>
+                                    <input type="number" class="form-control form-control-custom" id="activoTotal" 
+                                           placeholder="Ej: 100000" min="0" step="0.01" value="100000">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="patrimonio" class="form-label-custom">Patrimonio</label>
+                                    <input type="number" class="form-control form-control-custom" id="patrimonio" 
+                                           placeholder="Ej: 30000" min="0" step="0.01" value="30000">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2 flex-wrap mt-4">
+                            <button class="btn btn-primary-custom btn-custom" id="calcularBtn">
+                                <i class="fas fa-calculator me-2"></i>Calcular Sistema Dupont
+                            </button>
+                            <button class="btn btn-outline-custom btn-custom" id="limpiarBtn">
+                                <i class="fas fa-broom me-2"></i>Limpiar Campos
+                            </button>
+                            <button class="btn btn-outline-custom btn-custom" id="ejemploBtn">
+                                <i class="fas fa-book me-2"></i>Ver Ejemplo
+                            </button>
                         </div>
                     </div>
                 </div>
-                
-                <div class="final-result">
-                    <h4>Sistema Dupont</h4>
-                    <div id="dupont_formula" class="mb-2"></div>
-                    <div class="result" id="dupont_resultado"></div>
+
+                <!-- Explanation -->
+                <div class="explanation-box">
+                    <h5 class="explanation-title">¿Qué es el Sistema Dupont?</h5>
+                    <p>El sistema Dupont es una herramienta de análisis financiero que descompone el rendimiento sobre el patrimonio (ROE) en tres componentes clave:</p>
+                    <ul>
+                        <li><strong>Margen Neto de Utilidad:</strong> Mide la eficiencia de la empresa en convertir ventas en ganancias.</li>
+                        <li><strong>Rotación de Activos Totales:</strong> Evalúa la eficiencia en el uso de los activos para generar ventas.</li>
+                        <li><strong>Apalancamiento Financiero:</strong> Indica el grado en que la empresa utiliza deuda para financiar sus activos.</li>
+                    </ul>
+                    <p>Al multiplicar estos tres componentes, obtenemos el ROE, que representa la rentabilidad que la empresa genera para sus accionistas.</p>
                 </div>
             </div>
 
-            <!-- Información adicional -->
-            <div class="control-panel">
-                <h5 class="form-label-modern mb-3">Información sobre el Sistema Dupont</h5>
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6>¿Qué es el Sistema Dupont?</h6>
-                        <p class="text-muted">
-                            El Sistema Dupont es una herramienta financiera que descompone el rendimiento sobre el patrimonio (ROE) 
-                            en tres componentes: margen de utilidad, rotación de activos y apalancamiento financiero.
-                        </p>
+            <!-- Results Panel -->
+            <div class="col-lg-4">
+                <div class="card-custom">
+                    <div class="card-header-custom">
+                        <i class="fas fa-chart-bar me-2"></i>Resultados del Análisis
                     </div>
-                    <div class="col-md-6">
-                        <h6>Interpretación de los resultados</h6>
-                        <ul class="text-muted">
-                            <li><strong>Margen neto de utilidad:</strong> Eficiencia en la gestión de costos y gastos</li>
-                            <li><strong>Rotación de activos:</strong> Eficiencia en el uso de los activos para generar ventas</li>
-                            <li><strong>Apalancamiento financiero:</strong> Grado de financiamiento con deuda</li>
-                        </ul>
+                    <div class="card-body">
+                        <!-- Final Result -->
+                        <div class="final-result">
+                            <div class="final-result-label">ROE - Rentabilidad sobre el Patrimonio</div>
+                            <div class="final-result-value" id="finalResult">4.99</div>
+                            <div>Resultado Sistema Dupont</div>
+                        </div>
+                        
+                        <!-- Formula -->
+                        <div class="formula-box">
+                            <div class="formula-text" id="formulaDupont">
+                                Margen Neto × Rotación Activos × Apalancamiento = 0.60 × 2.50 × 3.33 = 4.99
+                            </div>
+                        </div>
+                        
+                        <!-- Individual Results -->
+                        <div class="row mt-3">
+                            <div class="col-12 mb-3">
+                                <div class="result-card">
+                                    <div class="result-title">Margen Neto de Utilidad</div>
+                                    <div class="result-value" id="margenResultado">0.60</div>
+                                    <div class="result-formula">Utilidad Neta / Ventas</div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="result-card">
+                                    <div class="result-title">Rotación de Activos Totales</div>
+                                    <div class="result-value" id="rotacionResultado">2.50</div>
+                                    <div class="result-formula">Ventas / Activo Total</div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="result-card">
+                                    <div class="result-title">Apalancamiento Financiero</div>
+                                    <div class="result-value" id="apalancamientoResultado">3.33</div>
+                                    <div class="result-formula">Activo Total / Patrimonio</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Export Button -->
+                        <div class="d-grid mt-4">
+                            <button class="btn btn-primary-custom btn-custom" id="exportarBtn">
+                                <i class="fas fa-file-export me-2"></i>Exportar Resultados
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Elementos del DOM
+            const utilidadNetaInput = document.getElementById('utilidadNeta');
+            const ventasInput = document.getElementById('ventas');
+            const activoTotalInput = document.getElementById('activoTotal');
+            const patrimonioInput = document.getElementById('patrimonio');
             const calcularBtn = document.getElementById('calcularBtn');
             const limpiarBtn = document.getElementById('limpiarBtn');
-            const resultadosDiv = document.getElementById('resultados');
+            const ejemploBtn = document.getElementById('ejemploBtn');
+            const exportarBtn = document.getElementById('exportarBtn');
+            
+            // Elementos de resultados
+            const margenResultado = document.getElementById('margenResultado');
+            const rotacionResultado = document.getElementById('rotacionResultado');
+            const apalancamientoResultado = document.getElementById('apalancamientoResultado');
+            const formulaDupont = document.getElementById('formulaDupont');
+            const finalResult = document.getElementById('finalResult');
+            
+            // Elementos del resumen
+            const summaryMargin = document.getElementById('summary-margin');
+            const summaryRotation = document.getElementById('summary-rotation');
+            const summaryLeverage = document.getElementById('summary-leverage');
+            const summaryRoe = document.getElementById('summary-roe');
             
             // Función para calcular el Sistema Dupont
             function calcularDupont() {
-                // Obtener valores del formulario
-                const utilidadNeta = parseFloat(document.getElementById('utilidad_neta').value);
-                const ventas = parseFloat(document.getElementById('ventas').value);
-                const activoTotal = parseFloat(document.getElementById('activo_total').value);
-                const patrimonio = parseFloat(document.getElementById('patrimonio').value);
+                // Obtener valores de los inputs
+                const utilidadNeta = parseFloat(utilidadNetaInput.value) || 0;
+                const ventas = parseFloat(ventasInput.value) || 0;
+                const activoTotal = parseFloat(activoTotalInput.value) || 0;
+                const patrimonio = parseFloat(patrimonioInput.value) || 0;
                 
-                // Validar que todos los campos tengan valores
-                if (isNaN(utilidadNeta) || isNaN(ventas) || isNaN(activoTotal) || isNaN(patrimonio)) {
-                    alert('Por favor, ingrese todos los valores.');
+                // Validar que no haya divisiones por cero
+                if (ventas === 0 || activoTotal === 0 || patrimonio === 0) {
+                    showAlert('Error: Los valores de Ventas, Activo Total y Patrimonio deben ser mayores a cero', 'error');
                     return;
                 }
                 
-                // Calcular indicadores
+                // Calcular ratios
                 const margenNeto = utilidadNeta / ventas;
                 const rotacionActivos = ventas / activoTotal;
-                const apalancamientoFinanciero = activoTotal / patrimonio;
-                const dupont = margenNeto * rotacionActivos * apalancamientoFinanciero;
+                const apalancamiento = activoTotal / patrimonio;
                 
-                // Mostrar resultados
-                document.getElementById('margen_formula').textContent = 
-                    `${utilidadNeta.toLocaleString()} / ${ventas.toLocaleString()} = ${margenNeto.toFixed(2)}`;
-                document.getElementById('margen_valor').textContent = margenNeto.toFixed(2);
+                // Calcular resultado Dupont
+                const resultado = margenNeto * rotacionActivos * apalancamiento;
                 
-                document.getElementById('rotacion_formula').textContent = 
-                    `${ventas.toLocaleString()} / ${activoTotal.toLocaleString()} = ${rotacionActivos.toFixed(2)}`;
-                document.getElementById('rotacion_valor').textContent = rotacionActivos.toFixed(2);
+                // Actualizar resultados en la interfaz
+                margenResultado.textContent = margenNeto.toFixed(2);
+                rotacionResultado.textContent = rotacionActivos.toFixed(2);
+                apalancamientoResultado.textContent = apalancamiento.toFixed(2);
+                finalResult.textContent = resultado.toFixed(2);
                 
-                document.getElementById('apalancamiento_formula').textContent = 
-                    `${activoTotal.toLocaleString()} / ${patrimonio.toLocaleString()} = ${apalancamientoFinanciero.toFixed(2)}`;
-                document.getElementById('apalancamiento_valor').textContent = apalancamientoFinanciero.toFixed(2);
+                // Actualizar resumen
+                summaryMargin.textContent = margenNeto.toFixed(2);
+                summaryRotation.textContent = rotacionActivos.toFixed(2);
+                summaryLeverage.textContent = apalancamiento.toFixed(2);
+                summaryRoe.textContent = resultado.toFixed(2);
                 
-                document.getElementById('dupont_formula').textContent = 
-                    `${margenNeto.toFixed(2)} × ${rotacionActivos.toFixed(2)} × ${apalancamientoFinanciero.toFixed(2)}`;
-                document.getElementById('dupont_resultado').textContent = dupont.toFixed(2);
+                // Actualizar fórmula
+                formulaDupont.innerHTML = `Margen Neto × Rotación Activos × Apalancamiento = ${margenNeto.toFixed(2)} × ${rotacionActivos.toFixed(2)} × ${apalancamiento.toFixed(2)} = ${resultado.toFixed(2)}`;
                 
-                // Mostrar la sección de resultados
-                resultadosDiv.style.display = 'block';
-                
-                // Scroll a los resultados
-                resultadosDiv.scrollIntoView({ behavior: 'smooth' });
+                showAlert('Cálculo del Sistema Dupont completado', 'success');
             }
             
-            // Función para limpiar el formulario
-            function limpiarFormulario() {
-                document.getElementById('utilidad_neta').value = '';
-                document.getElementById('ventas').value = '';
-                document.getElementById('activo_total').value = '';
-                document.getElementById('patrimonio').value = '';
-                resultadosDiv.style.display = 'none';
+            // Función para limpiar campos
+            function limpiarCampos() {
+                utilidadNetaInput.value = '';
+                ventasInput.value = '';
+                activoTotalInput.value = '';
+                patrimonioInput.value = '';
+                
+                margenResultado.textContent = '0.00';
+                rotacionResultado.textContent = '0.00';
+                apalancamientoResultado.textContent = '0.00';
+                finalResult.textContent = '0.00';
+                formulaDupont.innerHTML = 'Margen Neto × Rotación Activos × Apalancamiento = 0.00 × 0.00 × 0.00 = 0.00';
+                
+                // Actualizar resumen
+                summaryMargin.textContent = '0.00';
+                summaryRotation.textContent = '0.00';
+                summaryLeverage.textContent = '0.00';
+                summaryRoe.textContent = '0.00';
+                
+                showAlert('Campos limpiados correctamente', 'info');
+            }
+            
+            // Función para cargar ejemplo
+            function cargarEjemplo() {
+                utilidadNetaInput.value = '150000';
+                ventasInput.value = '250000';
+                activoTotalInput.value = '100000';
+                patrimonioInput.value = '30000';
+                
+                calcularDupont();
+                showAlert('Ejemplo cargado correctamente', 'info');
+            }
+            
+            // Función para exportar resultados
+            function exportarResultados() {
+                const utilidadNeta = parseFloat(utilidadNetaInput.value) || 0;
+                const ventas = parseFloat(ventasInput.value) || 0;
+                const activoTotal = parseFloat(activoTotalInput.value) || 0;
+                const patrimonio = parseFloat(patrimonioInput.value) || 0;
+                
+                if (ventas === 0 || activoTotal === 0 || patrimonio === 0) {
+                    showAlert('No hay datos válidos para exportar', 'error');
+                    return;
+                }
+                
+                // Crear contenido para exportar
+                const contenido = `
+SISTEMA DUPONT - ANÁLISIS FINANCIERO
+=====================================
+
+Datos de entrada:
+- Utilidad Neta: ${utilidadNeta.toLocaleString()}
+- Ventas: ${ventas.toLocaleString()}
+- Activo Total: ${activoTotal.toLocaleString()}
+- Patrimonio: ${patrimonio.toLocaleString()}
+
+Resultados:
+- Margen Neto de Utilidad: ${margenResultado.textContent}
+- Rotación de Activos Totales: ${rotacionResultado.textContent}
+- Apalancamiento Financiero: ${apalancamientoResultado.textContent}
+- Sistema Dupont (ROE): ${finalResult.textContent}
+
+Fórmula: ${formulaDupont.textContent}
+
+Generado el: ${new Date().toLocaleDateString()}
+                `;
+                
+                // Crear y descargar archivo
+                const blob = new Blob([contenido], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `sistema_dupont_${new Date().toISOString().slice(0, 10)}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showAlert('Resultados exportados correctamente', 'success');
+            }
+            
+            // Función para mostrar alertas
+            function showAlert(message, type) {
+                // Crear elemento de alerta
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'} alert-dismissible fade show position-fixed`;
+                alertDiv.style.cssText = `
+                    top: 100px;
+                    right: 20px;
+                    z-index: 9999;
+                    min-width: 300px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                `;
+                alertDiv.innerHTML = `
+                    <strong>${type === 'success' ? 'Éxito' : type === 'error' ? 'Error' : 'Info'}</strong>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                document.body.appendChild(alertDiv);
+                
+                // Auto-remover después de 4 segundos
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
+                }, 4000);
             }
             
             // Event Listeners
             calcularBtn.addEventListener('click', calcularDupont);
-            limpiarBtn.addEventListener('click', limpiarFormulario);
+            limpiarBtn.addEventListener('click', limpiarCampos);
+            ejemploBtn.addEventListener('click', cargarEjemplo);
+            exportarBtn.addEventListener('click', exportarResultados);
             
             // Permitir calcular con Enter
-            document.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    calcularDupont();
-                }
+            [utilidadNetaInput, ventasInput, activoTotalInput, patrimonioInput].forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        calcularDupont();
+                    }
+                });
             });
+            
+            // Calcular automáticamente al cargar la página con valores por defecto
+            calcularDupont();
         });
     </script>
 </body>
