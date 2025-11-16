@@ -5,35 +5,114 @@
 {% block extra_css %}
 <style>
     :root {
-        --primary-color: #2563eb;
-        --primary-dark: #1e40af;
-        --secondary-color: #64748b;
-        --accent-color: #06d6a0;
-        --accent-dark: #05b384;
-        --dark-color: #1e293b;
-        --light-color: #f8fafc;
-        --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --gradient-dark: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        --dark-bg: #0a0a12;
+        --darker-bg: #07070f;
+        --dark-card: #121225;
+        --neon-purple: #8b5cf6;
+        --neon-blue: #3b82f6;
+        --neon-cyan: #06b6d4;
+        --neon-pink: #ec4899;
+        --white: #ffffff;
+        --light-text: #f1f5f9;
+        --medium-text: #94a3b8;
+        --glow-purple: 0 0 20px rgba(139, 92, 246, 0.7);
+        --glow-blue: 0 0 20px rgba(59, 130, 246, 0.7);
         --success-color: #10b981;
         --danger-color: #ef4444;
         --warning-color: #f59e0b;
-        --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        --card-shadow-hover: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.06);
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--light-text);
+        line-height: 1.6;
+        background-color: var(--dark-bg);
+        overflow-x: hidden;
+    }
+    
+    /* Background Animation */
+    .bg-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+    }
+    
+    .floating-shapes {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(139, 92, 246, 0.1);
+        animation: float 15s infinite linear;
+    }
+    
+    .shape:nth-child(1) {
+        width: 80px;
+        height: 80px;
+        top: 20%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+    
+    .shape:nth-child(2) {
+        width: 120px;
+        height: 120px;
+        top: 60%;
+        left: 80%;
+        animation-delay: -5s;
+    }
+    
+    .shape:nth-child(3) {
+        width: 60px;
+        height: 60px;
+        top: 80%;
+        left: 20%;
+        animation-delay: -10s;
+    }
+    
+    @keyframes float {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translateY(-20px) rotate(180deg);
+            opacity: 0.8;
+        }
+        100% {
+            transform: translateY(0) rotate(360deg);
+            opacity: 0.5;
+        }
     }
     
     .analysis-section {
-        padding: 2rem 0;
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        padding: 120px 0 60px;
         min-height: calc(100vh - 76px);
+        position: relative;
     }
     
     .section-header {
-        background: white;
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
         border-radius: 20px;
         padding: 2.5rem;
-        box-shadow: var(--card-shadow);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
         margin-bottom: 2rem;
-        border: 1px solid rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(139, 92, 246, 0.2);
         position: relative;
         overflow: hidden;
     }
@@ -45,38 +124,43 @@
         left: 0;
         right: 0;
         height: 4px;
-        background: var(--gradient);
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
     }
     
     .section-title {
         font-size: 2.5rem;
         font-weight: 800;
-        color: var(--dark-color);
+        color: var(--white);
         margin-bottom: 0.5rem;
-        background: var(--gradient);
+        text-shadow: var(--glow-purple);
+    }
+    
+    .section-title .highlight {
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
     }
     
     .section-subtitle {
-        color: var(--secondary-color);
+        color: var(--medium-text);
         margin-bottom: 2rem;
         font-size: 1.1rem;
     }
     
     .control-panel {
-        background: white;
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
         border-radius: 20px;
         padding: 2rem;
-        box-shadow: var(--card-shadow);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
         margin-bottom: 2rem;
-        border: 1px solid rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(139, 92, 246, 0.2);
         transition: all 0.3s ease;
     }
     
     .control-panel:hover {
-        box-shadow: var(--card-shadow-hover);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
     }
     
     .btn-modern {
@@ -111,81 +195,82 @@
     }
     
     .btn-primary-modern {
-        background: var(--gradient);
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
         color: white;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
     }
     
     .btn-primary-modern:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.6);
         color: white;
     }
     
     .btn-outline-modern {
         background: transparent;
-        border: 2px solid var(--primary-color);
-        color: var(--primary-color);
+        border: 2px solid var(--neon-cyan);
+        color: var(--neon-cyan);
     }
     
     .btn-outline-modern:hover {
-        background: var(--primary-color);
-        color: white;
+        background: var(--neon-cyan);
+        color: var(--dark-bg);
         transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(37, 99, 235, 0.2);
+        box-shadow: 0 6px 15px rgba(6, 182, 212, 0.4);
     }
     
     .btn-success-modern {
         background: var(--success-color);
         color: white;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
     }
     
     .btn-success-modern:hover {
         background: #059669;
         transform: translateY(-3px);
         color: white;
-        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.6);
     }
     
     .btn-danger-modern {
         background: var(--danger-color);
         color: white;
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
     }
     
     .btn-danger-modern:hover {
         background: #dc2626;
         transform: translateY(-3px);
         color: white;
-        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.6);
     }
     
     .btn-warning-modern {
         background: var(--warning-color);
         color: white;
-        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
     }
     
     .btn-warning-modern:hover {
         background: #d97706;
         transform: translateY(-3px);
         color: white;
-        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.6);
     }
     
     .analysis-table-container {
-        background: white;
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
         border-radius: 20px;
-        box-shadow: var(--card-shadow);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(139, 92, 246, 0.2);
         margin-bottom: 2rem;
         transition: all 0.3s ease;
     }
     
     .analysis-table-container:hover {
-        box-shadow: var(--card-shadow-hover);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
     }
     
     .table-modern {
@@ -193,10 +278,11 @@
         border-collapse: separate;
         border-spacing: 0;
         width: 100%;
+        background: transparent;
     }
     
     .table-modern thead th {
-        background: var(--gradient);
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
         border-bottom: none;
         padding: 1.5rem 1rem;
         font-weight: 700;
@@ -205,6 +291,7 @@
         vertical-align: middle;
         font-size: 1.1rem;
         position: relative;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     }
     
     .table-modern thead th::after {
@@ -219,19 +306,21 @@
     
     .table-modern tbody td {
         padding: 1.25rem 1rem;
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid rgba(139, 92, 246, 0.1);
         vertical-align: middle;
         transition: all 0.2s ease;
+        background: transparent;
+        color: var(--light-text);
     }
     
     .table-modern tbody tr:hover td {
-        background: #f8fafc;
+        background: rgba(139, 92, 246, 0.1);
         transform: scale(1.01);
     }
     
     .table-modern .account-name {
         font-weight: 600;
-        color: var(--dark-color);
+        color: var(--light-text);
         min-width: 250px;
         font-size: 1rem;
     }
@@ -242,56 +331,126 @@
     
     .editable-input {
         width: 140px;
-        border: 2px solid #e2e8f0;
+        border: 2px solid rgba(139, 92, 246, 0.3);
         border-radius: 10px;
         padding: 0.75rem 1rem;
         font-size: 1rem;
         transition: all 0.3s ease;
         text-align: right;
         font-weight: 500;
-        background: #f8fafc;
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--light-text);
     }
     
     .editable-input:focus {
         outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        background: white;
+        border-color: var(--neon-purple);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        background: rgba(139, 92, 246, 0.15);
     }
     
     .period-header {
-        background: var(--gradient) !important;
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue)) !important;
         color: white !important;
         position: relative;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.7) !important;
+    }
+    
+    .period-header span {
+        color: white !important;
+        font-weight: 700;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.7) !important;
+    }
+    
+    .period-header small {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-weight: 500;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5) !important;
+    }
+    
+    /* CORRECCIÓN ESPECÍFICA PARA EL SELECTOR DE PERÍODO */
+    .form-control-modern {
+        border: 2px solid rgba(139, 92, 246, 0.3);
+        border-radius: 12px;
+        padding: 0.875rem 1.25rem;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--light-text) !important;
+    }
+    
+    .form-control-modern:focus {
+        border-color: var(--neon-purple);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        background: rgba(139, 92, 246, 0.15);
+        color: var(--light-text) !important;
+    }
+    
+    /* Estilos específicos para el dropdown del selector de período */
+    select.form-control-modern {
+        color: var(--light-text) !important;
+        background: rgba(139, 92, 246, 0.1) !important;
+    }
+    
+    select.form-control-modern option {
+        background: var(--dark-card) !important;
+        color: var(--light-text) !important;
+        padding: 10px;
+    }
+    
+    select.form-control-modern:focus {
+        background: rgba(139, 92, 246, 0.15) !important;
+        color: var(--light-text) !important;
+    }
+    
+    /* Asegurar que el texto sea legible en toda la aplicación */
+    .table-modern thead th {
+        color: white !important;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.7) !important;
+    }
+    
+    /* Ajustes adicionales para mejor contraste */
+    .section-title {
+        color: var(--white) !important;
+        text-shadow: var(--glow-purple) !important;
+    }
+    
+    .form-label-modern {
+        color: var(--light-text) !important;
+    }
+    
+    .report-title {
+        color: var(--light-text) !important;
     }
     
     .file-upload-area {
-        border: 2px dashed #cbd5e1;
+        border: 2px dashed rgba(139, 92, 246, 0.5);
         border-radius: 16px;
         padding: 2.5rem;
         text-align: center;
         transition: all 0.3s ease;
-        background: #f8fafc;
+        background: rgba(139, 92, 246, 0.05);
         cursor: pointer;
         position: relative;
     }
     
     .file-upload-area:hover {
-        border-color: var(--primary-color);
-        background: #f1f5f9;
+        border-color: var(--neon-purple);
+        background: rgba(139, 92, 246, 0.1);
         transform: translateY(-5px);
     }
     
     .file-upload-area.dragover {
-        border-color: var(--primary-color);
-        background: #e0e7ff;
+        border-color: var(--neon-purple);
+        background: rgba(139, 92, 246, 0.15);
         transform: scale(1.02);
     }
     
     .upload-icon {
         font-size: 3.5rem;
-        color: var(--primary-color);
+        color: var(--neon-purple);
         margin-bottom: 1rem;
+        text-shadow: var(--glow-purple);
     }
     
     .file-input {
@@ -307,9 +466,10 @@
     .file-name {
         margin-top: 0.5rem;
         font-size: 1rem;
-        color: var(--primary-color);
+        color: var(--neon-purple);
         font-weight: 600;
         word-break: break-all;
+        text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
     }
     
     .export-options {
@@ -321,12 +481,14 @@
     .modal-modern .modal-content {
         border-radius: 20px;
         border: none;
-        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
         overflow: hidden;
+        background: var(--dark-card);
+        color: var(--light-text);
     }
     
     .modal-modern .modal-header {
-        background: var(--gradient);
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
         color: white;
         border-radius: 20px 20px 0 0;
         border: none;
@@ -336,6 +498,7 @@
     .modal-modern .modal-title {
         font-weight: 700;
         font-size: 1.5rem;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     }
     
     .modal-modern .btn-close {
@@ -353,26 +516,13 @@
     
     .form-label-modern {
         font-weight: 600;
-        color: var(--dark-color);
+        color: var(--light-text);
         margin-bottom: 0.75rem;
         font-size: 1rem;
     }
     
-    .form-control-modern {
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 0.875rem 1.25rem;
-        transition: all 0.3s ease;
-        font-size: 1rem;
-    }
-    
-    .form-control-modern:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-    
     .percentage-badge {
-        background: var(--success-color);
+        background: linear-gradient(135deg, var(--success-color), var(--neon-cyan));
         color: white;
         padding: 0.5rem 1rem;
         border-radius: 20px;
@@ -380,21 +530,22 @@
         font-weight: 600;
         display: inline-block;
         margin-top: 0.5rem;
-        box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3);
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
     }
     
     .calculation-row {
-        background: #f0f9ff !important;
+        background: rgba(6, 182, 212, 0.1) !important;
         font-weight: 700;
     }
     
     .calculation-row td {
-        border-top: 2px solid #e2e8f0;
+        border-top: 2px solid rgba(139, 92, 246, 0.3);
     }
     
     .empty-row {
         text-align: center;
-        color: var(--secondary-color);
+        color: var(--medium-text);
         font-style: italic;
         padding: 3rem !important;
         font-size: 1.1rem;
@@ -413,17 +564,18 @@
     }
     
     .report-type-selector {
-        background: white;
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
         border-radius: 20px;
         padding: 2rem;
         margin-bottom: 2rem;
-        box-shadow: var(--card-shadow);
-        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
         transition: all 0.3s ease;
     }
     
     .report-type-selector:hover {
-        box-shadow: var(--card-shadow-hover);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
     }
     
     .report-type-buttons {
@@ -436,9 +588,9 @@
         flex: 1;
         min-width: 220px;
         padding: 2rem;
-        border: 2px solid #e2e8f0;
+        border: 2px solid rgba(139, 92, 246, 0.3);
         border-radius: 16px;
-        background: white;
+        background: rgba(139, 92, 246, 0.05);
         cursor: pointer;
         transition: all 0.3s ease;
         text-align: center;
@@ -453,15 +605,15 @@
         left: 0;
         right: 0;
         height: 4px;
-        background: var(--gradient);
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
         transform: scaleX(0);
         transition: transform 0.3s ease;
     }
     
     .report-type-btn.active {
-        border-color: var(--primary-color);
-        background: #f8faff;
-        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.1);
+        border-color: var(--neon-purple);
+        background: rgba(139, 92, 246, 0.1);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
         transform: translateY(-5px);
     }
     
@@ -470,42 +622,44 @@
     }
     
     .report-type-btn:hover {
-        border-color: var(--primary-color);
+        border-color: var(--neon-purple);
         transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
     }
     
     .report-icon {
         font-size: 2.5rem;
-        color: var(--primary-color);
+        color: var(--neon-purple);
         margin-bottom: 1rem;
+        text-shadow: var(--glow-purple);
     }
     
     .report-title {
         font-weight: 700;
-        color: var(--dark-color);
+        color: var(--light-text);
         margin-bottom: 0.75rem;
         font-size: 1.25rem;
     }
     
     .report-description {
-        color: var(--secondary-color);
+        color: var(--medium-text);
         font-size: 1rem;
         line-height: 1.5;
     }
     
     .period-selector {
-        background: white;
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
         border-radius: 20px;
         padding: 2rem;
         margin-bottom: 2rem;
-        box-shadow: var(--card-shadow);
-        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
         transition: all 0.3s ease;
     }
     
     .period-selector:hover {
-        box-shadow: var(--card-shadow-hover);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
     }
     
     .period-info {
@@ -513,27 +667,28 @@
         align-items: center;
         gap: 1.5rem;
         padding: 1.5rem;
-        background: #f8fafc;
+        background: rgba(139, 92, 246, 0.1);
         border-radius: 12px;
         margin-top: 1.5rem;
-        border-left: 4px solid var(--primary-color);
+        border-left: 4px solid var(--neon-purple);
     }
     
     .period-badge {
-        background: var(--gradient);
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
         color: white;
         padding: 0.75rem 1.5rem;
         border-radius: 20px;
         font-weight: 700;
-        box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 4px 10px rgba(139, 92, 246, 0.4);
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
     }
     
     .selected-row {
-        background-color: #f0f9ff !important;
-        border-left: 4px solid var(--primary-color);
+        background-color: rgba(139, 92, 246, 0.15) !important;
+        border-left: 4px solid var(--neon-purple);
         cursor: pointer;
         transform: scale(1.01);
-        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
     }
     
     .selectable-row {
@@ -542,44 +697,46 @@
     }
     
     .selectable-row:hover {
-        background-color: #f8fafc !important;
+        background-color: rgba(139, 92, 246, 0.1) !important;
     }
     
     .account-header-row {
-        background-color: #f1f5f9 !important;
+        background-color: rgba(139, 92, 246, 0.2) !important;
         font-weight: 700;
-        color: var(--dark-color);
+        color: var(--light-text);
         font-size: 1.1rem;
     }
     
     .account-total-row {
-        background-color: #e0f2fe !important;
+        background-color: rgba(6, 182, 212, 0.2) !important;
         font-weight: 700;
-        color: var(--dark-color);
+        color: var(--light-text);
         font-size: 1.1rem;
     }
     
     .deleted-accounts-section {
-        background: white;
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
         border-radius: 20px;
         padding: 2rem;
         margin-bottom: 2rem;
-        box-shadow: var(--card-shadow);
-        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
         transition: all 0.3s ease;
     }
     
     .deleted-accounts-section:hover {
-        box-shadow: var(--card-shadow-hover);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
     }
     
     .deleted-accounts-list {
         max-height: 200px;
         overflow-y: auto;
-        border: 1px solid #e2e8f0;
+        border: 1px solid rgba(139, 92, 246, 0.3);
         border-radius: 12px;
         padding: 1.5rem;
         margin-top: 1rem;
+        background: rgba(139, 92, 246, 0.05);
     }
     
     .deleted-account-item {
@@ -587,12 +744,12 @@
         justify-content: space-between;
         align-items: center;
         padding: 1rem;
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
         transition: all 0.2s ease;
     }
     
     .deleted-account-item:hover {
-        background: #f8fafc;
+        background: rgba(139, 92, 246, 0.1);
         border-radius: 8px;
     }
     
@@ -602,10 +759,170 @@
     
     .deleted-account-category {
         font-size: 0.85rem;
-        color: var(--secondary-color);
-        background: #f1f5f9;
+        color: var(--medium-text);
+        background: rgba(139, 92, 246, 0.2);
         padding: 0.35rem 0.75rem;
         border-radius: 6px;
+    }
+
+    /* NUEVAS ANIMACIONES DE CARGA */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(10, 10, 18, 0.9);
+        backdrop-filter: blur(10px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .loading-spinner {
+        width: 80px;
+        height: 80px;
+        position: relative;
+    }
+    
+    .spinner-ring {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: 4px solid transparent;
+        border-radius: 50%;
+        animation: spin 1.5s linear infinite;
+    }
+    
+    .spinner-ring:nth-child(1) {
+        border-top: 4px solid var(--neon-purple);
+        animation-delay: 0s;
+    }
+    
+    .spinner-ring:nth-child(2) {
+        border-right: 4px solid var(--neon-cyan);
+        animation-delay: 0.1s;
+    }
+    
+    .spinner-ring:nth-child(3) {
+        border-bottom: 4px solid var(--neon-blue);
+        animation-delay: 0.2s;
+    }
+    
+    .spinner-ring:nth-child(4) {
+        border-left: 4px solid var(--neon-pink);
+        animation-delay: 0.3s;
+    }
+    
+    .loading-content {
+        text-align: center;
+        color: var(--light-text);
+        margin-top: 2rem;
+    }
+    
+    .loading-text {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan), var(--neon-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .loading-subtext {
+        color: var(--medium-text);
+        font-size: 0.9rem;
+    }
+    
+    .btn-loading {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border: 2px solid transparent;
+        border-top: 2px solid currentColor;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .btn-loading.loading {
+        pointer-events: none;
+        opacity: 0.8;
+    }
+    
+    .btn-loading.loading::after {
+        opacity: 1;
+    }
+    
+    .btn-loading.loading .btn-text {
+        opacity: 0;
+    }
+    
+    .progress-bar {
+        width: 200px;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        margin: 1rem auto;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+        border-radius: 3px;
+        width: 0%;
+        transition: width 0.3s ease;
+        animation: progressPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    
+    @keyframes progressPulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.7;
+        }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     /* Responsive Design */
@@ -644,7 +961,7 @@
 
     @media (max-width: 768px) {
         .analysis-section {
-            padding: 1rem 0;
+            padding: 100px 0 40px;
         }
         
         .section-header {
@@ -732,6 +1049,15 @@
         .btn-modern {
             padding: 0.75rem 1.5rem;
         }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .loading-text {
+            font-size: 1rem;
+        }
     }
 
     @media (max-width: 576px) {
@@ -784,12 +1110,38 @@
 {% endblock %}
 
 {% block content %}
+<!-- Background Animation -->
+<div class="bg-animation">
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="globalLoading">
+    <div class="loading-content">
+        <div class="loading-spinner">
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring"></div>
+        </div>
+        <div class="loading-text" id="loadingMessage">Procesando...</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="loading-subtext" id="loadingSubtext">Por favor espera</div>
+    </div>
+</div>
+
 <section class="analysis-section">
     <div class="container">
         <!-- Header -->
         <div class="section-header">
-            <h1 class="section-title">Análisis Vertical</h1>
-            <p class="section-subtitle">Analiza la estructura porcentual de los estados financieros</p>
+            <h1 class="section-title">Análisis <span class="highlight">Vertical</span></h1>
+            <p class="section-subtitle">Analiza la estructura porcentual de los estados financieros con tecnología avanzada</p>
         </div>
 
         <!-- Selector de Tipo de Reporte -->
@@ -1024,12 +1376,61 @@
         let analysisData = [];
         let deletedAccounts = [];
         let currentPeriod = '';
-        let currentReportType = 'balance'; // 'balance' or 'income'
+        let currentReportType = 'balance';
         let selectedFiles = {
             excel: null,
             pdf: null
         };
-        let selectedRowIndex = -1; // Para rastrear la fila seleccionada
+        let selectedRowIndex = -1;
+        
+        // NUEVO: Sistema de loading mejorado
+        function showLoading(message = 'Procesando...', subtext = 'Por favor espera') {
+            const loadingOverlay = document.getElementById('globalLoading');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const loadingSubtext = document.getElementById('loadingSubtext');
+            const progressFill = document.getElementById('progressFill');
+            
+            loadingMessage.textContent = message;
+            loadingSubtext.textContent = subtext;
+            progressFill.style.width = '0%';
+            
+            loadingOverlay.classList.add('active');
+            
+            // Animar progreso
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress > 90) progress = 90;
+                progressFill.style.width = progress + '%';
+            }, 300);
+            
+            return {
+                hide: function() {
+                    clearInterval(progressInterval);
+                    progressFill.style.width = '100%';
+                    setTimeout(() => {
+                        loadingOverlay.classList.remove('active');
+                    }, 500);
+                },
+                updateProgress: function(value) {
+                    progressFill.style.width = value + '%';
+                },
+                updateMessage: function(newMessage) {
+                    loadingMessage.textContent = newMessage;
+                }
+            };
+        }
+        
+        // NUEVO: Función para botones con loading
+        function setButtonLoading(button, isLoading) {
+            if (isLoading) {
+                button.classList.add('btn-loading', 'loading');
+                button.disabled = true;
+            } else {
+                button.classList.remove('btn-loading', 'loading');
+                button.disabled = false;
+            }
+        }
         
         // Inicializar aplicación
         function initializeApp() {
@@ -1582,18 +1983,25 @@
                 deleteAccount(selectedRowIndex);
             });
             
-            // Calcular porcentajes
+            // Calcular porcentajes - CON LOADING MEJORADO
             document.getElementById('calculateBtn').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
                     return;
                 }
                 
-                renderTable();
-                showAlert('Porcentajes verticales calculados correctamente', 'success');
+                const loading = showLoading('Calculando porcentajes...', 'Analizando estructura financiera');
+                setButtonLoading(this, true);
+                
+                setTimeout(() => {
+                    renderTable();
+                    loading.hide();
+                    setButtonLoading(this, false);
+                    showAlert('Porcentajes verticales calculados correctamente', 'success');
+                }, 1500);
             });
             
-            // Limpiar tabla
+            // Limpiar tabla - CON LOADING MEJORADO
             document.getElementById('clearBtn').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
@@ -1601,21 +2009,28 @@
                 }
                 
                 if (confirm('¿Estás seguro de que deseas limpiar toda la tabla? Se perderán todos los datos.')) {
-                    analysisData.forEach(row => {
-                        if (row.values) {
-                            row.values[currentPeriod] = '';
-                        }
-                    });
+                    const loading = showLoading('Limpiando tabla...', 'Eliminando datos del período actual');
+                    setButtonLoading(this, true);
                     
-                    // Resetear selección
-                    selectedRowIndex = -1;
-                    
-                    renderTable();
-                    showAlert('Tabla limpiada correctamente', 'info');
+                    setTimeout(() => {
+                        analysisData.forEach(row => {
+                            if (row.values) {
+                                row.values[currentPeriod] = '';
+                            }
+                        });
+                        
+                        // Resetear selección
+                        selectedRowIndex = -1;
+                        
+                        renderTable();
+                        loading.hide();
+                        setButtonLoading(this, false);
+                        showAlert('Tabla limpiada correctamente', 'info');
+                    }, 1200);
                 }
             });
             
-            // Procesar importación
+            // Procesar importación - CON LOADING MEJORADO
             document.getElementById('processImport').addEventListener('click', function() {
                 if (!selectedFiles.excel && !selectedFiles.pdf) {
                     showAlert('Por favor selecciona al menos un archivo para importar', 'error');
@@ -1627,97 +2042,121 @@
                     return;
                 }
                 
-                // Simular procesamiento de importación
-                const btn = this;
-                const originalText = btn.innerHTML;
+                const loading = showLoading('Importando datos...', 'Procesando archivos seleccionados');
+                setButtonLoading(this, true);
                 
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
+                // Simular procesamiento con progreso
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += 10;
+                    loading.updateProgress(progress);
                     
-                    // Agregar datos de ejemplo importados
-                    if (currentReportType === 'balance') {
-                        analysisData = [
-                            { account: 'ACTIVOS', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Efectivo y Equivalentes', values: { [currentPeriod]: 150000 }, category: 'current-assets' },
-                            { account: 'Cuentas por Cobrar', values: { [currentPeriod]: 300000 }, category: 'current-assets' },
-                            { account: 'Inventarios', values: { [currentPeriod]: 200000 }, category: 'current-assets' },
-                            { account: 'TOTAL ACTIVOS CORRIENTES', values: { [currentPeriod]: 650000 }, isTotal: true, category: 'total' },
-                            { account: 'Propiedad, Planta y Equipo', values: { [currentPeriod]: 850000 }, category: 'noncurrent-assets' },
-                            { account: 'Activos Intangibles', values: { [currentPeriod]: 100000 }, category: 'noncurrent-assets' },
-                            { account: 'TOTAL ACTIVOS', values: { [currentPeriod]: 1600000 }, isTotal: true, category: 'total' }
-                        ];
-                    } else {
-                        analysisData = [
-                            { account: 'INGRESOS', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Ventas Netas', values: { [currentPeriod]: 1200000 }, category: 'revenue' },
-                            { account: 'TOTAL INGRESOS', values: { [currentPeriod]: 1200000 }, isTotal: true, category: 'total' },
-                            { account: 'COSTOS Y GASTOS', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Costo de Ventas', values: { [currentPeriod]: 720000 }, category: 'expenses' },
-                            { account: 'Gastos Operativos', values: { [currentPeriod]: 300000 }, category: 'expenses' },
-                            { account: 'TOTAL COSTOS Y GASTOS', values: { [currentPeriod]: 1020000 }, isTotal: true, category: 'total' },
-                            { account: 'UTILIDAD NETA', values: { [currentPeriod]: 180000 }, isTotal: true, category: 'total' }
-                        ];
+                    if (progress >= 50) {
+                        loading.updateMessage('Extrayendo datos...');
+                    } else if (progress >= 80) {
+                        loading.updateMessage('Organizando información...');
                     }
                     
-                    // Resetear selección
-                    selectedRowIndex = -1;
-                    
-                    renderTable();
-                    
-                    // Limpiar archivos seleccionados
-                    selectedFiles.excel = null;
-                    selectedFiles.pdf = null;
-                    document.getElementById('excelFileName').style.display = 'none';
-                    document.getElementById('pdfFileName').style.display = 'none';
-                    document.getElementById('excelFile').value = '';
-                    document.getElementById('pdfFile').value = '';
-                    
-                    bootstrap.Modal.getInstance(document.getElementById('importModal')).hide();
-                    showAlert('Datos importados correctamente', 'success');
-                }, 2000);
+                    if (progress >= 100) {
+                        clearInterval(progressInterval);
+                        
+                        // Agregar datos de ejemplo importados
+                        if (currentReportType === 'balance') {
+                            analysisData = [
+                                { account: 'ACTIVOS', values: {}, isHeader: true, category: 'header' },
+                                { account: 'Efectivo y Equivalentes', values: { [currentPeriod]: 150000 }, category: 'current-assets' },
+                                { account: 'Cuentas por Cobrar', values: { [currentPeriod]: 300000 }, category: 'current-assets' },
+                                { account: 'Inventarios', values: { [currentPeriod]: 200000 }, category: 'current-assets' },
+                                { account: 'TOTAL ACTIVOS CORRIENTES', values: { [currentPeriod]: 650000 }, isTotal: true, category: 'total' },
+                                { account: 'Propiedad, Planta y Equipo', values: { [currentPeriod]: 850000 }, category: 'noncurrent-assets' },
+                                { account: 'Activos Intangibles', values: { [currentPeriod]: 100000 }, category: 'noncurrent-assets' },
+                                { account: 'TOTAL ACTIVOS', values: { [currentPeriod]: 1600000 }, isTotal: true, category: 'total' }
+                            ];
+                        } else {
+                            analysisData = [
+                                { account: 'INGRESOS', values: {}, isHeader: true, category: 'header' },
+                                { account: 'Ventas Netas', values: { [currentPeriod]: 1200000 }, category: 'revenue' },
+                                { account: 'TOTAL INGRESOS', values: { [currentPeriod]: 1200000 }, isTotal: true, category: 'total' },
+                                { account: 'COSTOS Y GASTOS', values: {}, isHeader: true, category: 'header' },
+                                { account: 'Costo de Ventas', values: { [currentPeriod]: 720000 }, category: 'expenses' },
+                                { account: 'Gastos Operativos', values: { [currentPeriod]: 300000 }, category: 'expenses' },
+                                { account: 'TOTAL COSTOS Y GASTOS', values: { [currentPeriod]: 1020000 }, isTotal: true, category: 'total' },
+                                { account: 'UTILIDAD NETA', values: { [currentPeriod]: 180000 }, isTotal: true, category: 'total' }
+                            ];
+                        }
+                        
+                        // Resetear selección
+                        selectedRowIndex = -1;
+                        
+                        renderTable();
+                        
+                        // Limpiar archivos seleccionados
+                        selectedFiles.excel = null;
+                        selectedFiles.pdf = null;
+                        document.getElementById('excelFileName').style.display = 'none';
+                        document.getElementById('pdfFileName').style.display = 'none';
+                        document.getElementById('excelFile').value = '';
+                        document.getElementById('pdfFile').value = '';
+                        
+                        bootstrap.Modal.getInstance(document.getElementById('importModal')).hide();
+                        loading.hide();
+                        setButtonLoading(this, false);
+                        showAlert('Datos importados correctamente', 'success');
+                    }
+                }, 100);
             });
             
-            // Guardar análisis
+            // Guardar análisis - CON LOADING MEJORADO
             document.getElementById('saveAnalysis').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
                     return;
                 }
                 
-                // Simular guardado
-                const btn = this;
-                const originalText = btn.innerHTML;
-                
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+                const loading = showLoading('Guardando análisis...', 'Almacenando datos financieros');
+                setButtonLoading(this, true);
                 
                 setTimeout(() => {
-                    btn.innerHTML = originalText;
+                    loading.hide();
+                    setButtonLoading(this, false);
                     showAlert('Análisis guardado correctamente', 'success');
-                }, 1500);
+                }, 2000);
             });
             
-            // Exportar a Excel
+            // Exportar a Excel - CON LOADING MEJORADO
             document.getElementById('exportExcel').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
                     return;
                 }
                 
-                showAlert('Preparando descarga de Excel...', 'info');
-                // Aquí iría la lógica real de exportación a Excel
+                const loading = showLoading('Generando Excel...', 'Preparando archivo para descarga');
+                setButtonLoading(this, true);
+                
+                setTimeout(() => {
+                    loading.hide();
+                    setButtonLoading(this, false);
+                    showAlert('Preparando descarga de Excel...', 'info');
+                    // Aquí iría la lógica real de exportación a Excel
+                }, 1800);
             });
             
-            // Exportar a PDF
+            // Exportar a PDF - CON LOADING MEJORADO
             document.getElementById('exportPDF').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
                     return;
                 }
                 
-                showAlert('Preparando descarga de PDF...', 'info');
-                // Aquí iría la lógica real de exportación a PDF
+                const loading = showLoading('Generando PDF...', 'Creando documento profesional');
+                setButtonLoading(this, true);
+                
+                setTimeout(() => {
+                    loading.hide();
+                    setButtonLoading(this, false);
+                    showAlert('Preparando descarga de PDF...', 'info');
+                    // Aquí iría la lógica real de exportación a PDF
+                }, 1800);
             });
         }
         
@@ -1753,9 +2192,13 @@
                 right: 20px;
                 z-index: 9999;
                 min-width: 300px;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
                 border-radius: 12px;
                 border: none;
+                background: ${type === 'success' ? 'linear-gradient(135deg, var(--success-color), var(--neon-cyan))' : 
+                          type === 'error' ? 'linear-gradient(135deg, var(--danger-color), #f87171)' : 
+                          'linear-gradient(135deg, var(--neon-blue), var(--neon-purple))'};
+                color: white;
             `;
             alertDiv.innerHTML = `
                 <div class="d-flex align-items-center">
