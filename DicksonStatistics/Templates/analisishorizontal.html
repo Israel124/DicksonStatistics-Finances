@@ -856,6 +856,80 @@
         }
     }
 
+    /* NUEVOS ESTILOS PARA ELIMINAR Y RECUPERAR CUENTAS */
+    .deleted-accounts-section {
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .deleted-accounts-section:hover {
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
+    }
+    
+    .deleted-accounts-list {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+        background: rgba(139, 92, 246, 0.05);
+    }
+    
+    .deleted-account-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+        transition: all 0.2s ease;
+    }
+    
+    .deleted-account-item:hover {
+        background: rgba(139, 92, 246, 0.1);
+        border-radius: 8px;
+    }
+    
+    .deleted-account-item:last-child {
+        border-bottom: none;
+    }
+    
+    .deleted-account-category {
+        font-size: 0.85rem;
+        color: var(--medium-text);
+        background: rgba(139, 92, 246, 0.2);
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+    }
+
+    .selectable-row {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .selectable-row:hover {
+        background-color: rgba(139, 92, 246, 0.1) !important;
+    }
+    
+    .selected-row {
+        background-color: rgba(139, 92, 246, 0.15) !important;
+        border-left: 4px solid var(--neon-purple);
+        cursor: pointer;
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+    }
+
+    .account-header-row {
+        background-color: rgba(139, 92, 246, 0.2) !important;
+        font-weight: 700;
+    }
+
     /* Responsive Design */
     @media (max-width: 1200px) {
         .section-title {
@@ -908,7 +982,7 @@
             font-size: 1rem;
         }
         
-        .control-panel {
+        .control-panel, .report-type-selector, .periods-selector, .deleted-accounts-section {
             padding: 1.5rem;
             border-radius: 16px;
         }
@@ -978,6 +1052,17 @@
         .loading-text {
             font-size: 1rem;
         }
+        
+        .deleted-account-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .deleted-account-item .d-flex {
+            width: 100%;
+            justify-content: space-between;
+        }
     }
 
     @media (max-width: 576px) {
@@ -989,7 +1074,7 @@
             font-size: 1.5rem;
         }
         
-        .control-panel, .report-type-selector, .periods-selector {
+        .control-panel, .report-type-selector, .periods-selector, .deleted-accounts-section {
             padding: 1.25rem;
             border-radius: 16px;
         }
@@ -1082,6 +1167,15 @@
                     <div class="report-title">Estado de Resultados</div>
                     <div class="report-description">Análisis horizontal de ingresos, costos y gastos</div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Sección para cuentas eliminadas -->
+        <div class="deleted-accounts-section" id="deletedAccountsSection">
+            <h5 class="form-label-modern">Cuentas Eliminadas</h5>
+            <p class="text-muted">Puedes restaurar cuentas que hayas eliminado anteriormente:</p>
+            <div class="deleted-accounts-list" id="deletedAccountsList">
+                <!-- Las cuentas eliminadas aparecerán aquí -->
             </div>
         </div>
 
@@ -1184,6 +1278,9 @@
                         </button>
                         <button class="btn btn-outline-modern btn-modern" id="calculateBtn">
                             <i class="fas fa-calculator"></i> Calcular Variaciones
+                        </button>
+                        <button class="btn btn-danger-modern btn-modern" id="deleteRowBtn" disabled>
+                            <i class="fas fa-trash"></i> Eliminar Cuenta
                         </button>
                         <button class="btn btn-outline-modern btn-modern" id="clearBtn">
                             <i class="fas fa-broom"></i> Limpiar Tabla
@@ -1310,6 +1407,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         let analysisData = [];
+        let deletedAccounts = [];
         let basePeriod = '2023';
         let comparisonPeriod = '';
         let currentReportType = 'balance';
@@ -1317,6 +1415,7 @@
             excel: null,
             pdf: null
         };
+        let selectedRowIndex = -1;
         
         // NUEVO: Sistema de loading mejorado
         function showLoading(message = 'Procesando...', subtext = 'Por favor espera') {
@@ -1372,6 +1471,7 @@
             updateTableData();
             renderTable();
             setupFileUpload();
+            updateDeletedAccountsSection();
             setupEventListeners();
         }
         
@@ -1450,10 +1550,18 @@
             analysisData.forEach((row, index) => {
                 const tr = document.createElement('tr');
                 
+                // Agregar clase de selección si es la fila seleccionada
+                if (index === selectedRowIndex) {
+                    tr.classList.add('selected-row');
+                }
+                
+                // Agregar clases según el tipo de fila
                 if (row.isHeader) {
                     tr.classList.add('account-header-row');
                 } else if (row.isTotal) {
                     tr.classList.add('calculation-row');
+                } else {
+                    tr.classList.add('selectable-row');
                 }
                 
                 const baseValue = row.values[basePeriod] || '';
@@ -1509,6 +1617,200 @@
             
             // Agregar event listeners a los inputs
             attachInputListeners();
+            
+            // Agregar event listeners para selección de filas
+            attachRowSelectionListeners();
+            
+            // Actualizar estado del botón de eliminar
+            updateDeleteButtonState();
+        }
+        
+        // Adjuntar event listeners para selección de filas
+        function attachRowSelectionListeners() {
+            document.querySelectorAll('.selectable-row').forEach((tr, index) => {
+                // Encontrar el índice real en analysisData
+                let realIndex = -1;
+                let count = 0;
+                for (let i = 0; i < analysisData.length; i++) {
+                    if (!analysisData[i].isHeader && !analysisData[i].isTotal) {
+                        if (count === index) {
+                            realIndex = i;
+                            break;
+                        }
+                        count++;
+                    }
+                }
+                
+                if (realIndex >= 0) {
+                    tr.addEventListener('click', function() {
+                        selectedRowIndex = realIndex;
+                        renderTable(); // Re-renderizar para mostrar la selección
+                    });
+                }
+            });
+        }
+        
+        // Eliminar cuenta
+        function deleteAccount(index) {
+            if (index < 0 || index >= analysisData.length) return;
+            
+            const accountToDelete = analysisData[index];
+            
+            // Confirmar eliminación
+            if (confirm(`¿Estás seguro de que deseas eliminar la cuenta "${accountToDelete.account}"?`)) {
+                // Mover la cuenta a la lista de eliminadas
+                deletedAccounts.push({
+                    ...accountToDelete,
+                    deletedAt: new Date().toISOString()
+                });
+                
+                // Eliminar la cuenta del array
+                analysisData.splice(index, 1);
+                
+                // Resetear la selección
+                selectedRowIndex = -1;
+                
+                // Re-renderizar la tabla
+                renderTable();
+                
+                // Actualizar sección de cuentas eliminadas
+                updateDeletedAccountsSection();
+                
+                // Mostrar mensaje de éxito
+                showAlert(`Cuenta "${accountToDelete.account}" eliminada correctamente`, 'success');
+            }
+        }
+        
+        // Restaurar cuenta
+        function restoreAccount(accountIndex) {
+            if (accountIndex < 0 || accountIndex >= deletedAccounts.length) return;
+            
+            const accountToRestore = deletedAccounts[accountIndex];
+            
+            // Determinar la posición correcta para insertar la cuenta
+            let insertIndex = findInsertionIndex(accountToRestore);
+            
+            // Insertar la cuenta en la posición correcta
+            analysisData.splice(insertIndex, 0, accountToRestore);
+            
+            // Eliminar la cuenta de la lista de eliminadas
+            deletedAccounts.splice(accountIndex, 1);
+            
+            // Re-renderizar la tabla
+            renderTable();
+            
+            // Actualizar sección de cuentas eliminadas
+            updateDeletedAccountsSection();
+            
+            // Mostrar mensaje de éxito
+            showAlert(`Cuenta "${accountToRestore.account}" restaurada correctamente`, 'success');
+        }
+        
+        // Encontrar la posición correcta para insertar una cuenta
+        function findInsertionIndex(account) {
+            if (currentReportType === 'balance') {
+                // Para Balance General
+                if (account.account.includes('Activo') && !account.account.includes('TOTAL')) {
+                    return findCategoryInsertionIndex('Activo');
+                } else if (account.account.includes('Pasivo') || account.account.includes('Patrimonio')) {
+                    return findCategoryInsertionIndex('Pasivo');
+                }
+            } else {
+                // Para Estado de Resultados
+                if (account.account.includes('INGRESOS') || account.account.includes('Ventas')) {
+                    return findCategoryInsertionIndex('Ingresos');
+                } else if (account.account.includes('COSTOS') || account.account.includes('Gastos')) {
+                    return findCategoryInsertionIndex('Gastos');
+                } else if (account.account.includes('UTILIDAD')) {
+                    return findCategoryInsertionIndex('Utilidad');
+                }
+            }
+            return analysisData.length - 1;
+        }
+        
+        // Encontrar índice de inserción para una categoría específica
+        function findCategoryInsertionIndex(category) {
+            for (let i = 0; i < analysisData.length; i++) {
+                if (analysisData[i].account.includes(category)) {
+                    // Encontrar el último elemento de esta categoría
+                    let lastIndex = i;
+                    for (let j = i + 1; j < analysisData.length; j++) {
+                        if (analysisData[j].account.includes(category)) {
+                            lastIndex = j;
+                        } else {
+                            break;
+                        }
+                    }
+                    return lastIndex + 1;
+                }
+            }
+            return analysisData.length - 1;
+        }
+        
+        // Actualizar estado del botón de eliminar
+        function updateDeleteButtonState() {
+            const deleteButton = document.getElementById('deleteRowBtn');
+            if (selectedRowIndex >= 0 && !analysisData[selectedRowIndex].isHeader && !analysisData[selectedRowIndex].isTotal) {
+                deleteButton.disabled = false;
+            } else {
+                deleteButton.disabled = true;
+            }
+        }
+        
+        // Actualizar sección de cuentas eliminadas
+        function updateDeletedAccountsSection() {
+            const deletedSection = document.getElementById('deletedAccountsSection');
+            const deletedList = document.getElementById('deletedAccountsList');
+            
+            if (deletedAccounts.length > 0) {
+                deletedSection.style.display = 'block';
+                deletedList.innerHTML = '';
+                
+                deletedAccounts.forEach((account, index) => {
+                    const accountItem = document.createElement('div');
+                    accountItem.className = 'deleted-account-item';
+                    
+                    const categoryName = getCategoryName(account);
+                    
+                    accountItem.innerHTML = `
+                        <div class="d-flex justify-content-between w-100">
+                            <div>
+                                <strong>${account.account}</strong>
+                                <div class="deleted-account-category">${categoryName}</div>
+                            </div>
+                            <button class="btn btn-success-modern btn-sm-modern restore-account" data-index="${index}">
+                                <i class="fas fa-undo"></i> Restaurar
+                            </button>
+                        </div>
+                    `;
+                    
+                    deletedList.appendChild(accountItem);
+                });
+                
+                // Agregar event listeners a los botones de restaurar
+                document.querySelectorAll('.restore-account').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const accountIndex = parseInt(this.dataset.index);
+                        restoreAccount(accountIndex);
+                    });
+                });
+            } else {
+                deletedSection.style.display = 'none';
+            }
+        }
+        
+        // Obtener nombre legible de la categoría
+        function getCategoryName(account) {
+            if (currentReportType === 'balance') {
+                if (account.account.includes('Activo')) return 'Activos';
+                if (account.account.includes('Pasivo')) return 'Pasivos';
+                if (account.account.includes('Patrimonio')) return 'Patrimonio';
+            } else {
+                if (account.account.includes('INGRESOS') || account.account.includes('Ventas')) return 'Ingresos';
+                if (account.account.includes('COSTOS') || account.account.includes('Gastos')) return 'Gastos';
+                if (account.account.includes('UTILIDAD')) return 'Utilidad';
+            }
+            return 'General';
         }
         
         // Calcular variación absoluta
@@ -1536,6 +1838,8 @@
         
         // Obtener badge de variación
         function getVariationBadge(value, type) {
+            if (value === 'N/A') return '';
+            
             const numValue = parseFloat(value);
             if (isNaN(numValue)) return '';
             
@@ -1679,15 +1983,19 @@
                     this.classList.add('active');
                     
                     currentReportType = this.dataset.reportType;
+                    selectedRowIndex = -1; // Resetear selección al cambiar tipo de reporte
+                    deletedAccounts = []; // Limpiar cuentas eliminadas
                     updateTableData();
                     renderTable();
                     updatePeriodsInfo();
+                    updateDeletedAccountsSection();
                 });
             });
             
             // Selector de período base
             document.getElementById('basePeriodSelect').addEventListener('change', function() {
                 basePeriod = this.value;
+                selectedRowIndex = -1; // Resetear selección al cambiar período
                 renderTable();
                 updatePeriodsInfo();
             });
@@ -1695,22 +2003,48 @@
             // Selector de período de comparación
             document.getElementById('comparisonPeriodSelect').addEventListener('change', function() {
                 comparisonPeriod = this.value;
+                selectedRowIndex = -1; // Resetear selección al cambiar período
                 renderTable();
                 updatePeriodsInfo();
             });
             
-            // Agregar nueva fila
+            // Agregar nueva fila - CON LOADING MEJORADO
             document.getElementById('addRowBtn').addEventListener('click', function() {
                 if (!comparisonPeriod) {
                     showAlert('Primero selecciona un período de comparación', 'error');
                     return;
                 }
                 
-                analysisData.splice(analysisData.length - 1, 0, {
-                    account: 'Nueva Cuenta',
-                    values: {}
-                });
-                renderTable();
+                const loading = showLoading('Agregando fila...', 'Actualizando estructura de datos');
+                setButtonLoading(this, true);
+                
+                setTimeout(() => {
+                    analysisData.splice(analysisData.length - 1, 0, {
+                        account: 'Nueva Cuenta',
+                        values: {}
+                    });
+                    renderTable();
+                    loading.hide();
+                    setButtonLoading(this, false);
+                    showAlert('Fila agregada correctamente', 'success');
+                }, 800);
+            });
+            
+            // Eliminar cuenta seleccionada - CON LOADING MEJORADO
+            document.getElementById('deleteRowBtn').addEventListener('click', function() {
+                if (selectedRowIndex < 0) {
+                    showAlert('Primero selecciona una cuenta para eliminar', 'error');
+                    return;
+                }
+                
+                const loading = showLoading('Eliminando cuenta...', 'Actualizando estructura de datos');
+                setButtonLoading(this, true);
+                
+                setTimeout(() => {
+                    deleteAccount(selectedRowIndex);
+                    loading.hide();
+                    setButtonLoading(this, false);
+                }, 800);
             });
             
             // Calcular variaciones - CON LOADING MEJORADO
@@ -1749,6 +2083,8 @@
                                 row.values[comparisonPeriod] = '';
                             }
                         });
+                        // Resetear selección
+                        selectedRowIndex = -1;
                         renderTable();
                         loading.hide();
                         setButtonLoading(this, false);
@@ -1811,6 +2147,9 @@
                                 { account: 'UTILIDAD NETA', values: { [basePeriod]: 150000, [comparisonPeriod]: 180000 }, isTotal: true }
                             ];
                         }
+                        
+                        // Resetear selección
+                        selectedRowIndex = -1;
                         
                         renderTable();
                         
