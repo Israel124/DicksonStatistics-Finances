@@ -311,6 +311,7 @@
         transition: all 0.2s ease;
         background: transparent;
         color: var(--light-text);
+        text-align: center;
     }
     
     .table-modern tbody tr:hover td {
@@ -323,30 +324,82 @@
         color: var(--light-text);
         min-width: 250px;
         font-size: 1rem;
+        text-align: left;
     }
     
-    .editable-cell {
+    /* NUEVOS ESTILOS PARA CONTROLES NUMÉRICOS CON FLECHAS */
+    .number-input-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+    
+    .number-input-wrapper {
         position: relative;
-    }
-    
-    .editable-input {
-        width: 140px;
+        display: flex;
+        align-items: center;
+        background: rgba(139, 92, 246, 0.1);
         border: 2px solid rgba(139, 92, 246, 0.3);
         border-radius: 10px;
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
         transition: all 0.3s ease;
-        text-align: right;
-        font-weight: 500;
-        background: rgba(139, 92, 246, 0.1);
-        color: var(--light-text);
+        max-width: 150px;
+        margin: 0 auto;
     }
     
-    .editable-input:focus {
-        outline: none;
+    .number-input-wrapper:focus-within {
         border-color: var(--neon-purple);
         box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
         background: rgba(139, 92, 246, 0.15);
+    }
+    
+    .number-input {
+        border: none;
+        background: transparent;
+        padding: 0.75rem 3rem 0.75rem 1rem;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--light-text);
+        text-align: right;
+        width: 100%;
+        border-radius: 10px;
+        outline: none;
+    }
+    
+    .number-controls {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        width: 2rem;
+        border-left: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    
+    .number-control {
+        flex: 1;
+        background: rgba(139, 92, 246, 0.2);
+        border: none;
+        color: var(--light-text);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        font-size: 0.8rem;
+    }
+    
+    .number-control:hover {
+        background: rgba(139, 92, 246, 0.4);
+    }
+    
+    .number-control:first-child {
+        border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    
+    .number-control:active {
+        background: rgba(139, 92, 246, 0.6);
     }
     
     .period-header {
@@ -1167,10 +1220,17 @@
             min-width: 180px;
         }
         
-        .editable-input {
-            padding: 0.5rem 0.75rem;
-            width: 120px;
+        .number-input-wrapper {
+            max-width: 130px;
+        }
+        
+        .number-input {
+            padding: 0.6rem 2.5rem 0.6rem 0.8rem;
             font-size: 0.9rem;
+        }
+        
+        .number-controls {
+            width: 1.8rem;
         }
         
         .export-options {
@@ -1268,9 +1328,17 @@
             font-size: 0.9rem;
         }
         
-        .editable-input {
-            width: 100px;
-            padding: 0.4rem 0.6rem;
+        .number-input-wrapper {
+            max-width: 110px;
+        }
+        
+        .number-input {
+            padding: 0.5rem 2rem 0.5rem 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .number-controls {
+            width: 1.6rem;
         }
         
         .report-type-btn, .data-source-btn {
@@ -1711,6 +1779,25 @@
             }
         }
         
+        // NUEVO: Función para ajustar valores con incremento/decremento
+        function adjustValue(rowIndex, direction) {
+            if (!fundsData[rowIndex].values) {
+                fundsData[rowIndex].values = {};
+            }
+            
+            const currentValue = parseFloat(fundsData[rowIndex].values[finalPeriod]) || 0;
+            const step = 1000; // Incremento de 1000 por defecto (más apropiado para fondos)
+            const newValue = Math.max(0, currentValue + (direction * step));
+            
+            fundsData[rowIndex].values[finalPeriod] = newValue;
+            
+            // Recalcular totales
+            calculateTotals();
+            
+            // Re-renderizar para actualizar valores
+            renderTable();
+        }
+        
         // Datos de ejemplo para Balance General y Estado de Resultados
         const financialData = {
             balance: {
@@ -1883,12 +1970,26 @@
                     </td>
                     <td class="editable-cell">
                         ${!row.isHeader ? `
-                            <input type="text" 
-                                   class="editable-input" 
-                                   value="${value}" 
-                                   data-row="${index}"
-                                   placeholder="0.00"
-                                   ${row.isTotal || row.isNetChange ? 'readonly' : ''}>
+                            <div class="number-input-container">
+                                <div class="number-input-wrapper">
+                                    <input type="number" 
+                                           class="number-input" 
+                                           value="${value}" 
+                                           data-row="${index}"
+                                           placeholder="0.00"
+                                           step="1000"
+                                           min="0"
+                                           ${row.isTotal || row.isNetChange ? 'readonly' : ''}>
+                                    <div class="number-controls">
+                                        <button type="button" class="number-control increase" data-row="${index}">
+                                            <i class="fas fa-chevron-up"></i>
+                                        </button>
+                                        <button type="button" class="number-control decrease" data-row="${index}">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                             ${formattedValue ? `<div class="variation-badge ${value >= 0 ? 'variation-positive' : 'variation-negative'}">${formattedValue}</div>` : ''}
                         ` : ''}
                     </td>
@@ -1900,6 +2001,9 @@
             // Agregar event listeners a los inputs
             attachInputListeners();
             
+            // Agregar event listeners para botones de incremento/decremento
+            attachNumberControlListeners();
+            
             // Agregar event listeners para selección de filas
             attachRowSelectionListeners();
             
@@ -1908,6 +2012,53 @@
             
             // Actualizar resumen
             updateSummary();
+        }
+        
+        // Adjuntar event listeners a los inputs
+        function attachInputListeners() {
+            document.querySelectorAll('.number-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const rowIndex = parseInt(this.dataset.row);
+                    const value = this.value.trim();
+                    
+                    if (!fundsData[rowIndex].values) {
+                        fundsData[rowIndex].values = {};
+                    }
+                    
+                    fundsData[rowIndex].values[finalPeriod] = value === '' ? '' : parseFloat(value) || 0;
+                    
+                    // Recalcular totales
+                    calculateTotals();
+                    
+                    // Re-renderizar para actualizar valores
+                    renderTable();
+                });
+                
+                // Permitir solo números y punto decimal
+                input.addEventListener('keypress', function(e) {
+                    const char = String.fromCharCode(e.which);
+                    if (!/[\d.]/.test(char)) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        }
+        
+        // Adjuntar event listeners para botones de incremento/decremento
+        function attachNumberControlListeners() {
+            document.querySelectorAll('.number-control.increase').forEach(button => {
+                button.addEventListener('click', function() {
+                    const rowIndex = parseInt(this.dataset.row);
+                    adjustValue(rowIndex, 1);
+                });
+            });
+            
+            document.querySelectorAll('.number-control.decrease').forEach(button => {
+                button.addEventListener('click', function() {
+                    const rowIndex = parseInt(this.dataset.row);
+                    adjustValue(rowIndex, -1);
+                });
+            });
         }
         
         // Adjuntar event listeners para selección de filas
@@ -2079,36 +2230,6 @@
                 style: 'currency',
                 currency: 'MXN'
             }).format(value);
-        }
-        
-        // Adjuntar event listeners a los inputs
-        function attachInputListeners() {
-            document.querySelectorAll('.editable-input').forEach(input => {
-                input.addEventListener('input', function() {
-                    const rowIndex = parseInt(this.dataset.row);
-                    const value = this.value.trim();
-                    
-                    if (!fundsData[rowIndex].values) {
-                        fundsData[rowIndex].values = {};
-                    }
-                    
-                    fundsData[rowIndex].values[finalPeriod] = value === '' ? '' : parseFloat(value) || 0;
-                    
-                    // Recalcular totales
-                    calculateTotals();
-                    
-                    // Re-renderizar para actualizar valores
-                    renderTable();
-                });
-                
-                // Permitir solo números y punto decimal
-                input.addEventListener('keypress', function(e) {
-                    const char = String.fromCharCode(e.which);
-                    if (!/[\d.]/.test(char)) {
-                        e.preventDefault();
-                    }
-                });
-            });
         }
         
         // Calcular totales
