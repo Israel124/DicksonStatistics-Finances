@@ -335,7 +335,7 @@ def dupont(request):
 #Metdodo Directo (pendiente)
 @login_required
 def metodo_directo(request):
-    return render(request, 'metododirecto.html')
+    return render(request, 'matododirecto.html')
 
 #Metodo Indirecto (pendiente)
 @login_required
