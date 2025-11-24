@@ -1,0 +1,1822 @@
+{% extends 'base.html' %}
+
+{% block title %}Estados Financieros Proforma - DicksonStatistics{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --dark-bg: #0a0a12;
+        --darker-bg: #07070f;
+        --dark-card: #121225;
+        --neon-purple: #8b5cf6;
+        --neon-blue: #3b82f6;
+        --neon-cyan: #06b6d4;
+        --neon-pink: #ec4899;
+        --white: #ffffff;
+        --light-text: #f1f5f9;
+        --medium-text: #94a3b8;
+        --glow-purple: 0 0 20px rgba(139, 92, 246, 0.7);
+        --glow-blue: 0 0 20px rgba(59, 130, 246, 0.7);
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+    }
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--light-text);
+        line-height: 1.6;
+        background-color: var(--dark-bg);
+        overflow-x: hidden;
+    }
+    
+    /* Background Animation */
+    .bg-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+    }
+    
+    .floating-shapes {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(139, 92, 246, 0.1);
+        animation: float 15s infinite linear;
+    }
+    
+    .shape:nth-child(1) {
+        width: 80px;
+        height: 80px;
+        top: 20%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+    
+    .shape:nth-child(2) {
+        width: 120px;
+        height: 120px;
+        top: 60%;
+        left: 80%;
+        animation-delay: -5s;
+    }
+    
+    .shape:nth-child(3) {
+        width: 60px;
+        height: 60px;
+        top: 80%;
+        left: 20%;
+        animation-delay: -10s;
+    }
+    
+    @keyframes float {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translateY(-20px) rotate(180deg);
+            opacity: 0.8;
+        }
+        100% {
+            transform: translateY(0) rotate(360deg);
+            opacity: 0.5;
+        }
+    }
+    
+    .proforma-section {
+        padding: 120px 0 60px;
+        min-height: calc(100vh - 76px);
+        position: relative;
+    }
+    
+    .section-header {
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
+        margin-bottom: 2rem;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .section-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--white);
+        margin-bottom: 0.5rem;
+        text-shadow: var(--glow-purple);
+    }
+    
+    .section-title .highlight {
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .section-subtitle {
+        color: var(--medium-text);
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+    }
+    
+    .control-panel {
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
+        margin-bottom: 2rem;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .control-panel:hover {
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
+    }
+    
+    .btn-modern {
+        padding: 0.875rem 1.75rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.95rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }
+    
+    .btn-modern:hover::before {
+        left: 100%;
+    }
+    
+    .btn-primary-modern {
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+        color: white;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+    }
+    
+    .btn-primary-modern:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.6);
+        color: white;
+    }
+    
+    .btn-outline-modern {
+        background: transparent;
+        border: 2px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+    }
+    
+    .btn-outline-modern:hover {
+        background: var(--neon-cyan);
+        color: var(--dark-bg);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(6, 182, 212, 0.4);
+    }
+    
+    .btn-success-modern {
+        background: var(--success-color);
+        color: white;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+    
+    .btn-success-modern:hover {
+        background: #059669;
+        transform: translateY(-3px);
+        color: white;
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.6);
+    }
+    
+    .btn-danger-modern {
+        background: var(--danger-color);
+        color: white;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+    
+    .btn-danger-modern:hover {
+        background: #dc2626;
+        transform: translateY(-3px);
+        color: white;
+        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.6);
+    }
+    
+    .btn-warning-modern {
+        background: var(--warning-color);
+        color: white;
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+    }
+    
+    .btn-warning-modern:hover {
+        background: #d97706;
+        transform: translateY(-3px);
+        color: white;
+        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.6);
+    }
+    
+    .proforma-table-container {
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
+        overflow: hidden;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .proforma-table-container:hover {
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
+    }
+    
+    .table-modern {
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+        background: transparent;
+    }
+    
+    .table-modern thead th {
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+        border-bottom: none;
+        padding: 1.5rem 1rem;
+        font-weight: 700;
+        color: white;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 1.1rem;
+        position: relative;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    
+    .table-modern thead th::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 10%;
+        right: 10%;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.5);
+    }
+    
+    .table-modern tbody td {
+        padding: 1.25rem 1rem;
+        border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+        vertical-align: middle;
+        transition: all 0.2s ease;
+        background: transparent;
+        color: var(--light-text);
+        text-align: center;
+    }
+    
+    .table-modern tbody tr:hover td {
+        background: rgba(139, 92, 246, 0.1);
+        transform: scale(1.01);
+    }
+    
+    .table-modern .account-name {
+        font-weight: 600;
+        color: var(--light-text);
+        min-width: 250px;
+        font-size: 1rem;
+        text-align: left;
+    }
+    
+    /* NUEVOS ESTILOS PARA CONTROLES NUMÉRICOS CON FLECHAS */
+    .number-input-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+    
+    .number-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: rgba(139, 92, 246, 0.1);
+        border: 2px solid rgba(139, 92, 246, 0.3);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        max-width: 150px;
+        margin: 0 auto;
+    }
+    
+    .number-input-wrapper:focus-within {
+        border-color: var(--neon-purple);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        background: rgba(139, 92, 246, 0.15);
+    }
+    
+    .number-input {
+        border: none;
+        background: transparent;
+        padding: 0.75rem 3rem 0.75rem 1rem;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--light-text);
+        text-align: right;
+        width: 100%;
+        border-radius: 10px;
+        outline: none;
+    }
+    
+    .number-controls {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        width: 2rem;
+        border-left: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    
+    .number-control {
+        flex: 1;
+        background: rgba(139, 92, 246, 0.2);
+        border: none;
+        color: var(--light-text);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        font-size: 0.8rem;
+    }
+    
+    .number-control:hover {
+        background: rgba(139, 92, 246, 0.4);
+    }
+    
+    .number-control:first-child {
+        border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    
+    .number-control:active {
+        background: rgba(139, 92, 246, 0.6);
+    }
+    
+    .period-header {
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue)) !important;
+        color: white !important;
+        position: relative;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.7) !important;
+        min-width: 180px;
+    }
+    
+    .period-header span {
+        color: white !important;
+        font-weight: 700;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.7) !important;
+    }
+    
+    .period-header small {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-weight: 500;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5) !important;
+    }
+    
+    .period-actions {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        display: flex;
+        gap: 0.25rem;
+    }
+    
+    .period-btn {
+        width: 24px;
+        height: 24px;
+        border: none;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .period-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+    }
+    
+    /* CORRECCIÓN ESPECÍFICA PARA SELECTORES */
+    .form-control-modern {
+        border: 2px solid rgba(139, 92, 246, 0.3);
+        border-radius: 12px;
+        padding: 0.875rem 1.25rem;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--light-text) !important;
+    }
+    
+    .form-control-modern:focus {
+        border-color: var(--neon-purple);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        background: rgba(139, 92, 246, 0.15);
+        color: var(--light-text) !important;
+    }
+    
+    select.form-control-modern {
+        color: var(--light-text) !important;
+        background: rgba(139, 92, 246, 0.1) !important;
+    }
+    
+    select.form-control-modern option {
+        background: var(--dark-card) !important;
+        color: var(--light-text) !important;
+        padding: 10px;
+    }
+    
+    select.form-control-modern:focus {
+        background: rgba(139, 92, 246, 0.15) !important;
+        color: var(--light-text) !important;
+    }
+    
+    .file-upload-area {
+        border: 2px dashed rgba(139, 92, 246, 0.5);
+        border-radius: 16px;
+        padding: 2.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: rgba(139, 92, 246, 0.05);
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .file-upload-area:hover {
+        border-color: var(--neon-purple);
+        background: rgba(139, 92, 246, 0.1);
+        transform: translateY(-5px);
+    }
+    
+    .file-upload-area.dragover {
+        border-color: var(--neon-purple);
+        background: rgba(139, 92, 246, 0.15);
+        transform: scale(1.02);
+    }
+    
+    .upload-icon {
+        font-size: 3.5rem;
+        color: var(--neon-purple);
+        margin-bottom: 1rem;
+        text-shadow: var(--glow-purple);
+    }
+    
+    .file-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .file-name {
+        margin-top: 0.5rem;
+        font-size: 1rem;
+        color: var(--neon-purple);
+        font-weight: 600;
+        word-break: break-all;
+        text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+    }
+    
+    .export-options {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .modal-modern .modal-content {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+        background: var(--dark-card);
+        color: var(--light-text);
+    }
+    
+    .modal-modern .modal-header {
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+        color: white;
+        border-radius: 20px 20px 0 0;
+        border: none;
+        padding: 1.75rem 2rem;
+    }
+    
+    .modal-modern .modal-title {
+        font-weight: 700;
+        font-size: 1.5rem;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+    
+    .modal-modern .btn-close {
+        filter: invert(1);
+        opacity: 0.8;
+    }
+    
+    .modal-modern .btn-close:hover {
+        opacity: 1;
+    }
+    
+    .form-group-modern {
+        margin-bottom: 1.75rem;
+    }
+    
+    .form-label-modern {
+        font-weight: 600;
+        color: var(--light-text);
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+    
+    .variation-badge {
+        background: linear-gradient(135deg, var(--success-color), var(--neon-cyan));
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-top: 0.5rem;
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+    
+    .variation-positive {
+        background: linear-gradient(135deg, var(--success-color), var(--neon-cyan));
+    }
+    
+    .variation-negative {
+        background: linear-gradient(135deg, var(--danger-color), #f87171);
+    }
+    
+    .variation-neutral {
+        background: linear-gradient(135deg, var(--medium-text), #94a3b8);
+    }
+    
+    .calculation-row {
+        background: rgba(6, 182, 212, 0.1) !important;
+        font-weight: 700;
+    }
+    
+    .calculation-row td {
+        border-top: 2px solid rgba(139, 92, 246, 0.3);
+    }
+    
+    .empty-row {
+        text-align: center;
+        color: var(--medium-text);
+        font-style: italic;
+        padding: 3rem !important;
+        font-size: 1.1rem;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+    }
+    
+    .btn-sm-modern {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
+    }
+    
+    .report-type-selector {
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .report-type-selector:hover {
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
+    }
+    
+    .report-type-buttons {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .report-type-btn {
+        flex: 1;
+        min-width: 220px;
+        padding: 2rem;
+        border: 2px solid rgba(139, 92, 246, 0.3);
+        border-radius: 16px;
+        background: rgba(139, 92, 246, 0.05);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .report-type-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+    
+    .report-type-btn.active {
+        border-color: var(--neon-purple);
+        background: rgba(139, 92, 246, 0.1);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+        transform: translateY(-5px);
+    }
+    
+    .report-type-btn.active::before {
+        transform: scaleX(1);
+    }
+    
+    .report-type-btn:hover {
+        border-color: var(--neon-purple);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+    }
+    
+    .report-icon {
+        font-size: 2.5rem;
+        color: var(--neon-purple);
+        margin-bottom: 1rem;
+        text-shadow: var(--glow-purple);
+    }
+    
+    .report-title {
+        font-weight: 700;
+        color: var(--light-text);
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+    }
+    
+    .report-description {
+        color: var(--medium-text);
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+    
+    .periods-selector {
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .periods-selector:hover {
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
+    }
+    
+    .periods-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        background: rgba(139, 92, 246, 0.1);
+        border-radius: 12px;
+        margin-top: 1.5rem;
+        border-left: 4px solid var(--neon-purple);
+    }
+    
+    .period-badge {
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 20px;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(139, 92, 246, 0.4);
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    .base-period-select {
+        min-width: 180px;
+    }
+
+    /* NUEVOS ESTILOS PARA ELIMINAR Y RECUPERAR CUENTAS */
+    .deleted-accounts-section {
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .deleted-accounts-section:hover {
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
+    }
+    
+    .deleted-accounts-list {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+        background: rgba(139, 92, 246, 0.05);
+    }
+    
+    .deleted-account-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+        transition: all 0.2s ease;
+    }
+    
+    .deleted-account-item:hover {
+        background: rgba(139, 92, 246, 0.1);
+        border-radius: 8px;
+    }
+    
+    .deleted-account-item:last-child {
+        border-bottom: none;
+    }
+    
+    .deleted-account-category {
+        font-size: 0.85rem;
+        color: var(--medium-text);
+        background: rgba(139, 92, 246, 0.2);
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+    }
+
+    .selectable-row {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .selectable-row:hover {
+        background-color: rgba(139, 92, 246, 0.1) !important;
+    }
+    
+    .selected-row {
+        background-color: rgba(139, 92, 246, 0.15) !important;
+        border-left: 4px solid var(--neon-purple);
+        cursor: pointer;
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+    }
+
+    .account-header-row {
+        background-color: rgba(139, 92, 246, 0.2) !important;
+        font-weight: 700;
+    }
+
+    /* ESTILOS ESPECÍFICOS PARA PROFORMA */
+    .percentage-input {
+        max-width: 120px;
+    }
+    
+    .growth-input {
+        max-width: 150px;
+    }
+    
+    .proforma-value {
+        font-weight: 600;
+        color: var(--neon-cyan);
+    }
+    
+    .percentage-value {
+        font-weight: 600;
+        color: var(--neon-purple);
+    }
+    
+    .growth-value {
+        font-weight: 600;
+        color: var(--success-color);
+    }
+    
+    .assumption-panel {
+        background: rgba(18, 18, 37, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .assumption-panel:hover {
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
+    }
+    
+    .assumption-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    
+    .assumption-item:last-child {
+        border-bottom: none;
+    }
+    
+    .assumption-label {
+        font-weight: 600;
+        color: var(--light-text);
+    }
+    
+    .assumption-value {
+        color: var(--neon-cyan);
+        font-weight: 600;
+    }
+
+    /* ESTILOS PARA PESTAÑAS */
+    .nav-tabs-proforma {
+        border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+        margin-bottom: 2rem;
+    }
+    
+    .nav-tabs-proforma .nav-link {
+        background: transparent;
+        border: none;
+        color: var(--medium-text);
+        font-weight: 600;
+        padding: 1rem 2rem;
+        border-radius: 12px 12px 0 0;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    
+    .nav-tabs-proforma .nav-link:hover {
+        color: var(--light-text);
+        background: rgba(139, 92, 246, 0.1);
+    }
+    
+    .nav-tabs-proforma .nav-link.active {
+        color: var(--neon-purple);
+        background: rgba(139, 92, 246, 0.15);
+        border-bottom: 3px solid var(--neon-purple);
+    }
+    
+    .nav-tabs-proforma .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--neon-purple);
+        border-radius: 3px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .section-title {
+            font-size: 2.25rem;
+        }
+        
+        .report-type-btn {
+            min-width: 200px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .section-header {
+            padding: 2rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+        }
+        
+        .report-type-buttons {
+            gap: 1rem;
+        }
+        
+        .report-type-btn {
+            min-width: 180px;
+            padding: 1.5rem;
+        }
+        
+        .report-icon {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .proforma-section {
+            padding: 100px 0 40px;
+        }
+        
+        .section-header {
+            padding: 1.5rem;
+            border-radius: 16px;
+        }
+        
+        .section-title {
+            font-size: 1.75rem;
+        }
+        
+        .section-subtitle {
+            font-size: 1rem;
+        }
+        
+        .control-panel, .report-type-selector, .periods-selector, .deleted-accounts-section, .assumption-panel {
+            padding: 1.5rem;
+            border-radius: 16px;
+        }
+        
+        .table-responsive {
+            font-size: 0.9rem;
+        }
+        
+        .table-modern thead th,
+        .table-modern tbody td {
+            padding: 1rem 0.75rem;
+        }
+        
+        .table-modern .account-name {
+            min-width: 180px;
+        }
+        
+        .number-input-wrapper {
+            max-width: 130px;
+        }
+        
+        .number-input {
+            padding: 0.6rem 2.5rem 0.6rem 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        .number-controls {
+            width: 1.8rem;
+        }
+        
+        .export-options {
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .export-options .btn-modern {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .report-type-buttons {
+            flex-direction: column;
+        }
+        
+        .report-type-btn {
+            min-width: 100%;
+        }
+        
+        .control-panel .d-flex {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .control-panel .btn-modern {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .periods-info {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+        
+        .btn-modern {
+            padding: 0.75rem 1.5rem;
+        }
+        
+        .deleted-account-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .deleted-account-item .d-flex {
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        .assumption-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .nav-tabs-proforma .nav-link {
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .section-header {
+            padding: 1.25rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+        }
+        
+        .control-panel, .report-type-selector, .periods-selector, .deleted-accounts-section, .assumption-panel {
+            padding: 1.25rem;
+            border-radius: 16px;
+        }
+        
+        .table-modern thead th,
+        .table-modern tbody td {
+            padding: 0.75rem 0.5rem;
+        }
+        
+        .table-modern .account-name {
+            min-width: 150px;
+            font-size: 0.9rem;
+        }
+        
+        .number-input-wrapper {
+            max-width: 110px;
+        }
+        
+        .number-input {
+            padding: 0.5rem 2rem 0.5rem 0.6rem;
+            font-size: 0.85rem;
+        }
+        
+        .number-controls {
+            width: 1.6rem;
+        }
+        
+        .report-type-btn {
+            padding: 1.25rem;
+        }
+        
+        .report-icon {
+            font-size: 1.75rem;
+        }
+        
+        .report-title {
+            font-size: 1.1rem;
+        }
+        
+        .btn-modern {
+            font-size: 0.9rem;
+            padding: 0.7rem 1.25rem;
+        }
+        
+        .nav-tabs-proforma .nav-link {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Background Animation -->
+<div class="bg-animation">
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+</div>
+
+<section class="proforma-section">
+    <div class="container">
+        <!-- Header -->
+        <div class="section-header">
+            <h1 class="section-title">Estados Financieros <span class="highlight">Proforma</span></h1>
+            <p class="section-subtitle">Proyecta estados financieros futuros utilizando el método de porcentaje de ventas</p>
+        </div>
+
+        <!-- Panel de Configuración -->
+        <div class="assumption-panel">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="form-label-modern mb-3">Configuración de Proyección</h5>
+                    <div class="assumption-item">
+                        <div class="assumption-label">Periodo base para proyección</div>
+                        <select class="form-control form-control-modern" id="basePeriodSelect">
+                            <option value="">Seleccionar período base...</option>
+                            <option value="2023" selected>2023</option>
+                            <option value="2022">2022</option>
+                        </select>
+                    </div>
+                    <div class="assumption-item">
+                        <div class="assumption-label">Año a proyectar</div>
+                        <select class="form-control form-control-modern" id="projectionYear">
+                            <option value="2024" selected>2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                        </select>
+                    </div>
+                    <div class="assumption-item">
+                        <div class="assumption-label">No hay periodos disponibles</div>
+                        <div class="text-muted small">Los datos se obtendrán del análisis horizontal</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="form-label-modern mb-3">Parámetros de Proyección</h5>
+                    <div class="assumption-item">
+                        <div class="assumption-label">% Crecimiento de ventas</div>
+                        <div class="number-input-container">
+                            <div class="number-input-wrapper percentage-input">
+                                <input type="number" class="number-input" id="salesGrowth" value="5.00" step="0.1" min="0" max="100">
+                                <div class="number-controls">
+                                    <button type="button" class="number-control increase" data-input="salesGrowth">
+                                        <i class="fas fa-chevron-up"></i>
+                                    </button>
+                                    <button type="button" class="number-control decrease" data-input="salesGrowth">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <span class="assumption-value">%</span>
+                        </div>
+                    </div>
+                    <div class="assumption-item">
+                        <div class="assumption-label">% Impuestos</div>
+                        <div class="number-input-container">
+                            <div class="number-input-wrapper percentage-input">
+                                <input type="number" class="number-input" id="taxRate" value="30.00" step="0.1" min="0" max="100">
+                                <div class="number-controls">
+                                    <button type="button" class="number-control increase" data-input="taxRate">
+                                        <i class="fas fa-chevron-up"></i>
+                                    </button>
+                                    <button type="button" class="number-control decrease" data-input="taxRate">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <span class="assumption-value">%</span>
+                        </div>
+                    </div>
+                    <div class="assumption-item">
+                        <div class="assumption-label">% Utilidades retenidas</div>
+                        <div class="number-input-container">
+                            <div class="number-input-wrapper percentage-input">
+                                <input type="number" class="number-input" id="retainedEarnings" value="50.00" step="0.1" min="0" max="100">
+                                <div class="number-controls">
+                                    <button type="button" class="number-control increase" data-input="retainedEarnings">
+                                        <i class="fas fa-chevron-up"></i>
+                                    </button>
+                                    <button type="button" class="number-control decrease" data-input="retainedEarnings">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <span class="assumption-value">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <button class="btn btn-primary-modern btn-modern" id="generateProjection">
+                    <i class="fas fa-chart-line"></i> Generar Proyección
+                </button>
+            </div>
+        </div>
+
+        <!-- Pestañas de Resultados -->
+        <div class="proforma-table-container">
+            <ul class="nav nav-tabs nav-tabs-proforma" id="proformaTabs">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#incomeStatement">
+                        <i class="fas fa-chart-line me-2"></i>Estado de Resultados
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#balanceSheet">
+                        <i class="fas fa-balance-scale me-2"></i>Balance General
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#cashFlow">
+                        <i class="fas fa-money-bill-wave me-2"></i>Flujo de Efectivo
+                    </a>
+                </li>
+            </ul>
+
+            <div class="tab-content p-4">
+                <!-- Estado de Resultados -->
+                <div class="tab-pane fade show active" id="incomeStatement">
+                    <div class="table-responsive">
+                        <table class="table table-modern">
+                            <thead>
+                                <tr>
+                                    <th class="account-name">Cuenta</th>
+                                    <th class="period-header">Monto Proyectado</th>
+                                    <th class="period-header">% Ventas</th>
+                                    <th class="period-header">Notas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="incomeStatementBody">
+                                <!-- Datos del estado de resultados se cargarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Balance General -->
+                <div class="tab-pane fade" id="balanceSheet">
+                    <div class="table-responsive">
+                        <table class="table table-modern">
+                            <thead>
+                                <tr>
+                                    <th class="account-name">Cuenta</th>
+                                    <th class="period-header">Monto Proyectado</th>
+                                    <th class="period-header">% Ventas</th>
+                                    <th class="period-header">Notas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="balanceSheetBody">
+                                <!-- Datos del balance general se cargarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Flujo de Efectivo -->
+                <div class="tab-pane fade" id="cashFlow">
+                    <div class="table-responsive">
+                        <table class="table table-modern">
+                            <thead>
+                                <tr>
+                                    <th class="account-name">Cuenta</th>
+                                    <th class="period-header">Monto Proyectado</th>
+                                    <th class="period-header">% Ventas</th>
+                                    <th class="period-header">Notas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cashFlowBody">
+                                <!-- Datos del flujo de efectivo se cargarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="control-panel">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button class="btn btn-success-modern btn-modern" id="saveProjection">
+                            <i class="fas fa-save"></i> Guardar Proyección
+                        </button>
+                        <button class="btn btn-outline-modern btn-modern" id="exportExcel">
+                            <i class="fas fa-file-excel"></i> Exportar a Excel
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="text-muted">
+                        <small>Los datos se obtienen del análisis horizontal</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuración de Cuentas -->
+        <div class="assumption-panel">
+            <h5 class="form-label-modern mb-3">Configuración de cuentas</h5>
+            <p class="text-muted">Seleccione un periodo base para configurar las cuentas.</p>
+            <div class="d-flex gap-2 align-items-center">
+                <select class="form-control form-control-modern" id="accountConfigPeriod" style="max-width: 300px;">
+                    <option value="">Seleccionar período base...</option>
+                    <option value="2023" selected>2023</option>
+                    <option value="2022">2022</option>
+                </select>
+                <button class="btn btn-outline-modern btn-modern" id="loadAccounts">
+                    <i class="fas fa-sync"></i> Cargar Cuentas
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let proformaData = {
+            incomeStatement: [],
+            balanceSheet: [],
+            cashFlow: []
+        };
+        
+        let assumptions = {
+            salesGrowth: 5.0,
+            taxRate: 30.0,
+            retainedEarnings: 50.0
+        };
+        
+        // Función para ajustar valores con incremento/decremento
+        function adjustValue(inputId, direction) {
+            const input = document.getElementById(inputId);
+            const currentValue = parseFloat(input.value) || 0;
+            const step = 0.1;
+            const newValue = Math.max(0, Math.min(100, currentValue + (direction * step)));
+            
+            input.value = newValue.toFixed(2);
+            assumptions[inputId] = newValue;
+        }
+        
+        // Función para cargar datos del análisis horizontal
+        function loadHorizontalAnalysisData() {
+            // Simular datos del análisis horizontal
+            // En una implementación real, esto vendría de la base de datos o del localStorage
+            return {
+                incomeStatement: [
+                    { account: 'Ventas Netas', baseValue: 1000000, percentage: 100.0 },
+                    { account: 'Costo de Ventas', baseValue: 600000, percentage: 60.0 },
+                    { account: 'Utilidad Bruta', baseValue: 400000, percentage: 40.0 },
+                    { account: 'Gastos Operativos', baseValue: 250000, percentage: 25.0 },
+                    { account: 'Utilidad Operativa', baseValue: 150000, percentage: 15.0 },
+                    { account: 'Gastos Financieros', baseValue: 30000, percentage: 3.0 },
+                    { account: 'Utilidad Antes de Impuestos', baseValue: 120000, percentage: 12.0 },
+                    { account: 'Impuestos', baseValue: 36000, percentage: 3.6 },
+                    { account: 'Utilidad Neta', baseValue: 84000, percentage: 8.4 }
+                ],
+                balanceSheet: [
+                    { account: 'ACTIVOS', baseValue: 0, percentage: 0, isHeader: true },
+                    { account: 'Efectivo y Equivalentes', baseValue: 120000, percentage: 12.0 },
+                    { account: 'Cuentas por Cobrar', baseValue: 250000, percentage: 25.0 },
+                    { account: 'Inventarios', baseValue: 180000, percentage: 18.0 },
+                    { account: 'Total Activos Corrientes', baseValue: 550000, percentage: 55.0, isTotal: true },
+                    { account: 'Propiedad, Planta y Equipo', baseValue: 800000, percentage: 80.0 },
+                    { account: 'Activos Intangibles', baseValue: 100000, percentage: 10.0 },
+                    { account: 'Total Activos No Corrientes', baseValue: 900000, percentage: 90.0, isTotal: true },
+                    { account: 'TOTAL ACTIVOS', baseValue: 1450000, percentage: 145.0, isTotal: true },
+                    { account: 'PASIVOS Y PATRIMONIO', baseValue: 0, percentage: 0, isHeader: true },
+                    { account: 'Cuentas por Pagar', baseValue: 150000, percentage: 15.0 },
+                    { account: 'Préstamos a Corto Plazo', baseValue: 100000, percentage: 10.0 },
+                    { account: 'Total Pasivos Corrientes', baseValue: 250000, percentage: 25.0, isTotal: true },
+                    { account: 'Préstamos a Largo Plazo', baseValue: 500000, percentage: 50.0 },
+                    { account: 'Total Pasivos No Corrientes', baseValue: 500000, percentage: 50.0, isTotal: true },
+                    { account: 'Capital Social', baseValue: 500000, percentage: 50.0 },
+                    { account: 'Utilidades Retenidas', baseValue: 200000, percentage: 20.0 },
+                    { account: 'TOTAL PATRIMONIO', baseValue: 700000, percentage: 70.0, isTotal: true },
+                    { account: 'TOTAL PASIVOS Y PATRIMONIO', baseValue: 1450000, percentage: 145.0, isTotal: true }
+                ]
+            };
+        }
+        
+        // Función para calcular proyecciones
+        function calculateProjections() {
+            const horizontalData = loadHorizontalAnalysisData();
+            const salesGrowth = assumptions.salesGrowth / 100;
+            const baseSales = horizontalData.incomeStatement.find(item => item.account === 'Ventas Netas').baseValue;
+            const projectedSales = baseSales * (1 + salesGrowth);
+            
+            // Proyectar Estado de Resultados
+            proformaData.incomeStatement = horizontalData.incomeStatement.map(item => {
+                const projectedValue = projectedSales * (item.percentage / 100);
+                return {
+                    ...item,
+                    projectedValue: projectedValue,
+                    notes: getNotesForAccount(item.account, projectedValue, item.baseValue)
+                };
+            });
+            
+            // Proyectar Balance General
+            proformaData.balanceSheet = horizontalData.balanceSheet.map(item => {
+                let projectedValue;
+                if (item.isHeader || item.isTotal) {
+                    projectedValue = 0; // Se calculará después
+                } else {
+                    projectedValue = projectedSales * (item.percentage / 100);
+                }
+                
+                return {
+                    ...item,
+                    projectedValue: projectedValue,
+                    notes: getNotesForAccount(item.account, projectedValue, item.baseValue)
+                };
+            });
+            
+            // Calcular totales del balance general
+            calculateBalanceSheetTotals();
+            
+            // Proyectar Flujo de Efectivo (simplificado)
+            proformaData.cashFlow = calculateCashFlow();
+            
+            // Renderizar resultados
+            renderResults();
+        }
+        
+        // Función para calcular totales del balance general
+        function calculateBalanceSheetTotals() {
+            // Calcular total activos corrientes
+            const currentAssets = proformaData.balanceSheet
+                .filter(item => 
+                    item.account === 'Efectivo y Equivalentes' || 
+                    item.account === 'Cuentas por Cobrar' || 
+                    item.account === 'Inventarios'
+                )
+                .reduce((sum, item) => sum + item.projectedValue, 0);
+            
+            const currentAssetsItem = proformaData.balanceSheet.find(item => item.account === 'Total Activos Corrientes');
+            if (currentAssetsItem) currentAssetsItem.projectedValue = currentAssets;
+            
+            // Calcular total activos no corrientes
+            const nonCurrentAssets = proformaData.balanceSheet
+                .filter(item => 
+                    item.account === 'Propiedad, Planta y Equipo' || 
+                    item.account === 'Activos Intangibles'
+                )
+                .reduce((sum, item) => sum + item.projectedValue, 0);
+            
+            const nonCurrentAssetsItem = proformaData.balanceSheet.find(item => item.account === 'Total Activos No Corrientes');
+            if (nonCurrentAssetsItem) nonCurrentAssetsItem.projectedValue = nonCurrentAssets;
+            
+            // Calcular total activos
+            const totalAssetsItem = proformaData.balanceSheet.find(item => item.account === 'TOTAL ACTIVOS');
+            if (totalAssetsItem) totalAssetsItem.projectedValue = currentAssets + nonCurrentAssets;
+            
+            // Calcular total pasivos corrientes
+            const currentLiabilities = proformaData.balanceSheet
+                .filter(item => 
+                    item.account === 'Cuentas por Pagar' || 
+                    item.account === 'Préstamos a Corto Plazo'
+                )
+                .reduce((sum, item) => sum + item.projectedValue, 0);
+            
+            const currentLiabilitiesItem = proformaData.balanceSheet.find(item => item.account === 'Total Pasivos Corrientes');
+            if (currentLiabilitiesItem) currentLiabilitiesItem.projectedValue = currentLiabilities;
+            
+            // Calcular total pasivos no corrientes
+            const nonCurrentLiabilitiesItem = proformaData.balanceSheet.find(item => item.account === 'Total Pasivos No Corrientes');
+            if (nonCurrentLiabilitiesItem) {
+                const longTermLoans = proformaData.balanceSheet.find(item => item.account === 'Préstamos a Largo Plazo');
+                nonCurrentLiabilitiesItem.projectedValue = longTermLoans ? longTermLoans.projectedValue : 0;
+            }
+            
+            // Calcular total patrimonio
+            const equityItems = proformaData.balanceSheet
+                .filter(item => 
+                    item.account === 'Capital Social' || 
+                    item.account === 'Utilidades Retenidas'
+                );
+            
+            const totalEquity = equityItems.reduce((sum, item) => sum + item.projectedValue, 0);
+            const totalEquityItem = proformaData.balanceSheet.find(item => item.account === 'TOTAL PATRIMONIO');
+            if (totalEquityItem) totalEquityItem.projectedValue = totalEquity;
+            
+            // Calcular total pasivos y patrimonio
+            const totalLiabilitiesEquityItem = proformaData.balanceSheet.find(item => item.account === 'TOTAL PASIVOS Y PATRIMONIO');
+            if (totalLiabilitiesEquityItem) {
+                totalLiabilitiesEquityItem.projectedValue = 
+                    currentLiabilities + 
+                    (nonCurrentLiabilitiesItem ? nonCurrentLiabilitiesItem.projectedValue : 0) + 
+                    totalEquity;
+            }
+        }
+        
+        // Función para calcular flujo de efectivo (simplificado)
+        function calculateCashFlow() {
+            const netIncome = proformaData.incomeStatement.find(item => item.account === 'Utilidad Neta').projectedValue;
+            const depreciation = 50000; // Valor estimado
+            const changeInWorkingCapital = 20000; // Valor estimado
+            
+            return [
+                { account: 'FLUJO DE EFECTIVO DE OPERACIONES', baseValue: 0, percentage: 0, projectedValue: 0, isHeader: true },
+                { account: 'Utilidad Neta', baseValue: netIncome, percentage: 0, projectedValue: netIncome },
+                { account: 'Depreciación y Amortización', baseValue: depreciation, percentage: 0, projectedValue: depreciation },
+                { account: 'Cambio en Capital de Trabajo', baseValue: changeInWorkingCapital, percentage: 0, projectedValue: changeInWorkingCapital },
+                { account: 'Flujo de Efectivo de Operaciones', baseValue: netIncome + depreciation + changeInWorkingCapital, percentage: 0, projectedValue: netIncome + depreciation + changeInWorkingCapital, isTotal: true },
+                
+                { account: 'FLUJO DE EFECTIVO DE INVERSIÓN', baseValue: 0, percentage: 0, projectedValue: 0, isHeader: true },
+                { account: 'Inversiones en Activo Fijo', baseValue: -80000, percentage: 0, projectedValue: -80000 },
+                { account: 'Flujo de Efectivo de Inversión', baseValue: -80000, percentage: 0, projectedValue: -80000, isTotal: true },
+                
+                { account: 'FLUJO DE EFECTIVO DE FINANCIAMIENTO', baseValue: 0, percentage: 0, projectedValue: 0, isHeader: true },
+                { account: 'Préstamos Obtenidos', baseValue: 50000, percentage: 0, projectedValue: 50000 },
+                { account: 'Pago de Dividendos', baseValue: -20000, percentage: 0, projectedValue: -20000 },
+                { account: 'Flujo de Efectivo de Financiamiento', baseValue: 30000, percentage: 0, projectedValue: 30000, isTotal: true },
+                
+                { account: 'AUMENTO NETO EN EFECTIVO', baseValue: 0, percentage: 0, projectedValue: 0, isHeader: true },
+                { account: 'Aumento Neto en Efectivo', baseValue: (netIncome + depreciation + changeInWorkingCapital) - 80000 + 30000, percentage: 0, projectedValue: (netIncome + depreciation + changeInWorkingCapital) - 80000 + 30000, isTotal: true }
+            ];
+        }
+        
+        // Función para obtener notas para cada cuenta
+        function getNotesForAccount(accountName, projectedValue, baseValue) {
+            const growth = ((projectedValue - baseValue) / baseValue) * 100;
+            
+            if (accountName.includes('Ventas')) {
+                return `Crecimiento proyectado: ${growth.toFixed(1)}%`;
+            } else if (accountName.includes('Utilidad')) {
+                if (growth > 0) {
+                    return `Incremento en utilidades: ${growth.toFixed(1)}%`;
+                } else {
+                    return `Reducción en utilidades: ${growth.toFixed(1)}%`;
+                }
+            } else if (accountName.includes('Efectivo')) {
+                return `Liquidez proyectada: ${formatCurrency(projectedValue)}`;
+            } else if (accountName.includes('Activo')) {
+                return `Crecimiento de activos: ${growth.toFixed(1)}%`;
+            }
+            
+            return `Variación: ${growth.toFixed(1)}%`;
+        }
+        
+        // Función para renderizar resultados
+        function renderResults() {
+            renderIncomeStatement();
+            renderBalanceSheet();
+            renderCashFlow();
+        }
+        
+        // Función para renderizar estado de resultados
+        function renderIncomeStatement() {
+            const tbody = document.getElementById('incomeStatementBody');
+            tbody.innerHTML = '';
+            
+            if (proformaData.incomeStatement.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-row">
+                            <i class="fas fa-chart-line me-2"></i>Genera una proyección para ver los resultados
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            proformaData.incomeStatement.forEach(item => {
+                const tr = document.createElement('tr');
+                
+                if (item.isHeader) {
+                    tr.classList.add('account-header-row');
+                } else if (item.isTotal) {
+                    tr.classList.add('calculation-row');
+                }
+                
+                tr.innerHTML = `
+                    <td class="account-name">${item.account}</td>
+                    <td class="text-center proforma-value">${formatCurrency(item.projectedValue)}</td>
+                    <td class="text-center percentage-value">${item.percentage.toFixed(1)}%</td>
+                    <td class="text-center">${item.notes || '-'}</td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // Función para renderizar balance general
+        function renderBalanceSheet() {
+            const tbody = document.getElementById('balanceSheetBody');
+            tbody.innerHTML = '';
+            
+            if (proformaData.balanceSheet.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-row">
+                            <i class="fas fa-balance-scale me-2"></i>Genera una proyección para ver los resultados
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            proformaData.balanceSheet.forEach(item => {
+                const tr = document.createElement('tr');
+                
+                if (item.isHeader) {
+                    tr.classList.add('account-header-row');
+                } else if (item.isTotal) {
+                    tr.classList.add('calculation-row');
+                }
+                
+                tr.innerHTML = `
+                    <td class="account-name">${item.account}</td>
+                    <td class="text-center proforma-value">${formatCurrency(item.projectedValue)}</td>
+                    <td class="text-center percentage-value">${item.percentage.toFixed(1)}%</td>
+                    <td class="text-center">${item.notes || '-'}</td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // Función para renderizar flujo de efectivo
+        function renderCashFlow() {
+            const tbody = document.getElementById('cashFlowBody');
+            tbody.innerHTML = '';
+            
+            if (proformaData.cashFlow.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-row">
+                            <i class="fas fa-money-bill-wave me-2"></i>Genera una proyección para ver los resultados
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            proformaData.cashFlow.forEach(item => {
+                const tr = document.createElement('tr');
+                
+                if (item.isHeader) {
+                    tr.classList.add('account-header-row');
+                } else if (item.isTotal) {
+                    tr.classList.add('calculation-row');
+                }
+                
+                tr.innerHTML = `
+                    <td class="account-name">${item.account}</td>
+                    <td class="text-center proforma-value">${formatCurrency(item.projectedValue)}</td>
+                    <td class="text-center percentage-value">${item.percentage.toFixed(1)}%</td>
+                    <td class="text-center">${item.notes || '-'}</td>
+                `;
+                
+                tbody.appendChild(tr);
+            });
+        }
+        
+        // Formatear moneda
+        function formatCurrency(value) {
+            const num = parseFloat(value);
+            if (isNaN(num)) return '-';
+            
+            return new Intl.NumberFormat('es-MX', {
+                style: 'currency',
+                currency: 'MXN',
+                minimumFractionDigits: 0
+            }).format(num);
+        }
+        
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Controles de incremento/decremento para supuestos
+            document.querySelectorAll('.number-control').forEach(button => {
+                button.addEventListener('click', function() {
+                    const inputId = this.dataset.input;
+                    const direction = this.classList.contains('increase') ? 1 : -1;
+                    adjustValue(inputId, direction);
+                });
+            });
+            
+            // Inputs de supuestos
+            document.getElementById('salesGrowth').addEventListener('input', function() {
+                assumptions.salesGrowth = parseFloat(this.value) || 0;
+            });
+            
+            document.getElementById('taxRate').addEventListener('input', function() {
+                assumptions.taxRate = parseFloat(this.value) || 0;
+            });
+            
+            document.getElementById('retainedEarnings').addEventListener('input', function() {
+                assumptions.retainedEarnings = parseFloat(this.value) || 0;
+            });
+            
+            // Generar proyección
+            document.getElementById('generateProjection').addEventListener('click', function() {
+                calculateProjections();
+                showAlert('Proyección generada correctamente', 'success');
+            });
+            
+            // Guardar proyección
+            document.getElementById('saveProjection').addEventListener('click', function() {
+                showAlert('Proyección guardada correctamente', 'success');
+            });
+            
+            // Exportar a Excel
+            document.getElementById('exportExcel').addEventListener('click', function() {
+                showAlert('Preparando descarga de Excel...', 'info');
+            });
+            
+            // Cargar cuentas
+            document.getElementById('loadAccounts').addEventListener('click', function() {
+                const period = document.getElementById('accountConfigPeriod').value;
+                if (!period) {
+                    showAlert('Por favor selecciona un período base', 'error');
+                    return;
+                }
+                
+                showAlert(`Cuentas del período ${period} cargadas correctamente`, 'success');
+            });
+        }
+        
+        // Función para mostrar alertas
+        function showAlert(message, type) {
+            // Crear elemento de alerta
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+                border-radius: 12px;
+                border: none;
+                background: ${type === 'success' ? 'linear-gradient(135deg, var(--success-color), var(--neon-cyan))' : 
+                          type === 'error' ? 'linear-gradient(135deg, var(--danger-color), #f87171)' : 
+                          type === 'warning' ? 'linear-gradient(135deg, var(--warning-color), #f59e0b)' :
+                          'linear-gradient(135deg, var(--neon-blue), var(--neon-purple))'};
+                color: white;
+            `;
+            alertDiv.innerHTML = `
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                    <div>
+                        <strong class="d-block">${type === 'success' ? 'Éxito' : type === 'error' ? 'Error' : type === 'warning' ? 'Advertencia' : 'Información'}</strong>
+                        ${message}
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remover después de 4 segundos
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 4000);
+        }
+        
+        // Inicializar
+        setupEventListeners();
+        
+        // Generar proyección inicial
+        calculateProjections();
+    });
+</script>
+{% endblock %}

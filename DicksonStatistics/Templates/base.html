@@ -181,7 +181,7 @@
         }
 
         .analysis-dropdown .dropdown-menu {
-            min-width: 280px;
+            min-width: 320px;
         }
 
         .analysis-dropdown .dropdown-item {
@@ -492,6 +492,10 @@
                 width: 100%;
                 max-width: 250px;
             }
+            
+            .analysis-dropdown .dropdown-menu {
+                min-width: 280px;
+            }
         }
     </style>
     
@@ -589,6 +593,32 @@
                                     <div>
                                         <div class="fw-semibold">Método Indirecto</div>
                                         <small class="text-muted">Flujo de efectivo por conciliación</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <!-- NUEVOS BOTONES AÑADIDOS -->
+                            <li>
+                                <a class="dropdown-item {% if request.resolver_match.url_name == 'estados_proforma' %}active{% endif %}" 
+                                   href="{% url 'estados_proforma' %}">
+                                    <div class="analysis-icon">
+                                        <i class="fas fa-project-diagram"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Estados Proforma</div>
+                                        <small class="text-muted">Proyección de estados financieros futuros</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {% if request.resolver_match.url_name == 'presupuesto_caja' %}active{% endif %}" 
+                                   href="{% url 'presupuesto_caja' %}">
+                                    <div class="analysis-icon">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Presupuesto de Caja</div>
+                                        <small class="text-muted">Planificación de flujos de efectivo</small>
                                     </div>
                                 </a>
                             </li>

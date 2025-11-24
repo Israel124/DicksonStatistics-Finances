@@ -11,11 +11,27 @@ from django.contrib import messages
 
 # Create your views here.
 
+def estados_proforma(request):
+    return render(request, 'estados_proforma.html')
+
+def presupuesto_caja(request):
+    return render(request, 'presupuesto_caja.html')
+
 def home(request):
     return render(request, 'home.html')
 
 def register(request):
     return render(request, 'register.html')
+#Metdodo Directo (pendiente)
+@login_required
+def metodo_directo(request):
+    return render(request, 'metododirecto.html')
+
+#Metodo Indirecto (pendiente)
+@login_required
+def metodo_indirecto(request):
+    return render(request, 'metodoindirecto.html')
+
 
 #DEFINICON DE VISTAS PARA AUTENTICACION LOGIN/LOGOUT
 def login_view(request):

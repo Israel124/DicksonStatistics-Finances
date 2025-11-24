@@ -24,4 +24,9 @@ urlpatterns = [
     path('profitability/', views.profitability, name = 'profitability'),
     path('profile/', views.perfil, name= 'profile'),
     path('settings/', views.configuracion, name= 'settings'),
+    path('estados-proforma/', views.estados_proforma, name='estados_proforma'),
+    path('presupuesto-caja/', views.presupuesto_caja, name='presupuesto_caja'),
+    path('directo/', views.metodo_directo, name='directo'),
+    path('indirecto/', views.metodo_indirecto, name='indirecto'),
+    
 ]

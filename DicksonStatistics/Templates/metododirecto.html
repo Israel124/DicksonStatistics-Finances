@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Método Indirecto - DicksonStatistics{% endblock %}
+{% block title %}Método Directo - DicksonStatistics{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -97,42 +97,6 @@
             transform: translateY(0) rotate(360deg);
             opacity: 0.5;
         }
-    }
-
-    /* Animaciones de carga */
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-    }
-
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .loading {
-        display: inline-block;
-        animation: spin 1s linear infinite;
-    }
-
-    .pulse-effect {
-        animation: pulse 2s infinite;
-    }
-
-    .slide-in {
-        animation: slideIn 0.5s ease-out;
     }
     
     .analysis-section {
@@ -1071,8 +1035,8 @@
     <div class="container">
         <!-- Header -->
         <div class="section-header">
-            <h1 class="section-title">Método <span class="highlight">Indirecto</span></h1>
-            <p class="section-subtitle">Análisis del flujo de efectivo mediante el método indirecto con tecnología avanzada</p>
+            <h1 class="section-title">Método <span class="highlight">Directo</span></h1>
+            <p class="section-subtitle">Análisis del flujo de efectivo mediante el método directo con tecnología avanzada</p>
         </div>
 
         <!-- Selector de Tipo de Reporte -->
@@ -1084,14 +1048,21 @@
                         <i class="fas fa-exchange-alt"></i>
                     </div>
                     <div class="report-title">Flujo de Operación</div>
-                    <div class="report-description">Conciliación de utilidad neta a flujo operativo</div>
+                    <div class="report-description">Efectivo de actividades operativas</div>
                 </div>
-                <div class="report-type-btn" data-report-type="consolidated">
+                <div class="report-type-btn" data-report-type="investing">
                     <div class="report-icon">
-                        <i class="fas fa-chart-bar"></i>
+                        <i class="fas fa-chart-line"></i>
                     </div>
-                    <div class="report-title">Estado Consolidado</div>
-                    <div class="report-description">Flujo completo de efectivo consolidado</div>
+                    <div class="report-title">Flujo de Inversión</div>
+                    <div class="report-description">Efectivo de actividades de inversión</div>
+                </div>
+                <div class="report-type-btn" data-report-type="financing">
+                    <div class="report-icon">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                    <div class="report-title">Flujo de Financiación</div>
+                    <div class="report-description">Efectivo de actividades de financiación</div>
                 </div>
             </div>
         </div>
@@ -1144,7 +1115,7 @@
             </div>
         </div>
 
-        <!-- Tabla de Método Indirecto -->
+        <!-- Tabla de Método Directo -->
         <div class="analysis-table-container">
             <div class="table-responsive">
                 <table class="table table-modern">
@@ -1154,7 +1125,7 @@
                             <th class="period-header">
                                 <span id="tablePeriodTitle">Período</span>
                                 <br>
-                                <small id="tablePeriodSubtitle">Ajustes y Conciliaciones</small>
+                                <small id="tablePeriodSubtitle">Flujos de Efectivo</small>
                             </th>
                         </tr>
                     </thead>
@@ -1174,7 +1145,7 @@
                             <i class="fas fa-plus-circle"></i> Agregar Fila
                         </button>
                         <button class="btn btn-outline-modern btn-modern" id="calculateBtn">
-                            <i class="fas fa-calculator"></i> Calcular Conciliación
+                            <i class="fas fa-calculator"></i> Calcular Totales
                         </button>
                         <button class="btn btn-danger-modern btn-modern" id="deleteRowBtn" disabled>
                             <i class="fas fa-trash"></i> Eliminar Cuenta
@@ -1307,7 +1278,7 @@
         let analysisData = [];
         let deletedAccounts = [];
         let currentPeriod = '';
-        let currentReportType = 'operating'; // 'operating' or 'consolidated'
+        let currentReportType = 'operating'; // 'operating', 'investing', or 'financing'
         let selectedFiles = {
             excel: null,
             pdf: null
@@ -1328,40 +1299,37 @@
             if (currentReportType === 'operating') {
                 analysisData = [
                     { account: 'FLUJOS DE EFECTIVO DE ACTIVIDADES DE OPERACIÓN', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Utilidad Neta del Ejercicio', values: {}, category: 'starting-point' },
-                    { account: 'Ajustes por:', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Depreciación y Amortización', values: {}, category: 'adjustments' },
-                    { account: 'Provisiones', values: {}, category: 'adjustments' },
-                    { account: 'Intereses Diferidos', values: {}, category: 'adjustments' },
-                    { account: 'Pérdida (Ganancia) en Venta de Activos', values: {}, category: 'adjustments' },
-                    { account: 'Cambios en el Capital de Trabajo:', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Aumento (Disminución) en Cuentas por Cobrar', values: {}, category: 'working-capital' },
-                    { account: 'Aumento (Disminución) en Inventarios', values: {}, category: 'working-capital' },
-                    { account: 'Aumento (Disminución) en Cuentas por Pagar', values: {}, category: 'working-capital' },
-                    { account: 'Otros Ajustes de Capital de Trabajo', values: {}, category: 'working-capital' },
+                    { account: 'Cobros procedentes de clientes', values: {}, category: 'operating-inflows' },
+                    { account: 'Pagos a proveedores', values: {}, category: 'operating-outflows' },
+                    { account: 'Pagos al personal', values: {}, category: 'operating-outflows' },
+                    { account: 'Pagos de impuestos', values: {}, category: 'operating-outflows' },
+                    { account: 'Pagos de intereses', values: {}, category: 'operating-outflows' },
+                    { account: 'Otros cobros de actividades de operación', values: {}, category: 'operating-inflows' },
+                    { account: 'Otros pagos de actividades de operación', values: {}, category: 'operating-outflows' },
                     { account: 'FLUJO NETO DE EFECTIVO DE ACTIVIDADES DE OPERACIÓN', values: {}, isTotal: true, category: 'total' }
+                ];
+            } else if (currentReportType === 'investing') {
+                analysisData = [
+                    { account: 'FLUJOS DE EFECTIVO DE ACTIVIDADES DE INVERSIÓN', values: {}, isHeader: true, category: 'header' },
+                    { account: 'Cobros por venta de propiedades, planta y equipo', values: {}, category: 'investing-inflows' },
+                    { account: 'Cobros por venta de inversiones', values: {}, category: 'investing-inflows' },
+                    { account: 'Pagos por adquisición de propiedades, planta y equipo', values: {}, category: 'investing-outflows' },
+                    { account: 'Pagos por adquisición de inversiones', values: {}, category: 'investing-outflows' },
+                    { account: 'Otros cobros de actividades de inversión', values: {}, category: 'investing-inflows' },
+                    { account: 'Otros pagos de actividades de inversión', values: {}, category: 'investing-outflows' },
+                    { account: 'FLUJO NETO DE EFECTIVO DE ACTIVIDADES DE INVERSIÓN', values: {}, isTotal: true, category: 'total' }
                 ];
             } else {
                 analysisData = [
-                    { account: 'ESTADO DE FLUJOS DE EFECTIVO - MÉTODO INDIRECTO', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Actividades de Operación', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Utilidad Neta', values: {}, category: 'starting-point' },
-                    { account: 'Ajustes para Conciliar la Utilidad Neta:', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Depreciación y Amortización', values: {}, category: 'adjustments' },
-                    { account: 'Cambios en Activos y Pasivos Operativos:', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Cuentas por Cobrar', values: {}, category: 'working-capital' },
-                    { account: 'Inventarios', values: {}, category: 'working-capital' },
-                    { account: 'Cuentas por Pagar', values: {}, category: 'working-capital' },
-                    { account: 'Efectivo Neto Proporcionado por Actividades de Operación', values: {}, isTotal: true, category: 'total' },
-                    { account: 'Actividades de Inversión', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Compra de Propiedades, Planta y Equipo', values: {}, category: 'investing' },
-                    { account: 'Venta de Inversiones', values: {}, category: 'investing' },
-                    { account: 'Efectivo Neto Utilizado en Actividades de Inversión', values: {}, isTotal: true, category: 'total' },
-                    { account: 'Actividades de Financiamiento', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Emisión de Acciones', values: {}, category: 'financing' },
-                    { account: 'Pago de Dividendos', values: {}, category: 'financing' },
-                    { account: 'Efectivo Neto Proporcionado por Actividades de Financiamiento', values: {}, isTotal: true, category: 'total' },
-                    { account: 'AUMENTO (DISMINUCIÓN) NETO EN EFECTIVO', values: {}, isTotal: true, category: 'final-total' }
+                    { account: 'FLUJOS DE EFECTIVO DE ACTIVIDADES DE FINANCIACIÓN', values: {}, isHeader: true, category: 'header' },
+                    { account: 'Cobros por emisión de acciones', values: {}, category: 'financing-inflows' },
+                    { account: 'Cobros por préstamos', values: {}, category: 'financing-inflows' },
+                    { account: 'Pagos por dividendos', values: {}, category: 'financing-outflows' },
+                    { account: 'Pagos por recompra de acciones', values: {}, category: 'financing-outflows' },
+                    { account: 'Pagos por amortización de préstamos', values: {}, category: 'financing-outflows' },
+                    { account: 'Otros cobros de actividades de financiación', values: {}, category: 'financing-inflows' },
+                    { account: 'Otros pagos de actividades de financiación', values: {}, category: 'financing-outflows' },
+                    { account: 'FLUJO NETO DE EFECTIVO DE ACTIVIDADES DE FINANCIACIÓN', values: {}, isTotal: true, category: 'total' }
                 ];
             }
         }
@@ -1395,7 +1363,6 @@
             
             analysisData.forEach((row, index) => {
                 const tr = document.createElement('tr');
-                tr.classList.add('slide-in');
                 
                 // Agregar clase de selección si es la fila seleccionada
                 if (index === selectedRowIndex) {
@@ -1599,18 +1566,20 @@
         
         // Encontrar la posición correcta para insertar una cuenta
         function findInsertionIndex(account) {
-            // Para Método Indirecto
+            // Para Flujo de Efectivo
             switch(account.category) {
-                case 'starting-point':
-                    return findCategoryInsertionIndex('starting-point');
-                case 'adjustments':
-                    return findCategoryInsertionIndex('adjustments');
-                case 'working-capital':
-                    return findCategoryInsertionIndex('working-capital');
-                case 'investing':
-                    return findCategoryInsertionIndex('investing');
-                case 'financing':
-                    return findCategoryInsertionIndex('financing');
+                case 'operating-inflows':
+                    return findCategoryInsertionIndex('operating-inflows');
+                case 'operating-outflows':
+                    return findCategoryInsertionIndex('operating-outflows');
+                case 'investing-inflows':
+                    return findCategoryInsertionIndex('investing-inflows');
+                case 'investing-outflows':
+                    return findCategoryInsertionIndex('investing-outflows');
+                case 'financing-inflows':
+                    return findCategoryInsertionIndex('financing-inflows');
+                case 'financing-outflows':
+                    return findCategoryInsertionIndex('financing-outflows');
                 default:
                     return analysisData.length - 1;
             }
@@ -1690,14 +1659,14 @@
         // Obtener nombre legible de la categoría
         function getCategoryName(category) {
             const categoryNames = {
-                'starting-point': 'Punto de Partida',
-                'adjustments': 'Ajustes',
-                'working-capital': 'Capital de Trabajo',
-                'investing': 'Inversión',
-                'financing': 'Financiamiento',
+                'operating-inflows': 'Entradas Operación',
+                'operating-outflows': 'Salidas Operación',
+                'investing-inflows': 'Entradas Inversión',
+                'investing-outflows': 'Salidas Inversión',
+                'financing-inflows': 'Entradas Financiación',
+                'financing-outflows': 'Salidas Financiación',
                 'header': 'Encabezado',
-                'total': 'Total',
-                'final-total': 'Total Final'
+                'total': 'Total'
             };
             
             return categoryNames[category] || category;
@@ -1812,17 +1781,18 @@
                 let categoryOptions = [];
                 if (currentReportType === 'operating') {
                     categoryOptions = [
-                        { value: 'starting-point', text: 'Punto de Partida' },
-                        { value: 'adjustments', text: 'Ajustes' },
-                        { value: 'working-capital', text: 'Capital de Trabajo' }
+                        { value: 'operating-inflows', text: 'Entradas de Operación' },
+                        { value: 'operating-outflows', text: 'Salidas de Operación' }
+                    ];
+                } else if (currentReportType === 'investing') {
+                    categoryOptions = [
+                        { value: 'investing-inflows', text: 'Entradas de Inversión' },
+                        { value: 'investing-outflows', text: 'Salidas de Inversión' }
                     ];
                 } else {
                     categoryOptions = [
-                        { value: 'starting-point', text: 'Punto de Partida' },
-                        { value: 'adjustments', text: 'Ajustes' },
-                        { value: 'working-capital', text: 'Capital de Trabajo' },
-                        { value: 'investing', text: 'Inversión' },
-                        { value: 'financing', text: 'Financiamiento' }
+                        { value: 'financing-inflows', text: 'Entradas de Financiación' },
+                        { value: 'financing-outflows', text: 'Salidas de Financiación' }
                     ];
                 }
                 
@@ -1866,35 +1836,20 @@
                 deleteAccount(selectedRowIndex);
             });
             
-            // Calcular conciliación con animación de carga
+            // Calcular totales
             document.getElementById('calculateBtn').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
                     return;
                 }
                 
-                const btn = this;
-                const originalText = btn.innerHTML;
-                
-                // Aplicar animación de carga
-                btn.innerHTML = '<i class="fas fa-spinner loading"></i> Calculando...';
-                btn.disabled = true;
-                
-                // Simular cálculo con delay
-                setTimeout(() => {
-                    // Calcular totales para cada sección
-                    calculateReconciliation();
-                    renderTable();
-                    
-                    // Restaurar botón
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    
-                    showAlert('Conciliación calculada correctamente', 'success');
-                }, 1500);
+                // Calcular totales para cada sección
+                calculateTotals();
+                renderTable();
+                showAlert('Totales calculados correctamente', 'success');
             });
             
-            // Limpiar tabla con animación
+            // Limpiar tabla
             document.getElementById('clearBtn').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
@@ -1902,35 +1857,21 @@
                 }
                 
                 if (confirm('¿Estás seguro de que deseas limpiar toda la tabla? Se perderán todos los datos.')) {
-                    const btn = this;
-                    const originalText = btn.innerHTML;
+                    analysisData.forEach(row => {
+                        if (row.values) {
+                            row.values[currentPeriod] = '';
+                        }
+                    });
                     
-                    // Aplicar animación de carga
-                    btn.innerHTML = '<i class="fas fa-spinner loading"></i> Limpiando...';
-                    btn.disabled = true;
+                    // Resetear selección
+                    selectedRowIndex = -1;
                     
-                    setTimeout(() => {
-                        analysisData.forEach(row => {
-                            if (row.values) {
-                                row.values[currentPeriod] = '';
-                            }
-                        });
-                        
-                        // Resetear selección
-                        selectedRowIndex = -1;
-                        
-                        renderTable();
-                        
-                        // Restaurar botón
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                        
-                        showAlert('Tabla limpiada correctamente', 'info');
-                    }, 1000);
+                    renderTable();
+                    showAlert('Tabla limpiada correctamente', 'info');
                 }
             });
             
-            // Procesar importación con animación
+            // Procesar importación
             document.getElementById('processImport').addEventListener('click', function() {
                 if (!selectedFiles.excel && !selectedFiles.pdf) {
                     showAlert('Por favor selecciona al menos un archivo para importar', 'error');
@@ -1946,39 +1887,34 @@
                 const btn = this;
                 const originalText = btn.innerHTML;
                 
-                btn.innerHTML = '<i class="fas fa-spinner loading"></i> Procesando...';
-                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
                 
                 setTimeout(() => {
                     btn.innerHTML = originalText;
-                    btn.disabled = false;
                     
                     // Agregar datos de ejemplo importados
                     if (currentReportType === 'operating') {
                         analysisData = [
                             { account: 'FLUJOS DE EFECTIVO DE ACTIVIDADES DE OPERACIÓN', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Utilidad Neta del Ejercicio', values: { [currentPeriod]: 500000 }, category: 'starting-point' },
-                            { account: 'Ajustes por:', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Depreciación y Amortización', values: { [currentPeriod]: 150000 }, category: 'adjustments' },
-                            { account: 'Provisiones', values: { [currentPeriod]: 50000 }, category: 'adjustments' },
-                            { account: 'Cambios en el Capital de Trabajo:', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Aumento (Disminución) en Cuentas por Cobrar', values: { [currentPeriod]: -80000 }, category: 'working-capital' },
-                            { account: 'Aumento (Disminución) en Inventarios', values: { [currentPeriod]: -120000 }, category: 'working-capital' },
-                            { account: 'Aumento (Disminución) en Cuentas por Pagar', values: { [currentPeriod]: 60000 }, category: 'working-capital' },
-                            { account: 'FLUJO NETO DE EFECTIVO DE ACTIVIDADES DE OPERACIÓN', values: { [currentPeriod]: 560000 }, isTotal: true, category: 'total' }
+                            { account: 'Cobros procedentes de clientes', values: { [currentPeriod]: 1500000 }, category: 'operating-inflows' },
+                            { account: 'Pagos a proveedores', values: { [currentPeriod]: -800000 }, category: 'operating-outflows' },
+                            { account: 'Pagos al personal', values: { [currentPeriod]: -300000 }, category: 'operating-outflows' },
+                            { account: 'Pagos de impuestos', values: { [currentPeriod]: -150000 }, category: 'operating-outflows' },
+                            { account: 'FLUJO NETO DE EFECTIVO DE ACTIVIDADES DE OPERACIÓN', values: { [currentPeriod]: 250000 }, isTotal: true, category: 'total' }
+                        ];
+                    } else if (currentReportType === 'investing') {
+                        analysisData = [
+                            { account: 'FLUJOS DE EFECTIVO DE ACTIVIDADES DE INVERSIÓN', values: {}, isHeader: true, category: 'header' },
+                            { account: 'Cobros por venta de propiedades, planta y equipo', values: { [currentPeriod]: 50000 }, category: 'investing-inflows' },
+                            { account: 'Pagos por adquisición de propiedades, planta y equipo', values: { [currentPeriod]: -200000 }, category: 'investing-outflows' },
+                            { account: 'FLUJO NETO DE EFECTIVO DE ACTIVIDADES DE INVERSIÓN', values: { [currentPeriod]: -150000 }, isTotal: true, category: 'total' }
                         ];
                     } else {
                         analysisData = [
-                            { account: 'ESTADO DE FLUJOS DE EFECTIVO - MÉTODO INDIRECTO', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Actividades de Operación', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Utilidad Neta', values: { [currentPeriod]: 500000 }, category: 'starting-point' },
-                            { account: 'Ajustes para Conciliar la Utilidad Neta:', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Depreciación y Amortización', values: { [currentPeriod]: 150000 }, category: 'adjustments' },
-                            { account: 'Cambios en Activos y Pasivos Operativos:', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Cuentas por Cobrar', values: { [currentPeriod]: -80000 }, category: 'working-capital' },
-                            { account: 'Inventarios', values: { [currentPeriod]: -120000 }, category: 'working-capital' },
-                            { account: 'Cuentas por Pagar', values: { [currentPeriod]: 60000 }, category: 'working-capital' },
-                            { account: 'Efectivo Neto Proporcionado por Actividades de Operación', values: { [currentPeriod]: 510000 }, isTotal: true, category: 'total' }
+                            { account: 'FLUJOS DE EFECTIVO DE ACTIVIDADES DE FINANCIACIÓN', values: {}, isHeader: true, category: 'header' },
+                            { account: 'Cobros por emisión de acciones', values: { [currentPeriod]: 300000 }, category: 'financing-inflows' },
+                            { account: 'Pagos por dividendos', values: { [currentPeriod]: -50000 }, category: 'financing-outflows' },
+                            { account: 'FLUJO NETO DE EFECTIVO DE ACTIVIDADES DE FINANCIACIÓN', values: { [currentPeriod]: 250000 }, isTotal: true, category: 'total' }
                         ];
                     }
                     
@@ -2000,7 +1936,7 @@
                 }, 2000);
             });
             
-            // Guardar análisis con animación
+            // Guardar análisis
             document.getElementById('saveAnalysis').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
@@ -2011,79 +1947,57 @@
                 const btn = this;
                 const originalText = btn.innerHTML;
                 
-                btn.innerHTML = '<i class="fas fa-spinner loading"></i> Guardando...';
-                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
                 
                 setTimeout(() => {
                     btn.innerHTML = originalText;
-                    btn.disabled = false;
                     showAlert('Análisis guardado correctamente', 'success');
                 }, 1500);
             });
             
-            // Exportar a Excel con animación
+            // Exportar a Excel
             document.getElementById('exportExcel').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
                     return;
                 }
                 
-                const btn = this;
-                const originalText = btn.innerHTML;
-                
-                btn.innerHTML = '<i class="fas fa-spinner loading"></i> Exportando...';
-                btn.disabled = true;
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    showAlert('Preparando descarga de Excel...', 'info');
-                    // Aquí iría la lógica real de exportación a Excel
-                }, 1500);
+                showAlert('Preparando descarga de Excel...', 'info');
+                // Aquí iría la lógica real de exportación a Excel
             });
             
-            // Exportar a PDF con animación
+            // Exportar a PDF
             document.getElementById('exportPDF').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
                     return;
                 }
                 
-                const btn = this;
-                const originalText = btn.innerHTML;
-                
-                btn.innerHTML = '<i class="fas fa-spinner loading"></i> Exportando...';
-                btn.disabled = true;
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    showAlert('Preparando descarga de PDF...', 'info');
-                    // Aquí iría la lógica real de exportación a PDF
-                }, 1500);
+                showAlert('Preparando descarga de PDF...', 'info');
+                // Aquí iría la lógica real de exportación a PDF
             });
         }
         
-        // Calcular conciliación
-        function calculateReconciliation() {
-            let operatingTotal = 0;
+        // Calcular totales
+        function calculateTotals() {
+            let totalInflows = 0;
+            let totalOutflows = 0;
             
             analysisData.forEach(row => {
-                if (!row.isHeader && row.values[currentPeriod]) {
+                if (!row.isHeader && !row.isTotal && row.values[currentPeriod]) {
                     const value = parseFloat(row.values[currentPeriod]) || 0;
-                    
-                    if (row.category === 'starting-point' || row.category === 'adjustments') {
-                        operatingTotal += value;
-                    } else if (row.category === 'working-capital') {
-                        operatingTotal += value;
+                    if (value > 0) {
+                        totalInflows += value;
+                    } else {
+                        totalOutflows += Math.abs(value);
                     }
                 }
             });
             
-            // Actualizar fila de total operativo
-            const operatingTotalRow = analysisData.find(row => row.account.includes('FLUJO NETO') || row.account.includes('Efectivo Neto'));
-            if (operatingTotalRow) {
-                operatingTotalRow.values[currentPeriod] = operatingTotal;
+            // Actualizar fila de total
+            const totalRow = analysisData.find(row => row.isTotal);
+            if (totalRow) {
+                totalRow.values[currentPeriod] = totalInflows - totalOutflows;
             }
         }
         
@@ -2106,15 +2020,18 @@
                     case 'operating':
                         reportTypeText = 'Flujo de Operación';
                         break;
-                    case 'consolidated':
-                        reportTypeText = 'Estado Consolidado';
+                    case 'investing':
+                        reportTypeText = 'Flujo de Inversión';
+                        break;
+                    case 'financing':
+                        reportTypeText = 'Flujo de Financiación';
                         break;
                 }
                 reportType.textContent = reportTypeText;
                 
                 periodDates.textContent = `Período: Ene ${currentPeriod} - Dic ${currentPeriod}`;
                 tablePeriodTitle.textContent = `Período ${currentPeriod}`;
-                tablePeriodSubtitle.textContent = 'Ajustes y Conciliaciones';
+                tablePeriodSubtitle.textContent = 'Flujos de Efectivo';
             } else {
                 periodInfo.style.display = 'none';
             }
