@@ -1,0 +1,773 @@
+{% extends 'base.html' %}
+
+{% block title %}Estado de Resultados Proforma - DicksonStatistics{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --primary: #00d9ff;
+    --secondary: #0099cc;
+    --accent: #ff006e;
+    --dark-bg: #0a0e27;
+    --card-bg: #1a1f3a;
+    --border-color: #2d3561;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --success: #00ff88;
+    --warning: #ffaa00;
+    --danger: #ff3366;
+  }
+
+  .section-header {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 0, 110, 0.1) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+  }
+
+  .card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 12px 48px rgba(0, 217, 255, 0.2);
+    transform: translateY(-5px);
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .card-body {
+    padding: 25px;
+  }
+
+  .btn-primary-glow {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border: none;
+    color: var(--dark-bg);
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+    cursor: pointer;
+  }
+
+  .btn-primary-glow:hover {
+    box-shadow: 0 0 40px rgba(0, 217, 255, 0.6);
+    transform: translateY(-2px);
+    color: var(--dark-bg);
+  }
+
+  .input-futurista {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+
+  .input-futurista:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    color: var(--text-primary);
+    outline: none;
+  }
+
+  .input-futurista::placeholder {
+    color: var(--text-secondary);
+  }
+
+  .proforma-tabla {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .proforma-tabla td {
+    padding: 12px 15px;
+    border: none;
+    color: var(--text-primary);
+  }
+
+  .proforma-tabla .concepto {
+    text-align: left;
+    font-weight: 500;
+    width: 40%;
+  }
+
+  .proforma-tabla .porcentaje {
+    text-align: center;
+    width: 20%;
+    color: var(--primary);
+  }
+
+  .proforma-tabla .monto {
+    text-align: right;
+    width: 40%;
+  }
+
+  .proforma-tabla .titulo-seccion {
+    background: rgba(0, 217, 255, 0.1);
+    font-weight: 700;
+    color: var(--primary);
+    border-top: 2px solid var(--primary);
+    border-bottom: 2px solid var(--primary);
+  }
+
+  .proforma-tabla .subtotal {
+    background: rgba(0, 217, 255, 0.05);
+    font-weight: 600;
+    border-bottom: 1px dashed var(--border-color);
+  }
+
+  .proforma-tabla .total-final {
+    background: rgba(0, 217, 255, 0.15);
+    font-weight: 800;
+    border-top: 2px solid var(--primary);
+    border-bottom: 3px solid var(--primary);
+  }
+
+  .input-monto-modal {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid var(--primary);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    width: 100%;
+    text-align: right;
+  }
+
+  .input-monto-modal:focus {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+    outline: none;
+  }
+
+  .parametros-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .parametro-item {
+    background: rgba(0, 217, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 15px;
+    transition: all 0.3s ease;
+  }
+
+  .parametro-item:hover {
+    border-color: var(--primary);
+    background: rgba(0, 217, 255, 0.1);
+  }
+
+  .parametro-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .parametro-input {
+    width: 100%;
+  }
+
+  .alert-info {
+    background: rgba(0, 217, 255, 0.1);
+    border: 1px solid var(--primary);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .metric-card {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .metric-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 8px 32px rgba(0, 217, 255, 0.15);
+  }
+
+  .metric-value {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .metric-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 8px;
+  }
+
+  .btn-group-custom {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .btn-secondary-glow {
+    background: rgba(0, 217, 255, 0.1);
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .btn-secondary-glow:hover {
+    background: rgba(0, 217, 255, 0.2);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+  }
+
+  .modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+  }
+
+  .modal-header {
+    border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+  }
+
+  .modal-header .btn-close {
+    filter: invert(1);
+  }
+
+  .modal-title {
+    color: var(--primary);
+    font-weight: 700;
+  }
+
+  .modal-body {
+    color: var(--text-primary);
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 1.5rem;
+    }
+
+    .metric-value {
+      font-size: 1.5rem;
+    }
+
+    .section-header {
+      padding: 25px;
+    }
+
+    .parametros-container {
+      grid-template-columns: 1fr;
+    }
+
+    .proforma-tabla .concepto,
+    .proforma-tabla .porcentaje,
+    .proforma-tabla .monto {
+      font-size: 0.9rem;
+      padding: 8px 10px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4" style="position: relative; z-index: 1;">
+  <!-- Hero Section -->
+  <section class="section-header">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="section-title">
+          <i class="fas fa-crystal-ball" style="margin-right: 15px; text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);"></i>
+          Estado de Resultados Proforma
+        </h1>
+        <p class="section-subtitle">Proyecciones financieras basadas en el método de porcentaje de ventas</p>
+      </div>
+      <div class="col-lg-4 text-center">
+        <div style="font-size: 4rem; color: var(--primary); text-shadow: 0 0 30px rgba(0, 217, 255, 0.5);">
+          <i class="fas fa-chart-line"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Información -->
+  <div class="alert-info">
+    <i class="fas fa-info-circle"></i> <strong>Método de Porcentaje de Ventas:</strong> 
+    Este método proyecta los gastos e ingresos como un porcentaje de las ventas netas. 
+    Ingresa las ventas proyectadas y el sistema calculará automáticamente los demás conceptos.
+  </div>
+
+  <!-- Parámetros de Entrada -->
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-sliders-h"></i> Parámetros de Proyección
+    </div>
+    <div class="card-body">
+      <div class="parametros-container">
+        <div class="parametro-item">
+          <label class="parametro-label">Ventas Proyectadas</label>
+          <input type="number" id="ventasProyectadas" class="input-futurista parametro-input" 
+                 placeholder="0.00" step="0.01" value="0">
+        </div>
+        <div class="parametro-item">
+          <label class="parametro-label">Período de Proyección</label>
+          <input type="text" id="periodoProyeccion" class="input-futurista parametro-input" 
+                 placeholder="Ej: Enero 2025" value="Próximo Período">
+        </div>
+        <div class="parametro-item">
+          <label class="parametro-label">Variación de Ventas (%)</label>
+          <input type="number" id="variacionVentas" class="input-futurista parametro-input" 
+                 placeholder="0.00" step="0.01" value="0">
+        </div>
+      </div>
+
+      <div class="btn-group-custom">
+        <button class="btn-primary-glow" onclick="calcularProforma()">
+          <i class="fas fa-calculator"></i> Calcular Proforma
+        </button>
+        <button class="btn-secondary-glow" onclick="limpiarProforma()">
+          <i class="fas fa-redo"></i> Limpiar
+        </button>
+        <button class="btn-secondary-glow" onclick="exportarProforma()">
+          <i class="fas fa-download"></i> Descargar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado de Resultados Proforma -->
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-file-invoice-dollar"></i> Estado de Resultados Proforma
+    </div>
+    <div class="card-body">
+      <table class="proforma-tabla">
+        <thead style="display: none;"></thead>
+        <tbody id="tablaProforma">
+          <tr>
+            <td colspan="3" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+              <i class="fas fa-inbox"></i> Ingresa los datos y haz clic en "Calcular Proforma"
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Indicadores Proyectados -->
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-tachometer-alt"></i> Indicadores Financieros Proyectados
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="metric-card">
+            <div class="metric-value" id="margenBrutoProf">0.00%</div>
+            <div class="metric-label">Margen Bruto</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="metric-card">
+            <div class="metric-value" id="margenOperativoProf">0.00%</div>
+            <div class="metric-label">Margen Operativo</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="metric-card">
+            <div class="metric-value" id="margenNetoProf">0.00%</div>
+            <div class="metric-label">Margen Neto</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="metric-card">
+            <div class="metric-value" id="utilidadProf">0.00</div>
+            <div class="metric-label">Utilidad Neta</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparativa Histórico vs Proforma -->
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-chart-bar"></i> Comparativa: Histórico vs Proforma
+    </div>
+    <div class="card-body">
+      <table class="proforma-tabla">
+        <thead style="display: none;"></thead>
+        <tbody id="tablaComparativa">
+          <tr>
+            <td colspan="3" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+              <i class="fas fa-inbox"></i> Sin datos para comparar
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Parámetros Avanzados -->
+<div class="modal fade" id="modalParametrosAvanzados" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-cogs"></i> Parámetros Avanzados</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <label class="form-label" style="color: var(--primary); font-weight: 700;">
+              % Costo de Ventas
+            </label>
+            <input type="number" id="pctCostoVentas" class="input-monto-modal" placeholder="0.00" step="0.01">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" style="color: var(--primary); font-weight: 700;">
+              % Gastos Operativos
+            </label>
+            <input type="number" id="pctGastosOperativos" class="input-monto-modal" placeholder="0.00" step="0.01">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary-glow" onclick="guardarParametrosAvanzados()">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Datos históricos del análisis vertical (estos vienen de la sesión o localStorage)
+  let porcentajesHistoricos = {
+    costoVentas: 0,
+    gastosAdmin: 0,
+    gastosVentas: 0,
+    gastosFinancieros: 0,
+    impuestoRenta: 0
+  };
+
+  // Cargar porcentajes desde localStorage si existen
+  function cargarPorcentajesHistoricos() {
+    const datos = localStorage.getItem('porcentajesAnalisisVertical');
+    if (datos) {
+      const analisis = JSON.parse(datos);
+      porcentajesHistoricos = {
+        costoVentas: analisis.costoVentas || 0,
+        gastosAdmin: analisis.gastosAdmin || 0,
+        gastosVentas: analisis.gastosVentas || 0,
+        gastosFinancieros: analisis.gastosFinancieros || 0,
+        impuestoRenta: analisis.impuestoRenta || 0
+      };
+    }
+  }
+
+  // Guardar porcentajes en localStorage
+  function guardarPorcentajesHistoricos(analisis) {
+    localStorage.setItem('porcentajesAnalisisVertical', JSON.stringify({
+      costoVentas: analisis.costoVentas,
+      gastosAdmin: analisis.gastosAdmin,
+      gastosVentas: analisis.gastosVentas,
+      gastosFinancieros: analisis.gastosFinancieros,
+      impuestoRenta: analisis.impuestoRenta
+    }));
+  }
+
+  function calcularProforma() {
+    const ventasProyectadas = parseFloat(document.getElementById('ventasProyectadas').value) || 0;
+    const variacion = parseFloat(document.getElementById('variacionVentas').value) || 0;
+    const periodo = document.getElementById('periodoProyeccion').value;
+
+    if (ventasProyectadas <= 0) {
+      alert('Por favor ingresa un monto de ventas válido');
+      return;
+    }
+
+    // Aplicar variación
+    const ventasAjustadas = ventasProyectadas * (1 + (variacion / 100));
+
+    // Calcular componentes usando porcentajes históricos
+    const costoVentas = ventasAjustadas * (porcentajesHistoricos.costoVentas / 100);
+    const utilidadBruta = ventasAjustadas - costoVentas;
+    
+    const gastosAdmin = ventasAjustadas * (porcentajesHistoricos.gastosAdmin / 100);
+    const gastosVentas = ventasAjustadas * (porcentajesHistoricos.gastosVentas / 100);
+    const gastosOperativos = gastosAdmin + gastosVentas;
+    
+    const utilidadOperativa = utilidadBruta - gastosOperativos;
+    
+    const gastosFinancieros = ventasAjustadas * (porcentajesHistoricos.gastosFinancieros / 100);
+    const utilidadAntesISR = utilidadOperativa + gastosFinancieros;
+    
+    const impuestoRenta = utilidadAntesISR * (porcentajesHistoricos.impuestoRenta / 100);
+    const utilidadNeta = utilidadAntesISR - impuestoRenta;
+
+    // Generar tabla proforma
+    const html = `
+      <tr class="titulo-seccion">
+        <td class="concepto">VENTAS NETAS</td>
+        <td class="porcentaje"><strong>100.00%</strong></td>
+        <td class="monto"><strong>${ventasAjustadas.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></td>
+      </tr>
+      <tr>
+        <td class="concepto">(-) Costo de Ventas</td>
+        <td class="porcentaje">${(porcentajesHistoricos.costoVentas).toFixed(2)}%</td>
+        <td class="monto">${costoVentas.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+      </tr>
+      <tr class="subtotal">
+        <td class="concepto"><strong>= UTILIDAD BRUTA</strong></td>
+        <td class="porcentaje"><strong>${((utilidadBruta / ventasAjustadas) * 100).toFixed(2)}%</strong></td>
+        <td class="monto"><strong>${utilidadBruta.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></td>
+      </tr>
+      <tr>
+        <td class="concepto">(-) Gastos de Administración</td>
+        <td class="porcentaje">${(porcentajesHistoricos.gastosAdmin).toFixed(2)}%</td>
+        <td class="monto">${gastosAdmin.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+      </tr>
+      <tr>
+        <td class="concepto">(-) Gastos de Ventas</td>
+        <td class="porcentaje">${(porcentajesHistoricos.gastosVentas).toFixed(2)}%</td>
+        <td class="monto">${gastosVentas.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+      </tr>
+      <tr class="subtotal">
+        <td class="concepto"><strong>= UTILIDAD OPERATIVA</strong></td>
+        <td class="porcentaje"><strong>${((utilidadOperativa / ventasAjustadas) * 100).toFixed(2)}%</strong></td>
+        <td class="monto"><strong>${utilidadOperativa.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></td>
+      </tr>
+      <tr>
+        <td class="concepto">± Gastos Financieros</td>
+        <td class="porcentaje">${(porcentajesHistoricos.gastosFinancieros).toFixed(2)}%</td>
+        <td class="monto">${gastosFinancieros.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+      </tr>
+      <tr class="subtotal">
+        <td class="concepto"><strong>= UTILIDAD ANTES DEL ISR</strong></td>
+        <td class="porcentaje"><strong>${((utilidadAntesISR / ventasAjustadas) * 100).toFixed(2)}%</strong></td>
+        <td class="monto"><strong>${utilidadAntesISR.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></td>
+      </tr>
+      <tr>
+        <td class="concepto">(-) Impuesto sobre la Renta</td>
+        <td class="porcentaje">${(porcentajesHistoricos.impuestoRenta).toFixed(2)}%</td>
+        <td class="monto">${impuestoRenta.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+      </tr>
+      <tr class="total-final">
+        <td class="concepto"><strong>= UTILIDAD NETA</strong></td>
+        <td class="porcentaje"><strong>${((utilidadNeta / ventasAjustadas) * 100).toFixed(2)}%</strong></td>
+        <td class="monto"><strong>${utilidadNeta.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></td>
+      </tr>
+    `;
+
+    document.getElementById('tablaProforma').innerHTML = html;
+
+    // Actualizar indicadores
+    document.getElementById('margenBrutoProf').textContent = 
+      ((utilidadBruta / ventasAjustadas) * 100).toFixed(2) + '%';
+    document.getElementById('margenOperativoProf').textContent = 
+      ((utilidadOperativa / ventasAjustadas) * 100).toFixed(2) + '%';
+    document.getElementById('margenNetoProf').textContent = 
+      ((utilidadNeta / ventasAjustadas) * 100).toFixed(2) + '%';
+    document.getElementById('utilidadProf').textContent = 
+      utilidadNeta.toLocaleString('es-ES', { minimumFractionDigits: 2 });
+
+    // Actualizar comparativa
+    actualizarComparativa(ventasAjustadas, costoVentas, utilidadBruta, gastosOperativos, utilidadOperativa, utilidadNeta);
+  }
+
+  function actualizarComparativa(ventasProf, costoProf, utilidadBrutaProf, gastosOpProf, utilidadOpProf, utilidadNetaProf) {
+    const html = `
+      <tr class="titulo-seccion">
+        <td class="concepto">CONCEPTO</td>
+        <td class="porcentaje">HISTÓRICO %</td>
+        <td class="monto">PROFORMA %</td>
+      </tr>
+      <tr>
+        <td class="concepto">Costo de Ventas</td>
+        <td class="porcentaje">${(porcentajesHistoricos.costoVentas).toFixed(2)}%</td>
+        <td class="monto">${((costoProf / ventasProf) * 100).toFixed(2)}%</td>
+      </tr>
+      <tr>
+        <td class="concepto">Margen Bruto</td>
+        <td class="porcentaje">${(100 - porcentajesHistoricos.costoVentas).toFixed(2)}%</td>
+        <td class="monto">${((utilidadBrutaProf / ventasProf) * 100).toFixed(2)}%</td>
+      </tr>
+      <tr>
+        <td class="concepto">Gastos Operativos</td>
+        <td class="porcentaje">${(porcentajesHistoricos.gastosAdmin + porcentajesHistoricos.gastosVentas).toFixed(2)}%</td>
+        <td class="monto">${((gastosOpProf / ventasProf) * 100).toFixed(2)}%</td>
+      </tr>
+      <tr class="subtotal">
+        <td class="concepto"><strong>Margen Operativo</strong></td>
+        <td class="porcentaje"><strong>${(100 - porcentajesHistoricos.costoVentas - porcentajesHistoricos.gastosAdmin - porcentajesHistoricos.gastosVentas).toFixed(2)}%</strong></td>
+        <td class="monto"><strong>${((utilidadOpProf / ventasProf) * 100).toFixed(2)}%</strong></td>
+      </tr>
+      <tr class="total-final">
+        <td class="concepto"><strong>Margen Neto</strong></td>
+        <td class="porcentaje"><strong>${(100 - porcentajesHistoricos.costoVentas - porcentajesHistoricos.gastosAdmin - porcentajesHistoricos.gastosVentas - porcentajesHistoricos.impuestoRenta).toFixed(2)}%</strong></td>
+        <td class="monto"><strong>${((utilidadNetaProf / ventasProf) * 100).toFixed(2)}%</strong></td>
+      </tr>
+    `;
+
+    document.getElementById('tablaComparativa').innerHTML = html;
+  }
+
+  function limpiarProforma() {
+    document.getElementById('ventasProyectadas').value = '0';
+    document.getElementById('variacionVentas').value = '0';
+    document.getElementById('periodoProyeccion').value = 'Próximo Período';
+    document.getElementById('tablaProforma').innerHTML = `
+      <tr>
+        <td colspan="3" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+          <i class="fas fa-inbox"></i> Ingresa los datos y haz clic en "Calcular Proforma"
+        </td>
+      </tr>
+    `;
+    document.getElementById('tablaComparativa').innerHTML = `
+      <tr>
+        <td colspan="3" style="text-align: center; padding: 40px; color: var(--text-secondary);">
+          <i class="fas fa-inbox"></i> Sin datos para comparar
+        </td>
+      </tr>
+    `;
+  }
+
+  function exportarProforma() {
+    const ventasProyectadas = parseFloat(document.getElementById('ventasProyectadas').value) || 0;
+    const periodo = document.getElementById('periodoProyeccion').value;
+
+    if (ventasProyectadas <= 0) {
+      alert('Por favor calcula la proforma primero');
+      return;
+    }
+
+    let csv = 'Estado de Resultados Proforma\n';
+    csv += `Período: ${periodo}\n\n`;
+    csv += 'Concepto,Porcentaje,Monto\n';
+
+    const filas = document.querySelectorAll('#tablaProforma tr');
+    filas.forEach(fila => {
+      const celdas = fila.querySelectorAll('td');
+      if (celdas.length === 3) {
+        const concepto = celdas[0].textContent.trim();
+        const porcentaje = celdas[1].textContent.trim();
+        const monto = celdas[2].textContent.trim();
+        csv += `"${concepto}","${porcentaje}","${monto}"\n`;
+      }
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Proforma_${periodo.replace(/\s+/g, '_')}.csv`;
+    a.click();
+  }
+
+  function guardarParametrosAvanzados() {
+    const pctCostoVentas = parseFloat(document.getElementById('pctCostoVentas').value) || 0;
+    const pctGastosOperativos = parseFloat(document.getElementById('pctGastosOperativos').value) || 0;
+
+    porcentajesHistoricos.costoVentas = pctCostoVentas;
+    porcentajesHistoricos.gastosAdmin = pctGastosOperativos / 2;
+    porcentajesHistoricos.gastosVentas = pctGastosOperativos / 2;
+
+    guardarPorcentajesHistoricos(porcentajesHistoricos);
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modalParametrosAvanzados'));
+    modal.hide();
+
+    alert('Parámetros guardados correctamente');
+  }
+
+  // Inicializar
+  document.addEventListener('DOMContentLoaded', function() {
+    cargarPorcentajesHistoricos();
+  });
+
+  // Permitir Enter en inputs
+  document.getElementById('ventasProyectadas').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') calcularProforma();
+  });
+</script>
+{% endblock %}

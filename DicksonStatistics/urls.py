@@ -24,4 +24,6 @@ urlpatterns = [
     path('profitability/', views.profitability, name = 'profitability'),
     path('profile/', views.perfil, name= 'profile'),
     path('settings/', views.configuracion, name= 'settings'),
+    path('proforma/', views.prof, name= 'proforma'),
+    path('cash_budget/', views.presupuestocaja, name= 'cash_budget'),
 ]
