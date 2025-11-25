@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Análisis Financiero Inteligente{% endblock %}</title>
+    <title>RazoNix - Análisis Financiero Inteligente</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -14,15 +14,13 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Custom CSS -->
     <style>
         :root {
             --primary-color: #2563eb;
             --secondary-color: #64748b;
-            --accent-color: #06d6a0;
+            --accent-color: #C0B7E8;
             --dark-color: #1e293b;
             --light-color: #f8fafc;
-            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --navbar-bg: #1a1a2e;
             --navbar-text: #ffffff;
             --hero-bg: linear-gradient(135deg, #0c0c1b 0%, #1a1a2e 50%, #16213e 100%);
@@ -74,14 +72,14 @@
         }
         
         .nav-link:hover {
-            color: var(--accent-purple) !important;
-            background: rgba(192, 183, 232, 0.1);
+            color: #00d4ff !important;
+            background: rgba(0, 212, 255, 0.1);
             transform: translateY(-1px);
         }
         
         .nav-link.active {
-            color: var(--accent-purple) !important;
-            background: rgba(192, 183, 232, 0.1);
+            color: #00d4ff !important;
+            background: rgba(0, 212, 255, 0.1);
         }
         
         .nav-link.active::after {
@@ -91,7 +89,7 @@
             left: 1rem;
             right: 1rem;
             height: 2px;
-            background: var(--accent-purple);
+            background: #00d4ff;
             border-radius: 2px;
         }
         
@@ -119,14 +117,14 @@
         }
         
         .btn-register {
-            background: linear-gradient(90deg, #8176AF 0%, #C0B7E8 100%);
-            color: var(--navbar-bg);
+            background: linear-gradient(90deg, #00d4ff 0%, #d946ef 100%);
+            color: #fff;
         }
         
         .btn-register:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(192, 183, 232, 0.4);
-            color: var(--navbar-bg);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+            color: #fff;
         }
         
         .dropdown-menu {
@@ -148,14 +146,14 @@
         }
         
         .dropdown-item:hover {
-            background: rgba(192, 183, 232, 0.1);
-            color: var(--accent-purple) !important;
+            background: rgba(0, 212, 255, 0.1);
+            color: #00d4ff !important;
             transform: translateX(5px);
         }
         
         .user-dropdown .dropdown-toggle {
-            background: linear-gradient(90deg, #8176AF 0%, #C0B7E8 100%);
-            color: var(--navbar-bg);
+            background: linear-gradient(90deg, #00d4ff 0%, #d946ef 100%);
+            color: #fff;
             border: none;
             border-radius: 8px;
             padding: 0.6rem 1.2rem;
@@ -164,7 +162,7 @@
         
         .user-dropdown .dropdown-toggle:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(192, 183, 232, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
         }
         
         .navbar-toggler {
@@ -187,7 +185,6 @@
             padding-right: 0.5rem;
         }
 
-        /* Estilos para la barra deslizadora */
         .analysis-dropdown .dropdown-menu::-webkit-scrollbar {
             width: 8px;
         }
@@ -198,18 +195,17 @@
         }
 
         .analysis-dropdown .dropdown-menu::-webkit-scrollbar-thumb {
-            background: rgba(192, 183, 232, 0.3);
+            background: rgba(0, 212, 255, 0.3);
             border-radius: 10px;
             transition: all 0.3s ease;
         }
 
         .analysis-dropdown .dropdown-menu::-webkit-scrollbar-thumb:hover {
-            background: rgba(192, 183, 232, 0.6);
+            background: rgba(0, 212, 255, 0.6);
         }
 
-        /* Para Firefox */
         .analysis-dropdown .dropdown-menu {
-            scrollbar-color: rgba(192, 183, 232, 0.3) rgba(255, 255, 255, 0.05);
+            scrollbar-color: rgba(0, 212, 255, 0.3) rgba(255, 255, 255, 0.05);
             scrollbar-width: thin;
         }
 
@@ -226,8 +222,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(192, 183, 232, 0.2);
-            color: var(--accent-purple);
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
             font-size: 0.9rem;
             flex-shrink: 0;
         }
@@ -689,11 +685,6 @@
                                 <li>
                                     <a class="dropdown-item" href="{% url 'profile' %}">
                                         <i class="fas fa-user me-2"></i>Mi Perfil
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'settings' %}">
-                                        <i class="fas fa-cog me-2"></i>Configuración
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider"></li>

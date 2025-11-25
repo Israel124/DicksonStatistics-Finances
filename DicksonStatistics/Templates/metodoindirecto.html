@@ -20,6 +20,7 @@
         --success-color: #10b981;
         --danger-color: #ef4444;
         --warning-color: #f59e0b;
+        --info-color: #06b6d4;
     }
     
     * {
@@ -97,42 +98,6 @@
             transform: translateY(0) rotate(360deg);
             opacity: 0.5;
         }
-    }
-
-    /* Animaciones de carga */
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-    }
-
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .loading {
-        display: inline-block;
-        animation: spin 1s linear infinite;
-    }
-
-    .pulse-effect {
-        animation: pulse 2s infinite;
-    }
-
-    .slide-in {
-        animation: slideIn 0.5s ease-out;
     }
     
     .analysis-section {
@@ -352,7 +317,6 @@
     
     .table-modern tbody tr:hover td {
         background: rgba(139, 92, 246, 0.1);
-        transform: scale(1.01);
     }
     
     .table-modern .account-name {
@@ -363,7 +327,6 @@
         text-align: left;
     }
     
-    /* NUEVOS ESTILOS PARA CONTROLES NUMÉRICOS CON FLECHAS */
     .number-input-container {
         display: flex;
         align-items: center;
@@ -379,27 +342,44 @@
         border: 2px solid rgba(139, 92, 246, 0.3);
         border-radius: 10px;
         transition: all 0.3s ease;
-        max-width: 150px;
+        width: 100%;
+        max-width: 200px;
         margin: 0 auto;
+        cursor: pointer;
+    }
+    
+    .number-input-wrapper:hover {
+        border-color: var(--neon-cyan);
+        background: rgba(139, 92, 246, 0.15);
     }
     
     .number-input-wrapper:focus-within {
         border-color: var(--neon-purple);
         box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-        background: rgba(139, 92, 246, 0.15);
+        background: rgba(139, 92, 246, 0.2);
     }
     
     .number-input {
         border: none;
         background: transparent;
-        padding: 0.75rem 3rem 0.75rem 1rem;
+        padding: 0.75rem 3.5rem 0.75rem 1rem;
         font-size: 1rem;
-        font-weight: 500;
+        font-weight: 600;
         color: var(--light-text);
         text-align: right;
         width: 100%;
         border-radius: 10px;
         outline: none;
+        cursor: pointer;
+    }
+    
+    .number-input:hover {
+        background: rgba(139, 92, 246, 0.05);
+    }
+    
+    .number-input:focus {
+        background: rgba(139, 92, 246, 0.1);
+        cursor: text;
     }
     
     .number-controls {
@@ -457,7 +437,6 @@
         text-shadow: 0 0 5px rgba(255, 255, 255, 0.5) !important;
     }
     
-    /* CORRECCIÓN ESPECÍFICA PARA EL SELECTOR DE PERÍODO */
     .form-control-modern {
         border: 2px solid rgba(139, 92, 246, 0.3);
         border-radius: 12px;
@@ -475,7 +454,6 @@
         color: var(--light-text) !important;
     }
     
-    /* Estilos específicos para el dropdown del selector de período */
     select.form-control-modern {
         color: var(--light-text) !important;
         background: rgba(139, 92, 246, 0.1) !important;
@@ -492,13 +470,11 @@
         color: var(--light-text) !important;
     }
     
-    /* Asegurar que el texto sea legible en toda la aplicación */
     .table-modern thead th {
         color: white !important;
         text-shadow: 0 0 10px rgba(255, 255, 255, 0.7) !important;
     }
     
-    /* Ajustes adicionales para mejor contraste */
     .section-title {
         color: var(--white) !important;
         text-shadow: var(--glow-purple) !important;
@@ -512,229 +488,10 @@
         color: var(--light-text) !important;
     }
     
-    .file-upload-area {
-        border: 2px dashed rgba(139, 92, 246, 0.5);
-        border-radius: 16px;
-        padding: 2.5rem;
-        text-align: center;
-        transition: all 0.3s ease;
-        background: rgba(139, 92, 246, 0.05);
-        cursor: pointer;
-        position: relative;
-    }
-    
-    .file-upload-area:hover {
-        border-color: var(--neon-purple);
-        background: rgba(139, 92, 246, 0.1);
-        transform: translateY(-5px);
-    }
-    
-    .file-upload-area.dragover {
-        border-color: var(--neon-purple);
-        background: rgba(139, 92, 246, 0.15);
-        transform: scale(1.02);
-    }
-    
-    .upload-icon {
-        font-size: 3.5rem;
-        color: var(--neon-purple);
-        margin-bottom: 1rem;
-        text-shadow: var(--glow-purple);
-    }
-    
-    .file-input {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        cursor: pointer;
-    }
-    
-    .file-name {
-        margin-top: 0.5rem;
-        font-size: 1rem;
-        color: var(--neon-purple);
-        font-weight: 600;
-        word-break: break-all;
-        text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
-    }
-    
     .export-options {
         display: flex;
         gap: 1rem;
         flex-wrap: wrap;
-    }
-    
-    .modal-modern .modal-content {
-        border-radius: 20px;
-        border: none;
-        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
-        overflow: hidden;
-        background: var(--dark-card);
-        color: var(--light-text);
-    }
-    
-    .modal-modern .modal-header {
-        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
-        color: white;
-        border-radius: 20px 20px 0 0;
-        border: none;
-        padding: 1.75rem 2rem;
-    }
-    
-    .modal-modern .modal-title {
-        font-weight: 700;
-        font-size: 1.5rem;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    }
-    
-    .modal-modern .btn-close {
-        filter: invert(1);
-        opacity: 0.8;
-    }
-    
-    .modal-modern .btn-close:hover {
-        opacity: 1;
-    }
-    
-    .form-group-modern {
-        margin-bottom: 1.75rem;
-    }
-    
-    .form-label-modern {
-        font-weight: 600;
-        color: var(--light-text);
-        margin-bottom: 0.75rem;
-        font-size: 1rem;
-    }
-    
-    .percentage-badge {
-        background: linear-gradient(135deg, var(--success-color), var(--neon-cyan));
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        display: block;
-        margin: 0.5rem auto 0;
-        width: fit-content;
-        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
-        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    }
-    
-    .calculation-row {
-        background: rgba(6, 182, 212, 0.1) !important;
-        font-weight: 700;
-    }
-    
-    .calculation-row td {
-        border-top: 2px solid rgba(139, 92, 246, 0.3);
-    }
-    
-    .empty-row {
-        text-align: center;
-        color: var(--medium-text);
-        font-style: italic;
-        padding: 3rem !important;
-        font-size: 1.1rem;
-    }
-    
-    .action-buttons {
-        display: flex;
-        gap: 0.75rem;
-        justify-content: center;
-    }
-    
-    .btn-sm-modern {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-        border-radius: 8px;
-    }
-    
-    .report-type-selector {
-        background: rgba(18, 18, 37, 0.8);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        transition: all 0.3s ease;
-    }
-    
-    .report-type-selector:hover {
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
-    }
-    
-    .report-type-buttons {
-        display: flex;
-        gap: 1.5rem;
-        flex-wrap: wrap;
-    }
-    
-    .report-type-btn {
-        flex: 1;
-        min-width: 220px;
-        padding: 2rem;
-        border: 2px solid rgba(139, 92, 246, 0.3);
-        border-radius: 16px;
-        background: rgba(139, 92, 246, 0.05);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .report-type-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-    }
-    
-    .report-type-btn.active {
-        border-color: var(--neon-purple);
-        background: rgba(139, 92, 246, 0.1);
-        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
-        transform: translateY(-5px);
-    }
-    
-    .report-type-btn.active::before {
-        transform: scaleX(1);
-    }
-    
-    .report-type-btn:hover {
-        border-color: var(--neon-purple);
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
-    }
-    
-    .report-icon {
-        font-size: 2.5rem;
-        color: var(--neon-purple);
-        margin-bottom: 1rem;
-        text-shadow: var(--glow-purple);
-    }
-    
-    .report-title {
-        font-weight: 700;
-        color: var(--light-text);
-        margin-bottom: 0.75rem;
-        font-size: 1.25rem;
-    }
-    
-    .report-description {
-        color: var(--medium-text);
-        font-size: 1rem;
-        line-height: 1.5;
     }
     
     .period-selector {
@@ -777,7 +534,6 @@
         background-color: rgba(139, 92, 246, 0.15) !important;
         border-left: 4px solid var(--neon-purple);
         cursor: pointer;
-        transform: scale(1.01);
         box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
     }
     
@@ -804,77 +560,113 @@
         font-size: 1.1rem;
     }
     
-    .deleted-accounts-section {
+    .info-card {
         background: rgba(18, 18, 37, 0.8);
         backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        transition: all 0.3s ease;
-    }
-    
-    .deleted-accounts-section:hover {
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
-    }
-    
-    .deleted-accounts-list {
-        max-height: 200px;
-        overflow-y: auto;
-        border: 1px solid rgba(139, 92, 246, 0.3);
-        border-radius: 12px;
+        border-radius: 16px;
         padding: 1.5rem;
-        margin-top: 1rem;
-        background: rgba(139, 92, 246, 0.05);
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
     
-    .deleted-account-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-        transition: all 0.2s ease;
+    .info-card-title {
+        color: var(--neon-purple);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+        text-shadow: 0 0 5px rgba(139, 92, 246, 0.5);
     }
     
-    .deleted-account-item:hover {
-        background: rgba(139, 92, 246, 0.1);
+    .info-card-content {
+        color: var(--light-text);
+        line-height: 1.8;
+        font-size: 0.95rem;
+    }
+    
+    .info-card-content ul {
+        margin-left: 1.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .info-card-content li {
+        margin-bottom: 0.5rem;
+        color: var(--medium-text);
+    }
+    
+    .info-card-content strong {
+        color: var(--neon-cyan);
+    }
+    
+    /* SUMMARY SECTION - HORIZONTAL */
+    #summarySection {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1.5rem !important;
+        margin-bottom: 2rem !important;
+        width: 100% !important;
+    }
+    
+    .summary-card {
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.1));
+        border: 2px solid rgba(139, 92, 246, 0.3);
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-bottom: 0 !important;
+    }
+    
+    .summary-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+    }
+    
+    .summary-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        border-color: var(--neon-purple);
+    }
+    
+    .summary-label {
+        color: var(--medium-text);
+        font-size: 0.95rem;
+        margin-bottom: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .summary-value {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--neon-cyan);
+        text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+    }
+    
+    .empty-row {
+        text-align: center;
+        color: var(--medium-text);
+        font-style: italic;
+        padding: 3rem !important;
+        font-size: 1.1rem;
+    }
+    
+    .btn-sm-modern {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
         border-radius: 8px;
     }
     
-    .deleted-account-item:last-child {
-        border-bottom: none;
-    }
-    
-    .deleted-account-category {
-        font-size: 0.85rem;
-        color: var(--medium-text);
-        background: rgba(139, 92, 246, 0.2);
-        padding: 0.35rem 0.75rem;
-        border-radius: 6px;
-    }
-
-    /* Animations */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Responsive Design */
+    /* Responsive */
     @media (max-width: 1200px) {
         .section-title {
             font-size: 2.25rem;
-        }
-        
-        .report-type-btn {
-            min-width: 200px;
         }
     }
 
@@ -887,17 +679,17 @@
             font-size: 2rem;
         }
         
-        .report-type-buttons {
-            gap: 1rem;
+        #summarySection {
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 1rem !important;
         }
         
-        .report-type-btn {
-            min-width: 180px;
+        .summary-card {
             padding: 1.5rem;
         }
         
-        .report-icon {
-            font-size: 2rem;
+        .summary-value {
+            font-size: 1.75rem;
         }
     }
 
@@ -938,7 +730,7 @@
         }
         
         .number-input-wrapper {
-            max-width: 130px;
+            max-width: 150px;
         }
         
         .number-input {
@@ -960,14 +752,6 @@
             justify-content: center;
         }
         
-        .report-type-buttons {
-            flex-direction: column;
-        }
-        
-        .report-type-btn {
-            min-width: 100%;
-        }
-        
         .control-panel .d-flex {
             flex-direction: column;
             gap: 0.75rem;
@@ -984,15 +768,17 @@
             gap: 1rem;
         }
         
-        .deleted-account-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.75rem;
+        #summarySection {
+            grid-template-columns: 1fr !important;
+            gap: 1rem !important;
         }
         
-        .deleted-account-item .d-flex {
-            width: 100%;
-            justify-content: space-between;
+        .summary-card {
+            padding: 1.5rem;
+        }
+        
+        .summary-value {
+            font-size: 1.75rem;
         }
         
         .btn-modern {
@@ -1009,7 +795,7 @@
             font-size: 1.5rem;
         }
         
-        .control-panel, .report-type-selector, .period-selector, .deleted-accounts-section {
+        .control-panel, .period-selector {
             padding: 1.25rem;
             border-radius: 16px;
         }
@@ -1025,7 +811,7 @@
         }
         
         .number-input-wrapper {
-            max-width: 110px;
+            max-width: 120px;
         }
         
         .number-input {
@@ -1037,21 +823,26 @@
             width: 1.6rem;
         }
         
-        .report-type-btn {
-            padding: 1.25rem;
-        }
-        
-        .report-icon {
-            font-size: 1.75rem;
-        }
-        
-        .report-title {
-            font-size: 1.1rem;
-        }
-        
         .btn-modern {
             font-size: 0.9rem;
             padding: 0.7rem 1.25rem;
+        }
+        
+        #summarySection {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem !important;
+        }
+        
+        .summary-card {
+            padding: 1.25rem;
+        }
+        
+        .summary-value {
+            font-size: 1.5rem;
+        }
+        
+        .summary-label {
+            font-size: 0.85rem;
         }
     }
 </style>
@@ -1072,31 +863,25 @@
         <!-- Header -->
         <div class="section-header">
             <h1 class="section-title">Método <span class="highlight">Indirecto</span></h1>
-            <p class="section-subtitle">Análisis del flujo de efectivo mediante el método indirecto con tecnología avanzada</p>
+            <p class="section-subtitle">Análisis del flujo de efectivo mediante el método indirecto - Conciliación de utilidad neta a flujo de efectivo operativo</p>
         </div>
 
-        <!-- Selector de Tipo de Reporte -->
-        <div class="report-type-selector">
-            <h5 class="form-label-modern mb-3">Seleccionar Tipo de Flujo</h5>
-            <div class="report-type-buttons">
-                <div class="report-type-btn active" data-report-type="operating">
-                    <div class="report-icon">
-                        <i class="fas fa-exchange-alt"></i>
-                    </div>
-                    <div class="report-title">Flujo de Operación</div>
-                    <div class="report-description">Conciliación de utilidad neta a flujo operativo</div>
-                </div>
-                <div class="report-type-btn" data-report-type="consolidated">
-                    <div class="report-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <div class="report-title">Estado Consolidado</div>
-                    <div class="report-description">Flujo completo de efectivo consolidado</div>
-                </div>
+        <!-- Información del Método Indirecto -->
+        <div class="info-card">
+            <div class="info-card-title">
+                <i class="fas fa-info-circle me-2"></i>¿Qué es el Método Indirecto?
+            </div>
+            <div class="info-card-content">
+                <p>El método indirecto <strong>concilia la utilidad neta con el flujo de efectivo operativo</strong> ajustando por cambios en activos y pasivos circulantes, y por partidas no monetarias.</p>
+                <ul>
+                    <li><strong>Ventajas:</strong> Más fácil de elaborar; utiliza información del estado de resultados</li>
+                    <li><strong>Desventajas:</strong> Menos informativo sobre las fuentes reales de efectivo</li>
+                    <li><strong>Enfoque:</strong> Comienza con utilidad neta y realiza ajustes</li>
+                </ul>
             </div>
         </div>
 
-        <!-- Selector de Período -->
+        <!-- Período Selector -->
         <div class="period-selector">
             <div class="row align-items-center">
                 <div class="col-md-6">
@@ -1108,9 +893,6 @@
                             <option value="2023">Año 2023</option>
                             <option value="2022">Año 2022</option>
                         </select>
-                        <button class="btn btn-outline-modern btn-modern" data-bs-toggle="modal" data-bs-target="#addPeriodModal">
-                            <i class="fas fa-plus"></i> Nuevo Período
-                        </button>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -1125,22 +907,13 @@
                 </div>
             </div>
             
-            <!-- Información del Período Seleccionado -->
+            <!-- Información del Período -->
             <div class="period-info" id="periodInfo" style="display: none;">
                 <div class="period-badge" id="currentPeriodBadge">2024</div>
                 <div>
-                    <strong id="currentReportType">Flujo de Operación</strong>
+                    <strong>Flujo de Efectivo - Método Indirecto</strong>
                     <div class="text-muted" id="periodDates">Período: Ene 2024 - Dic 2024</div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Sección para cuentas eliminadas -->
-        <div class="deleted-accounts-section" id="deletedAccountsSection">
-            <h5 class="form-label-modern">Cuentas Eliminadas</h5>
-            <p class="text-muted">Puedes restaurar cuentas que hayas eliminado anteriormente:</p>
-            <div class="deleted-accounts-list" id="deletedAccountsList">
-                <!-- Las cuentas eliminadas aparecerán aquí -->
             </div>
         </div>
 
@@ -1154,7 +927,7 @@
                             <th class="period-header">
                                 <span id="tablePeriodTitle">Período</span>
                                 <br>
-                                <small id="tablePeriodSubtitle">Ajustes y Conciliaciones</small>
+                                <small id="tablePeriodSubtitle">Flujos de Efectivo</small>
                             </th>
                         </tr>
                     </thead>
@@ -1162,6 +935,31 @@
                         <!-- Filas se generan dinámicamente -->
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Resumen de Flujos - HORIZONTAL -->
+        <div id="summarySection" style="display: none;">
+            <div class="summary-card">
+                <div class="summary-label">
+                    <i class="fas fa-arrow-down me-2" style="color: var(--success-color);"></i>
+                    Utilidad Neta
+                </div>
+                <div class="summary-value" id="totalNetIncome">$0.00</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">
+                    <i class="fas fa-sync-alt me-2" style="color: var(--warning-color);"></i>
+                    Ajustes Totales
+                </div>
+                <div class="summary-value" id="totalAdjustments">$0.00</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">
+                    <i class="fas fa-exchange-alt me-2" style="color: var(--neon-cyan);"></i>
+                    Flujo Operativo
+                </div>
+                <div class="summary-value" id="operatingCashFlow">$0.00</div>
             </div>
         </div>
 
@@ -1174,22 +972,19 @@
                             <i class="fas fa-plus-circle"></i> Agregar Fila
                         </button>
                         <button class="btn btn-outline-modern btn-modern" id="calculateBtn">
-                            <i class="fas fa-calculator"></i> Calcular Conciliación
+                            <i class="fas fa-calculator"></i> Calcular Totales
                         </button>
                         <button class="btn btn-danger-modern btn-modern" id="deleteRowBtn" disabled>
-                            <i class="fas fa-trash"></i> Eliminar Cuenta
+                            <i class="fas fa-trash"></i> Eliminar
                         </button>
                         <button class="btn btn-outline-modern btn-modern" id="clearBtn">
-                            <i class="fas fa-broom"></i> Limpiar Tabla
-                        </button>
-                        <button class="btn btn-outline-modern btn-modern" data-bs-toggle="modal" data-bs-target="#importModal">
-                            <i class="fas fa-file-import"></i> Importar Datos
+                            <i class="fas fa-broom"></i> Limpiar
                         </button>
                     </div>
                 </div>
                 <div class="col-md-4 text-md-end">
                     <button class="btn btn-primary-modern btn-modern" id="saveAnalysis">
-                        <i class="fas fa-save"></i> Guardar Análisis
+                        <i class="fas fa-save"></i> Guardar
                     </button>
                 </div>
             </div>
@@ -1197,107 +992,6 @@
     </div>
 </section>
 
-<!-- Modal para Agregar Período -->
-<div class="modal fade modal-modern" id="addPeriodModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Agregar Nuevo Período</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="periodForm">
-                    <div class="form-group-modern">
-                        <label class="form-label-modern">Nombre del Período</label>
-                        <input type="text" class="form-control form-control-modern" id="periodName" 
-                               placeholder="Ej: Primer Trimestre 2024" required>
-                    </div>
-                    <div class="form-group-modern">
-                        <label class="form-label-modern">Año</label>
-                        <input type="number" class="form-control form-control-modern" id="periodYear" 
-                               min="2020" max="2030" value="2024" required>
-                    </div>
-                    <div class="form-group-modern">
-                        <label class="form-label-modern">Tipo de Período</label>
-                        <select class="form-control form-control-modern" id="periodType">
-                            <option value="annual">Anual</option>
-                            <option value="semester">Semestral</option>
-                            <option value="quarterly">Trimestral</option>
-                            <option value="monthly">Mensual</option>
-                        </select>
-                    </div>
-                    <div class="form-group-modern">
-                        <label class="form-label-modern">Moneda</label>
-                        <select class="form-control form-control-modern" id="currency">
-                            <option value="USD">Dólar Americano (USD)</option>
-                            <option value="EUR">Euro (EUR)</option>
-                            <option value="MXN">Peso Mexicano (MXN)</option>
-                            <option value="COP">Peso Colombiano (COP)</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-modern btn-modern" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary-modern btn-modern" id="savePeriod">Agregar Período</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para Importar Datos -->
-<div class="modal fade modal-modern" id="importModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Importar Datos</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="file-upload-area" id="excelUploadArea">
-                            <input type="file" class="file-input" id="excelFile" accept=".xlsx, .xls">
-                            <div class="upload-icon">
-                                <i class="fas fa-file-excel"></i>
-                            </div>
-                            <h5>Importar desde Excel</h5>
-                            <p class="text-muted">Haz clic aquí o arrastra tu archivo Excel</p>
-                            <div class="file-name" id="excelFileName"></div>
-                            <small class="text-muted">Formatos soportados: .xlsx, .xls</small>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="file-upload-area" id="pdfUploadArea">
-                            <input type="file" class="file-input" id="pdfFile" accept=".pdf">
-                            <div class="upload-icon">
-                                <i class="fas fa-file-pdf"></i>
-                            </div>
-                            <h5>Importar desde PDF</h5>
-                            <p class="text-muted">Haz clic aquí o arrastra tu archivo PDF</p>
-                            <div class="file-name" id="pdfFileName"></div>
-                            <small class="text-muted">Formato soportado: .pdf</small>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <h6>Instrucciones de Importación:</h6>
-                    <ul class="text-muted">
-                        <li>Para Excel: La primera columna debe contener los nombres de las cuentas</li>
-                        <li>La segunda columna debe contener los valores numéricos</li>
-                        <li>Para PDF: El sistema extraerá automáticamente las tablas detectadas</li>
-                        <li>Los datos importados reemplazarán la información actual</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-modern btn-modern" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary-modern btn-modern" id="processImport">Procesar Archivos</button>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -1305,65 +999,87 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Variables globales
         let analysisData = [];
-        let deletedAccounts = [];
         let currentPeriod = '';
-        let currentReportType = 'operating'; // 'operating' or 'consolidated'
-        let selectedFiles = {
-            excel: null,
-            pdf: null
-        };
-        let selectedRowIndex = -1; // Para rastrear la fila seleccionada
+        let selectedRowIndex = -1;
+        
+        // Estructura del Método Indirecto según el PowerPoint
+        const indirectMethodStructure = [
+            {
+                account: 'FLUJOS DE EFECTIVO DE ACTIVIDADES DE OPERACIÓN',
+                values: {},
+                isHeader: true,
+                category: 'header'
+            },
+            {
+                account: 'Utilidad Neta del Ejercicio',
+                values: {},
+                category: 'net-income'
+            },
+            {
+                account: 'Ajustes para Conciliar la Utilidad Neta con el Flujo de Efectivo:',
+                values: {},
+                isSubHeader: true,
+                category: 'adjustments-header'
+            },
+            {
+                account: 'Depreciación y Amortización',
+                values: {},
+                category: 'non-cash-items'
+            },
+            {
+                account: 'Pérdida (Ganancia) en Venta de Activos',
+                values: {},
+                category: 'non-cash-items'
+            },
+            {
+                account: 'Provisiones y Reservas',
+                values: {},
+                category: 'non-cash-items'
+            },
+            {
+                account: 'Cambios en Activos y Pasivos Circulantes:',
+                values: {},
+                isSubHeader: true,
+                category: 'working-capital-header'
+            },
+            {
+                account: 'Aumento (Disminución) en Cuentas por Cobrar',
+                values: {},
+                category: 'working-capital'
+            },
+            {
+                account: 'Aumento (Disminución) en Inventarios',
+                values: {},
+                category: 'working-capital'
+            },
+            {
+                account: 'Aumento (Disminución) en Cuentas por Pagar',
+                values: {},
+                category: 'working-capital'
+            },
+            {
+                account: 'Aumento (Disminución) en Impuestos por Pagar',
+                values: {},
+                category: 'working-capital'
+            },
+            {
+                account: 'Otros Cambios en Capital de Trabajo',
+                values: {},
+                category: 'working-capital'
+            },
+            {
+                account: 'FLUJO NETO DE EFECTIVO DE ACTIVIDADES DE OPERACIÓN',
+                values: {},
+                isTotal: true,
+                category: 'total'
+            }
+        ];
         
         // Inicializar aplicación
         function initializeApp() {
-            updateTableData();
-            renderTable();
-            setupFileUpload();
+            analysisData = JSON.parse(JSON.stringify(indirectMethodStructure));
             setupEventListeners();
-            updateDeletedAccountsSection();
-        }
-        
-        // Actualizar datos según el tipo de reporte
-        function updateTableData() {
-            if (currentReportType === 'operating') {
-                analysisData = [
-                    { account: 'FLUJOS DE EFECTIVO DE ACTIVIDADES DE OPERACIÓN', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Utilidad Neta del Ejercicio', values: {}, category: 'starting-point' },
-                    { account: 'Ajustes por:', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Depreciación y Amortización', values: {}, category: 'adjustments' },
-                    { account: 'Provisiones', values: {}, category: 'adjustments' },
-                    { account: 'Intereses Diferidos', values: {}, category: 'adjustments' },
-                    { account: 'Pérdida (Ganancia) en Venta de Activos', values: {}, category: 'adjustments' },
-                    { account: 'Cambios en el Capital de Trabajo:', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Aumento (Disminución) en Cuentas por Cobrar', values: {}, category: 'working-capital' },
-                    { account: 'Aumento (Disminución) en Inventarios', values: {}, category: 'working-capital' },
-                    { account: 'Aumento (Disminución) en Cuentas por Pagar', values: {}, category: 'working-capital' },
-                    { account: 'Otros Ajustes de Capital de Trabajo', values: {}, category: 'working-capital' },
-                    { account: 'FLUJO NETO DE EFECTIVO DE ACTIVIDADES DE OPERACIÓN', values: {}, isTotal: true, category: 'total' }
-                ];
-            } else {
-                analysisData = [
-                    { account: 'ESTADO DE FLUJOS DE EFECTIVO - MÉTODO INDIRECTO', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Actividades de Operación', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Utilidad Neta', values: {}, category: 'starting-point' },
-                    { account: 'Ajustes para Conciliar la Utilidad Neta:', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Depreciación y Amortización', values: {}, category: 'adjustments' },
-                    { account: 'Cambios en Activos y Pasivos Operativos:', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Cuentas por Cobrar', values: {}, category: 'working-capital' },
-                    { account: 'Inventarios', values: {}, category: 'working-capital' },
-                    { account: 'Cuentas por Pagar', values: {}, category: 'working-capital' },
-                    { account: 'Efectivo Neto Proporcionado por Actividades de Operación', values: {}, isTotal: true, category: 'total' },
-                    { account: 'Actividades de Inversión', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Compra de Propiedades, Planta y Equipo', values: {}, category: 'investing' },
-                    { account: 'Venta de Inversiones', values: {}, category: 'investing' },
-                    { account: 'Efectivo Neto Utilizado en Actividades de Inversión', values: {}, isTotal: true, category: 'total' },
-                    { account: 'Actividades de Financiamiento', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Emisión de Acciones', values: {}, category: 'financing' },
-                    { account: 'Pago de Dividendos', values: {}, category: 'financing' },
-                    { account: 'Efectivo Neto Proporcionado por Actividades de Financiamiento', values: {}, isTotal: true, category: 'total' },
-                    { account: 'AUMENTO (DISMINUCIÓN) NETO EN EFECTIVO', values: {}, isTotal: true, category: 'final-total' }
-                ];
-            }
+            renderTable();
         }
         
         // Renderizar tabla
@@ -1379,6 +1095,7 @@
                         </td>
                     </tr>
                 `;
+                document.getElementById('summarySection').style.display = 'none';
                 return;
             }
             
@@ -1386,43 +1103,45 @@
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="2" class="empty-row">
-                            <i class="fas fa-table me-2"></i>No hay datos disponibles. Agrega filas o importa datos.
+                            <i class="fas fa-table me-2"></i>No hay datos disponibles
                         </td>
                     </tr>
                 `;
+                document.getElementById('summarySection').style.display = 'none';
                 return;
             }
             
             analysisData.forEach((row, index) => {
                 const tr = document.createElement('tr');
-                tr.classList.add('slide-in');
-                
-                // Agregar clase de selección si es la fila seleccionada
-                if (index === selectedRowIndex) {
-                    tr.classList.add('selected-row');
-                }
                 
                 // Agregar clases según el tipo de fila
                 if (row.isHeader) {
                     tr.classList.add('account-header-row');
+                } else if (row.isSubHeader) {
+                    tr.classList.add('account-header-row');
+                    tr.style.backgroundColor = 'rgba(139, 92, 246, 0.15)';
                 } else if (row.isTotal) {
                     tr.classList.add('account-total-row');
                 } else {
                     tr.classList.add('selectable-row');
                 }
                 
+                if (index === selectedRowIndex) {
+                    tr.classList.add('selected-row');
+                }
+                
                 const value = row.values[currentPeriod] || '';
                 const isNegative = value < 0;
                 
                 let accountCell = row.account;
-                if (row.isHeader || row.isTotal) {
+                if (row.isHeader || row.isTotal || row.isSubHeader) {
                     accountCell = `<strong>${row.account}</strong>`;
                 }
                 
                 tr.innerHTML = `
                     <td class="account-name">${accountCell}</td>
                     <td class="editable-cell">
-                        ${!row.isHeader ? `
+                        ${!row.isHeader && !row.isSubHeader ? `
                             <div class="number-input-container">
                                 <div class="number-input-wrapper">
                                     <input type="number" 
@@ -1433,16 +1152,15 @@
                                            step="0.01"
                                            ${row.isTotal ? 'readonly' : ''}>
                                     <div class="number-controls">
-                                        <button type="button" class="number-control increase" data-row="${index}">
+                                        <button type="button" class="number-control increase" data-row="${index}" title="Aumentar 100">
                                             <i class="fas fa-chevron-up"></i>
                                         </button>
-                                        <button type="button" class="number-control decrease" data-row="${index}">
+                                        <button type="button" class="number-control decrease" data-row="${index}" title="Disminuir 100">
                                             <i class="fas fa-chevron-down"></i>
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                            ${isNegative ? `<div class="percentage-badge" style="background: linear-gradient(135deg, var(--danger-color), #f87171);">(${Math.abs(value)})</div>` : ''}
                         ` : ''}
                     </td>
                 `;
@@ -1450,38 +1168,17 @@
                 tbody.appendChild(tr);
             });
             
-            // Agregar event listeners a los inputs
+            // Adjuntar event listeners
             attachInputListeners();
-            
-            // Agregar event listeners para selección de filas
             attachRowSelectionListeners();
-            
-            // Actualizar estado del botón de eliminar
             updateDeleteButtonState();
             
-            // Actualizar sección de cuentas eliminadas
-            updateDeletedAccountsSection();
+            // Mostrar resumen
+            updateSummary();
         }
         
-        // Función para ajustar valores con incremento/decremento
-        function adjustValue(rowIndex, direction) {
-            if (!analysisData[rowIndex].values) {
-                analysisData[rowIndex].values = {};
-            }
-            
-            const currentValue = parseFloat(analysisData[rowIndex].values[currentPeriod]) || 0;
-            const step = 100; // Incremento de 100 por defecto
-            const newValue = currentValue + (direction * step);
-            
-            analysisData[rowIndex].values[currentPeriod] = newValue;
-            
-            // Re-renderizar para actualizar totales
-            renderTable();
-        }
-        
-        // Adjuntar event listeners a los inputs
+        // Adjuntar event listeners a inputs
         function attachInputListeners() {
-            // Event listeners para inputs numéricos
             document.querySelectorAll('.number-input').forEach(input => {
                 input.addEventListener('input', function() {
                     const rowIndex = parseInt(this.dataset.row);
@@ -1492,44 +1189,75 @@
                     }
                     
                     analysisData[rowIndex].values[currentPeriod] = value === '' ? '' : parseFloat(value) || 0;
-                    
-                    // Re-renderizar para actualizar totales
-                    renderTable();
+                    updateSummary();
                 });
                 
-                // Permitir solo números y punto decimal
+                input.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    this.focus();
+                    this.select();
+                });
+                
+                input.addEventListener('dblclick', function() {
+                    this.focus();
+                    this.select();
+                });
+                
                 input.addEventListener('keypress', function(e) {
                     const char = String.fromCharCode(e.which);
                     if (!/[\d.-]/.test(char)) {
                         e.preventDefault();
                     }
                 });
+                
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        this.blur();
+                        renderTable();
+                    }
+                });
             });
             
-            // Event listeners para botones de incremento/decremento
+            // Botones de incremento/decremento
             document.querySelectorAll('.number-control.increase').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
                     const rowIndex = parseInt(this.dataset.row);
                     adjustValue(rowIndex, 1);
                 });
             });
             
             document.querySelectorAll('.number-control.decrease').forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
                     const rowIndex = parseInt(this.dataset.row);
                     adjustValue(rowIndex, -1);
                 });
             });
         }
         
+        // Ajustar valor
+        function adjustValue(rowIndex, direction) {
+            if (!analysisData[rowIndex].values) {
+                analysisData[rowIndex].values = {};
+            }
+            
+            const currentValue = parseFloat(analysisData[rowIndex].values[currentPeriod]) || 0;
+            const step = 100;
+            const newValue = currentValue + (direction * step);
+            
+            analysisData[rowIndex].values[currentPeriod] = newValue;
+            renderTable();
+        }
+        
         // Adjuntar event listeners para selección de filas
         function attachRowSelectionListeners() {
             document.querySelectorAll('.selectable-row').forEach((tr, index) => {
-                // Encontrar el índice real en analysisData
                 let realIndex = -1;
                 let count = 0;
                 for (let i = 0; i < analysisData.length; i++) {
-                    if (!analysisData[i].isHeader && !analysisData[i].isTotal) {
+                    if (!analysisData[i].isHeader && !analysisData[i].isTotal && 
+                        !analysisData[i].isSubHeader) {
                         if (count === index) {
                             realIndex = i;
                             break;
@@ -1541,588 +1269,230 @@
                 if (realIndex >= 0) {
                     tr.addEventListener('click', function() {
                         selectedRowIndex = realIndex;
-                        renderTable(); // Re-renderizar para mostrar la selección
+                        renderTable();
                     });
                 }
             });
         }
         
-        // Eliminar cuenta
-        function deleteAccount(index) {
-            if (index < 0 || index >= analysisData.length) return;
-            
-            const accountToDelete = analysisData[index];
-            
-            // Confirmar eliminación
-            if (confirm(`¿Estás seguro de que deseas eliminar la cuenta "${accountToDelete.account}"?`)) {
-                // Mover la cuenta a la lista de eliminadas
-                deletedAccounts.push({
-                    ...accountToDelete,
-                    deletedAt: new Date().toISOString()
-                });
-                
-                // Eliminar la cuenta del array
-                analysisData.splice(index, 1);
-                
-                // Resetear la selección
-                selectedRowIndex = -1;
-                
-                // Re-renderizar la tabla
-                renderTable();
-                
-                // Mostrar mensaje de éxito
-                showAlert(`Cuenta "${accountToDelete.account}" eliminada correctamente`, 'success');
-            }
-        }
-        
-        // Restaurar cuenta
-        function restoreAccount(accountIndex) {
-            if (accountIndex < 0 || accountIndex >= deletedAccounts.length) return;
-            
-            const accountToRestore = deletedAccounts[accountIndex];
-            
-            // Determinar la posición correcta para insertar la cuenta
-            let insertIndex = findInsertionIndex(accountToRestore);
-            
-            // Insertar la cuenta en la posición correcta
-            analysisData.splice(insertIndex, 0, accountToRestore);
-            
-            // Eliminar la cuenta de la lista de eliminadas
-            deletedAccounts.splice(accountIndex, 1);
-            
-            // Re-renderizar la tabla
-            renderTable();
-            
-            // Mostrar mensaje de éxito
-            showAlert(`Cuenta "${accountToRestore.account}" restaurada correctamente`, 'success');
-        }
-        
-        // Encontrar la posición correcta para insertar una cuenta
-        function findInsertionIndex(account) {
-            // Para Método Indirecto
-            switch(account.category) {
-                case 'starting-point':
-                    return findCategoryInsertionIndex('starting-point');
-                case 'adjustments':
-                    return findCategoryInsertionIndex('adjustments');
-                case 'working-capital':
-                    return findCategoryInsertionIndex('working-capital');
-                case 'investing':
-                    return findCategoryInsertionIndex('investing');
-                case 'financing':
-                    return findCategoryInsertionIndex('financing');
-                default:
-                    return analysisData.length - 1;
-            }
-        }
-        
-        // Encontrar índice de inserción para una categoría específica
-        function findCategoryInsertionIndex(category) {
-            for (let i = 0; i < analysisData.length; i++) {
-                if (analysisData[i].category === category) {
-                    // Encontrar el último elemento de esta categoría
-                    let lastIndex = i;
-                    for (let j = i + 1; j < analysisData.length; j++) {
-                        if (analysisData[j].category === category) {
-                            lastIndex = j;
-                        } else {
-                            break;
-                        }
-                    }
-                    return lastIndex + 1;
-                }
-            }
-            return analysisData.length - 1;
-        }
-        
-        // Actualizar estado del botón de eliminar
+        // Actualizar estado del botón eliminar
         function updateDeleteButtonState() {
             const deleteButton = document.getElementById('deleteRowBtn');
-            if (selectedRowIndex >= 0 && !analysisData[selectedRowIndex].isHeader && !analysisData[selectedRowIndex].isTotal) {
+            if (selectedRowIndex >= 0 && !analysisData[selectedRowIndex].isHeader && 
+                !analysisData[selectedRowIndex].isTotal && !analysisData[selectedRowIndex].isSubHeader) {
                 deleteButton.disabled = false;
             } else {
                 deleteButton.disabled = true;
             }
         }
         
-        // Actualizar sección de cuentas eliminadas
-        function updateDeletedAccountsSection() {
-            const deletedSection = document.getElementById('deletedAccountsSection');
-            const deletedList = document.getElementById('deletedAccountsList');
+        // Calcular totales
+        function calculateTotals() {
+            if (!currentPeriod) return;
             
-            if (deletedAccounts.length > 0) {
-                deletedSection.style.display = 'block';
-                deletedList.innerHTML = '';
-                
-                deletedAccounts.forEach((account, index) => {
-                    const accountItem = document.createElement('div');
-                    accountItem.className = 'deleted-account-item';
-                    
-                    const categoryName = getCategoryName(account.category);
-                    
-                    accountItem.innerHTML = `
-                        <div class="d-flex justify-content-between w-100">
-                            <div>
-                                <strong>${account.account}</strong>
-                                <div class="deleted-account-category">${categoryName}</div>
-                            </div>
-                            <button class="btn btn-success-modern btn-sm-modern restore-account" data-index="${index}">
-                                <i class="fas fa-undo"></i> Restaurar
-                            </button>
-                        </div>
-                    `;
-                    
-                    deletedList.appendChild(accountItem);
-                });
-                
-                // Agregar event listeners a los botones de restaurar
-                document.querySelectorAll('.restore-account').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const accountIndex = parseInt(this.dataset.index);
-                        restoreAccount(accountIndex);
-                    });
-                });
-            } else {
-                deletedSection.style.display = 'none';
+            let netIncome = parseFloat(analysisData[1].values[currentPeriod]) || 0;
+            let adjustments = 0;
+            let workingCapitalChanges = 0;
+            
+            // Calcular ajustes por partidas no monetarias
+            for (let i = 0; i < analysisData.length; i++) {
+                if (analysisData[i].category === 'non-cash-items') {
+                    const value = parseFloat(analysisData[i].values[currentPeriod]) || 0;
+                    adjustments += value;
+                }
             }
+            
+            // Calcular cambios en capital de trabajo
+            for (let i = 0; i < analysisData.length; i++) {
+                if (analysisData[i].category === 'working-capital') {
+                    const value = parseFloat(analysisData[i].values[currentPeriod]) || 0;
+                    workingCapitalChanges += value;
+                }
+            }
+            
+            // Calcular flujo operativo total
+            const operatingCashFlow = netIncome + adjustments + workingCapitalChanges;
+            
+            // Actualizar fila de total
+            const totalRow = analysisData.find(row => row.isTotal);
+            if (totalRow) {
+                totalRow.values[currentPeriod] = operatingCashFlow;
+            }
+            
+            renderTable();
         }
         
-        // Obtener nombre legible de la categoría
-        function getCategoryName(category) {
-            const categoryNames = {
-                'starting-point': 'Punto de Partida',
-                'adjustments': 'Ajustes',
-                'working-capital': 'Capital de Trabajo',
-                'investing': 'Inversión',
-                'financing': 'Financiamiento',
-                'header': 'Encabezado',
-                'total': 'Total',
-                'final-total': 'Total Final'
-            };
+        // Actualizar resumen
+        function updateSummary() {
+            if (!currentPeriod) {
+                document.getElementById('summarySection').style.display = 'none';
+                return;
+            }
             
-            return categoryNames[category] || category;
-        }
-        
-        // Configurar la subida de archivos
-        function setupFileUpload() {
-            const excelFileInput = document.getElementById('excelFile');
-            const pdfFileInput = document.getElementById('pdfFile');
-            const excelFileName = document.getElementById('excelFileName');
-            const pdfFileName = document.getElementById('pdfFileName');
+            let netIncome = parseFloat(analysisData[1].values[currentPeriod]) || 0;
+            let adjustments = 0;
+            let workingCapitalChanges = 0;
             
-            // Excel file handling
-            excelFileInput.addEventListener('change', function(e) {
-                if (e.target.files.length > 0) {
-                    selectedFiles.excel = e.target.files[0];
-                    excelFileName.textContent = selectedFiles.excel.name;
-                    excelFileName.style.display = 'block';
-                    showAlert(`Archivo Excel "${selectedFiles.excel.name}" seleccionado`, 'info');
+            analysisData.forEach(row => {
+                if (row.category === 'non-cash-items') {
+                    adjustments += parseFloat(row.values[currentPeriod]) || 0;
+                } else if (row.category === 'working-capital') {
+                    workingCapitalChanges += parseFloat(row.values[currentPeriod]) || 0;
                 }
             });
             
-            // PDF file handling
-            pdfFileInput.addEventListener('change', function(e) {
-                if (e.target.files.length > 0) {
-                    selectedFiles.pdf = e.target.files[0];
-                    pdfFileName.textContent = selectedFiles.pdf.name;
-                    pdfFileName.style.display = 'block';
-                    showAlert(`Archivo PDF "${selectedFiles.pdf.name}" seleccionado`, 'info');
-                }
-            });
+            const operatingCashFlow = netIncome + adjustments + workingCapitalChanges;
             
-            // Drag and drop functionality
-            const uploadAreas = document.querySelectorAll('.file-upload-area');
+            document.getElementById('totalNetIncome').textContent = formatCurrency(netIncome);
+            document.getElementById('totalAdjustments').textContent = formatCurrency(adjustments + workingCapitalChanges);
+            document.getElementById('operatingCashFlow').textContent = formatCurrency(operatingCashFlow);
             
-            uploadAreas.forEach(area => {
-                area.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    area.classList.add('dragover');
-                });
-                
-                area.addEventListener('dragleave', () => {
-                    area.classList.remove('dragover');
-                });
-                
-                area.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    area.classList.remove('dragover');
-                    
-                    const files = e.dataTransfer.files;
-                    if (files.length > 0) {
-                        const file = files[0];
-                        const isExcel = area.id === 'excelUploadArea';
-                        
-                        if (isExcel && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
-                            selectedFiles.excel = file;
-                            excelFileName.textContent = file.name;
-                            excelFileName.style.display = 'block';
-                            showAlert(`Archivo Excel "${file.name}" seleccionado`, 'info');
-                        } else if (!isExcel && file.name.endsWith('.pdf')) {
-                            selectedFiles.pdf = file;
-                            pdfFileName.textContent = file.name;
-                            pdfFileName.style.display = 'block';
-                            showAlert(`Archivo PDF "${file.name}" seleccionado`, 'info');
-                        } else {
-                            showAlert('Tipo de archivo no válido', 'error');
-                        }
-                    }
-                });
-            });
+            document.getElementById('summarySection').style.display = 'grid';
+        }
+        
+        // Formatear moneda
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('es-ES', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2
+            }).format(value);
         }
         
         // Configurar event listeners
         function setupEventListeners() {
-            // Selector de tipo de reporte
-            document.querySelectorAll('.report-type-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.report-type-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    currentReportType = this.dataset.reportType;
-                    selectedRowIndex = -1; // Resetear selección al cambiar tipo de reporte
-                    deletedAccounts = []; // Limpiar cuentas eliminadas
-                    updateTableData();
-                    renderTable();
-                    
-                    // Actualizar información del período
-                    updatePeriodInfo();
-                });
-            });
-            
             // Selector de período
             document.getElementById('periodSelect').addEventListener('change', function() {
                 currentPeriod = this.value;
-                selectedRowIndex = -1; // Resetear selección al cambiar período
+                selectedRowIndex = -1;
                 renderTable();
                 updatePeriodInfo();
             });
             
-            // Agregar nueva fila
+            // Agregar fila
             document.getElementById('addRowBtn').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
                     return;
                 }
                 
-                // Solicitar nombre de la nueva cuenta
                 const accountName = prompt('Ingresa el nombre de la nueva cuenta:');
                 if (!accountName) return;
                 
-                // Solicitar categoría
-                let categoryOptions = [];
-                if (currentReportType === 'operating') {
-                    categoryOptions = [
-                        { value: 'starting-point', text: 'Punto de Partida' },
-                        { value: 'adjustments', text: 'Ajustes' },
-                        { value: 'working-capital', text: 'Capital de Trabajo' }
-                    ];
-                } else {
-                    categoryOptions = [
-                        { value: 'starting-point', text: 'Punto de Partida' },
-                        { value: 'adjustments', text: 'Ajustes' },
-                        { value: 'working-capital', text: 'Capital de Trabajo' },
-                        { value: 'investing', text: 'Inversión' },
-                        { value: 'financing', text: 'Financiamiento' }
-                    ];
-                }
-                
-                let categoryOptionsHTML = '';
-                categoryOptions.forEach(option => {
-                    categoryOptionsHTML += `<option value="${option.value}">${option.text}</option>`;
+                analysisData.push({
+                    account: accountName,
+                    values: {},
+                    category: 'working-capital'
                 });
                 
-                const categorySelect = `
-                    <select id="newAccountCategory" class="form-control-modern mt-2">
-                        ${categoryOptionsHTML}
-                    </select>
-                `;
-                
-                if (confirm(`¿Deseas agregar la cuenta "${accountName}"?\n\nSelecciona la categoría:\n${categorySelect}`)) {
-                    const category = document.getElementById('newAccountCategory')?.value || categoryOptions[0].value;
-                    
-                    // Agregar nueva cuenta en la posición correcta
-                    const insertIndex = findCategoryInsertionIndex(category);
-                    analysisData.splice(insertIndex, 0, {
-                        account: accountName,
-                        values: {},
-                        category: category
-                    });
-                    
-                    // Resetear selección
-                    selectedRowIndex = -1;
-                    
-                    renderTable();
-                    showAlert(`Cuenta "${accountName}" agregada correctamente`, 'success');
-                }
+                selectedRowIndex = -1;
+                renderTable();
+                showAlert(`Cuenta "${accountName}" agregada correctamente`, 'success');
             });
             
-            // Eliminar cuenta seleccionada
+            // Eliminar fila
             document.getElementById('deleteRowBtn').addEventListener('click', function() {
                 if (selectedRowIndex < 0) {
                     showAlert('Primero selecciona una cuenta para eliminar', 'error');
                     return;
                 }
                 
-                deleteAccount(selectedRowIndex);
+                const accountToDelete = analysisData[selectedRowIndex].account;
+                if (confirm(`¿Estás seguro de que deseas eliminar "${accountToDelete}"?`)) {
+                    analysisData.splice(selectedRowIndex, 1);
+                    selectedRowIndex = -1;
+                    renderTable();
+                    showAlert(`Cuenta eliminada correctamente`, 'success');
+                }
             });
             
-            // Calcular conciliación con animación de carga
+            // Calcular totales
             document.getElementById('calculateBtn').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
                     return;
                 }
                 
-                const btn = this;
-                const originalText = btn.innerHTML;
-                
-                // Aplicar animación de carga
-                btn.innerHTML = '<i class="fas fa-spinner loading"></i> Calculando...';
-                btn.disabled = true;
-                
-                // Simular cálculo con delay
-                setTimeout(() => {
-                    // Calcular totales para cada sección
-                    calculateReconciliation();
-                    renderTable();
-                    
-                    // Restaurar botón
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    
-                    showAlert('Conciliación calculada correctamente', 'success');
-                }, 1500);
+                calculateTotals();
+                showAlert('Totales calculados correctamente', 'success');
             });
             
-            // Limpiar tabla con animación
+            // Limpiar tabla
             document.getElementById('clearBtn').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
                     return;
                 }
                 
-                if (confirm('¿Estás seguro de que deseas limpiar toda la tabla? Se perderán todos los datos.')) {
-                    const btn = this;
-                    const originalText = btn.innerHTML;
+                if (confirm('¿Estás seguro de que deseas limpiar toda la tabla?')) {
+                    analysisData.forEach(row => {
+                        if (row.values) {
+                            row.values[currentPeriod] = '';
+                        }
+                    });
                     
-                    // Aplicar animación de carga
-                    btn.innerHTML = '<i class="fas fa-spinner loading"></i> Limpiando...';
-                    btn.disabled = true;
-                    
-                    setTimeout(() => {
-                        analysisData.forEach(row => {
-                            if (row.values) {
-                                row.values[currentPeriod] = '';
-                            }
-                        });
-                        
-                        // Resetear selección
-                        selectedRowIndex = -1;
-                        
-                        renderTable();
-                        
-                        // Restaurar botón
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                        
-                        showAlert('Tabla limpiada correctamente', 'info');
-                    }, 1000);
-                }
-            });
-            
-            // Procesar importación con animación
-            document.getElementById('processImport').addEventListener('click', function() {
-                if (!selectedFiles.excel && !selectedFiles.pdf) {
-                    showAlert('Por favor selecciona al menos un archivo para importar', 'error');
-                    return;
-                }
-                
-                if (!currentPeriod) {
-                    showAlert('Primero selecciona un período', 'error');
-                    return;
-                }
-                
-                // Simular procesamiento de importación
-                const btn = this;
-                const originalText = btn.innerHTML;
-                
-                btn.innerHTML = '<i class="fas fa-spinner loading"></i> Procesando...';
-                btn.disabled = true;
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    
-                    // Agregar datos de ejemplo importados
-                    if (currentReportType === 'operating') {
-                        analysisData = [
-                            { account: 'FLUJOS DE EFECTIVO DE ACTIVIDADES DE OPERACIÓN', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Utilidad Neta del Ejercicio', values: { [currentPeriod]: 500000 }, category: 'starting-point' },
-                            { account: 'Ajustes por:', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Depreciación y Amortización', values: { [currentPeriod]: 150000 }, category: 'adjustments' },
-                            { account: 'Provisiones', values: { [currentPeriod]: 50000 }, category: 'adjustments' },
-                            { account: 'Cambios en el Capital de Trabajo:', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Aumento (Disminución) en Cuentas por Cobrar', values: { [currentPeriod]: -80000 }, category: 'working-capital' },
-                            { account: 'Aumento (Disminución) en Inventarios', values: { [currentPeriod]: -120000 }, category: 'working-capital' },
-                            { account: 'Aumento (Disminución) en Cuentas por Pagar', values: { [currentPeriod]: 60000 }, category: 'working-capital' },
-                            { account: 'FLUJO NETO DE EFECTIVO DE ACTIVIDADES DE OPERACIÓN', values: { [currentPeriod]: 560000 }, isTotal: true, category: 'total' }
-                        ];
-                    } else {
-                        analysisData = [
-                            { account: 'ESTADO DE FLUJOS DE EFECTIVO - MÉTODO INDIRECTO', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Actividades de Operación', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Utilidad Neta', values: { [currentPeriod]: 500000 }, category: 'starting-point' },
-                            { account: 'Ajustes para Conciliar la Utilidad Neta:', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Depreciación y Amortización', values: { [currentPeriod]: 150000 }, category: 'adjustments' },
-                            { account: 'Cambios en Activos y Pasivos Operativos:', values: {}, isHeader: true, category: 'header' },
-                            { account: 'Cuentas por Cobrar', values: { [currentPeriod]: -80000 }, category: 'working-capital' },
-                            { account: 'Inventarios', values: { [currentPeriod]: -120000 }, category: 'working-capital' },
-                            { account: 'Cuentas por Pagar', values: { [currentPeriod]: 60000 }, category: 'working-capital' },
-                            { account: 'Efectivo Neto Proporcionado por Actividades de Operación', values: { [currentPeriod]: 510000 }, isTotal: true, category: 'total' }
-                        ];
-                    }
-                    
-                    // Resetear selección
                     selectedRowIndex = -1;
-                    
                     renderTable();
-                    
-                    // Limpiar archivos seleccionados
-                    selectedFiles.excel = null;
-                    selectedFiles.pdf = null;
-                    document.getElementById('excelFileName').style.display = 'none';
-                    document.getElementById('pdfFileName').style.display = 'none';
-                    document.getElementById('excelFile').value = '';
-                    document.getElementById('pdfFile').value = '';
-                    
-                    bootstrap.Modal.getInstance(document.getElementById('importModal')).hide();
-                    showAlert('Datos importados correctamente', 'success');
-                }, 2000);
+                    showAlert('Tabla limpiada correctamente', 'info');
+                }
             });
             
-            // Guardar análisis con animación
+            // Guardar análisis
             document.getElementById('saveAnalysis').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
                     return;
                 }
                 
-                // Simular guardado
                 const btn = this;
                 const originalText = btn.innerHTML;
                 
-                btn.innerHTML = '<i class="fas fa-spinner loading"></i> Guardando...';
-                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
                 
                 setTimeout(() => {
                     btn.innerHTML = originalText;
-                    btn.disabled = false;
                     showAlert('Análisis guardado correctamente', 'success');
                 }, 1500);
             });
             
-            // Exportar a Excel con animación
+            // Exportar Excel
             document.getElementById('exportExcel').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
                     return;
                 }
                 
-                const btn = this;
-                const originalText = btn.innerHTML;
-                
-                btn.innerHTML = '<i class="fas fa-spinner loading"></i> Exportando...';
-                btn.disabled = true;
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    showAlert('Preparando descarga de Excel...', 'info');
-                    // Aquí iría la lógica real de exportación a Excel
-                }, 1500);
+                showAlert('Preparando descarga de Excel...', 'info');
             });
             
-            // Exportar a PDF con animación
+            // Exportar PDF
             document.getElementById('exportPDF').addEventListener('click', function() {
                 if (!currentPeriod) {
                     showAlert('Primero selecciona un período', 'error');
                     return;
                 }
                 
-                const btn = this;
-                const originalText = btn.innerHTML;
-                
-                btn.innerHTML = '<i class="fas fa-spinner loading"></i> Exportando...';
-                btn.disabled = true;
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    showAlert('Preparando descarga de PDF...', 'info');
-                    // Aquí iría la lógica real de exportación a PDF
-                }, 1500);
+                showAlert('Preparando descarga de PDF...', 'info');
             });
-        }
-        
-        // Calcular conciliación
-        function calculateReconciliation() {
-            let operatingTotal = 0;
-            
-            analysisData.forEach(row => {
-                if (!row.isHeader && row.values[currentPeriod]) {
-                    const value = parseFloat(row.values[currentPeriod]) || 0;
-                    
-                    if (row.category === 'starting-point' || row.category === 'adjustments') {
-                        operatingTotal += value;
-                    } else if (row.category === 'working-capital') {
-                        operatingTotal += value;
-                    }
-                }
-            });
-            
-            // Actualizar fila de total operativo
-            const operatingTotalRow = analysisData.find(row => row.account.includes('FLUJO NETO') || row.account.includes('Efectivo Neto'));
-            if (operatingTotalRow) {
-                operatingTotalRow.values[currentPeriod] = operatingTotal;
-            }
         }
         
         // Actualizar información del período
         function updatePeriodInfo() {
             const periodInfo = document.getElementById('periodInfo');
             const periodBadge = document.getElementById('currentPeriodBadge');
-            const reportType = document.getElementById('currentReportType');
-            const periodDates = document.getElementById('periodDates');
             const tablePeriodTitle = document.getElementById('tablePeriodTitle');
-            const tablePeriodSubtitle = document.getElementById('tablePeriodSubtitle');
             
             if (currentPeriod) {
                 periodInfo.style.display = 'flex';
                 periodBadge.textContent = currentPeriod;
-                
-                // Actualizar tipo de reporte
-                let reportTypeText = '';
-                switch(currentReportType) {
-                    case 'operating':
-                        reportTypeText = 'Flujo de Operación';
-                        break;
-                    case 'consolidated':
-                        reportTypeText = 'Estado Consolidado';
-                        break;
-                }
-                reportType.textContent = reportTypeText;
-                
-                periodDates.textContent = `Período: Ene ${currentPeriod} - Dic ${currentPeriod}`;
                 tablePeriodTitle.textContent = `Período ${currentPeriod}`;
-                tablePeriodSubtitle.textContent = 'Ajustes y Conciliaciones';
             } else {
                 periodInfo.style.display = 'none';
             }
         }
         
-        // Función para mostrar alertas
+        // Mostrar alertas
         function showAlert(message, type) {
-            // Crear elemento de alerta
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
             alertDiv.style.cssText = `
@@ -2147,16 +1517,14 @@
                         ${message}
                     </div>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
             `;
-            
             document.body.appendChild(alertDiv);
-            
-            // Auto-remover después de 4 segundos
             setTimeout(() => {
-                if (alertDiv.parentNode) {
-                    alertDiv.remove();
-                }
+                alertDiv.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(alertDiv);
+                }, 500);
             }, 4000);
         }
         
