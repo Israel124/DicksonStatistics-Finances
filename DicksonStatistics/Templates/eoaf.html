@@ -1,0 +1,1384 @@
+{% extends 'base.html' %}
+
+{% block title %}Estado de Origen y Aplicación de Fondos - DicksonStatistics{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --primary: #00d9ff;
+    --secondary: #0099cc;
+    --accent: #ff006e;
+    --dark-bg: #0a0e27;
+    --card-bg: #1a1f3a;
+    --border-color: #2d3561;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --success: #00ff88;
+    --warning: #ffaa00;
+    --danger: #ff3366;
+  }
+
+  .section-header {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 0, 110, 0.1) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+  }
+
+  .card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 12px 48px rgba(0, 217, 255, 0.2);
+    transform: translateY(-5px);
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .card-body {
+    padding: 25px;
+  }
+
+  .btn-primary-glow {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border: none;
+    color: var(--dark-bg);
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+    cursor: pointer;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  .btn-primary-glow:hover {
+    box-shadow: 0 0 40px rgba(0, 217, 255, 0.6);
+    transform: translateY(-2px);
+    color: var(--dark-bg);
+  }
+
+  .btn-sm-glow {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border: none;
+    color: var(--dark-bg);
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin: 0 4px;
+  }
+
+  .btn-sm-glow:hover {
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+  }
+
+  .btn-danger-sm {
+    background: linear-gradient(90deg, var(--danger), #ff1744);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .btn-danger-sm:hover {
+    box-shadow: 0 0 20px rgba(255, 51, 102, 0.4);
+  }
+
+  .input-futurista {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+
+  .input-futurista:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    color: var(--text-primary);
+    outline: none;
+  }
+
+  .input-futurista::placeholder {
+    color: var(--text-secondary);
+  }
+
+  .tabla-cuentas {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  .tabla-cuentas th {
+    background: rgba(0, 217, 255, 0.1);
+    color: var(--primary);
+    padding: 12px;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 2px solid var(--primary);
+  }
+
+  .tabla-cuentas td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .tabla-cuentas tr:hover {
+    background: rgba(0, 217, 255, 0.05);
+  }
+
+  .tabla-cuentas .acciones {
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .tabla-origen-aplicacion {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .tabla-origen-aplicacion td {
+    padding: 12px 15px;
+    border: none;
+    color: var(--text-primary);
+  }
+
+  .tabla-origen-aplicacion .concepto {
+    text-align: left;
+    font-weight: 500;
+  }
+
+  .tabla-origen-aplicacion .monto {
+    text-align: right;
+    min-width: 150px;
+  }
+
+  .tabla-origen-aplicacion .titulo-seccion {
+    background: rgba(0, 217, 255, 0.1);
+    font-weight: 700;
+    color: var(--primary);
+    border-top: 2px solid var(--primary);
+    border-bottom: 2px solid var(--primary);
+  }
+
+  .tabla-origen-aplicacion .total-final {
+    background: rgba(0, 217, 255, 0.15);
+    font-weight: 800;
+    border-top: 2px solid var(--primary);
+    border-bottom: 3px solid var(--primary);
+  }
+
+  .origen {
+    background: rgba(0, 255, 136, 0.08);
+  }
+
+  .aplicacion {
+    background: rgba(255, 51, 102, 0.08);
+  }
+
+  .metric-card {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .metric-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 8px 32px rgba(0, 217, 255, 0.15);
+  }
+
+  .metric-value {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .metric-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 8px;
+  }
+
+  .resumen-card {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.05));
+    border-left: 4px solid var(--primary);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+  }
+
+  .resumen-card.positivo {
+    border-left-color: var(--success);
+  }
+
+  .resumen-card.negativo {
+    border-left-color: var(--danger);
+  }
+
+  .resumen-card.advertencia {
+    border-left-color: var(--warning);
+  }
+
+  .resumen-titulo {
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+
+  .resumen-texto {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+  }
+
+  .modal-header {
+    border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+  }
+
+  .modal-header .btn-close {
+    filter: invert(1);
+  }
+
+  .modal-title {
+    color: var(--primary);
+    font-weight: 700;
+  }
+
+  .modal-body {
+    color: var(--text-primary);
+  }
+
+  .nav-tabs .nav-link {
+    color: var(--text-secondary);
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+  }
+
+  .nav-tabs .nav-link:hover {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+
+  .nav-tabs .nav-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: transparent;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 350px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(0, 217, 255, 0.05);
+    border-radius: 15px;
+    border: 1px solid var(--border-color);
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 1.5rem;
+    }
+
+    .metric-value {
+      font-size: 1.5rem;
+    }
+
+    .section-header {
+      padding: 25px;
+    }
+
+    .chart-container {
+      height: 300px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4" style="position: relative; z-index: 1;">
+  <!-- Hero Section -->
+  <section class="section-header">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="section-title"><i class="fas fa-exchange-alt" style="margin-right: 15px; text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);"></i>Estado de Origen y Aplicación de Fondos</h1>
+        <p class="section-subtitle">Análisis comparativo completo con gestión dinámica de cuentas y visualización de datos</p>
+      </div>
+      <div class="col-lg-4 text-center">
+        <div style="font-size: 4rem; color: var(--primary); text-shadow: 0 0 30px rgba(0, 217, 255, 0.5);">
+          <i class="fas fa-balance-scale"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabs de Navegación -->
+  <ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="tab-balance" data-bs-toggle="tab" data-bs-target="#contenido-balance" type="button">
+        <i class="fas fa-building"></i> Balance General
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="tab-resultados" data-bs-toggle="tab" data-bs-target="#contenido-resultados" type="button">
+        <i class="fas fa-file-invoice-dollar"></i> Estado de Resultados
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="tab-eoaf" data-bs-toggle="tab" data-bs-target="#contenido-eoaf" type="button">
+        <i class="fas fa-chart-bar"></i> EOAF
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <!-- TAB: BALANCE GENERAL -->
+    <div class="tab-pane fade show active" id="contenido-balance" role="tabpanel">
+      <!-- Gráficos Balance -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-chart-pie"></i> Visualización de Balances
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-lg-6">
+              <h6 style="color: var(--primary); margin-bottom: 15px;">Balance Año Anterior</h6>
+              <div class="chart-container">
+                <canvas id="chartBalance1"></canvas>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <h6 style="color: var(--primary); margin-bottom: 15px;">Balance Año Actual</h6>
+              <div class="chart-container">
+                <canvas id="chartBalance2"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Balance Inicial -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-calendar-alt"></i> Balance General - Año Anterior
+        </div>
+        <div class="card-body">
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h6 style="color: var(--primary); margin-bottom: 15px;">
+                <i class="fas fa-arrow-right"></i> ACTIVOS
+              </h6>
+              <div class="mb-3">
+                <label class="form-label" style="color: var(--text-secondary);">Año Anterior:</label>
+                <input type="number" id="anioPeriodo1" class="input-futurista" placeholder="2023" step="1">
+              </div>
+              <table class="tabla-cuentas" id="tablaCuentasActivo1">
+                <thead>
+                  <tr>
+                    <th>Cuenta</th>
+                    <th>Monto</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="bodyActivo1">
+                </tbody>
+              </table>
+              <button class="btn btn-primary-glow mt-3" onclick="abrirModalCuenta('activo1')">
+                <i class="fas fa-plus"></i> Agregar Activo
+              </button>
+            </div>
+
+            <div class="col-md-6">
+              <h6 style="color: var(--primary); margin-bottom: 15px;">
+                <i class="fas fa-arrow-left"></i> PASIVOS Y CAPITAL
+              </h6>
+              <div class="mb-3">
+                <label class="form-label" style="color: var(--text-secondary);">Pasivos:</label>
+                <table class="tabla-cuentas" id="tablaCuentasPasivo1">
+                  <thead>
+                    <tr>
+                      <th>Cuenta</th>
+                      <th>Monto</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bodyPasivo1">
+                  </tbody>
+                </table>
+                <button class="btn btn-primary-glow mt-3" onclick="abrirModalCuenta('pasivo1')">
+                  <i class="fas fa-plus"></i> Agregar Pasivo
+                </button>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" style="color: var(--text-secondary);">Capital/Patrimonio:</label>
+                <table class="tabla-cuentas" id="tablaCuentasCapital1">
+                  <thead>
+                    <tr>
+                      <th>Cuenta</th>
+                      <th>Monto</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bodyCapital1">
+                  </tbody>
+                </table>
+                <button class="btn btn-primary-glow mt-3" onclick="abrirModalCuenta('capital1')">
+                  <i class="fas fa-plus"></i> Agregar Capital
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Balance Final -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-calendar-check"></i> Balance General - Año Actual
+        </div>
+        <div class="card-body">
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h6 style="color: var(--primary); margin-bottom: 15px;">
+                <i class="fas fa-arrow-right"></i> ACTIVOS
+              </h6>
+              <div class="mb-3">
+                <label class="form-label" style="color: var(--text-secondary);">Año Actual:</label>
+                <input type="number" id="anioPeriodo2" class="input-futurista" placeholder="2024" step="1">
+              </div>
+              <table class="tabla-cuentas" id="tablaCuentasActivo2">
+                <thead>
+                  <tr>
+                    <th>Cuenta</th>
+                    <th>Monto</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="bodyActivo2">
+                </tbody>
+              </table>
+              <button class="btn btn-primary-glow mt-3" onclick="abrirModalCuenta('activo2')">
+                <i class="fas fa-plus"></i> Agregar Activo
+              </button>
+            </div>
+
+            <div class="col-md-6">
+              <h6 style="color: var(--primary); margin-bottom: 15px;">
+                <i class="fas fa-arrow-left"></i> PASIVOS Y CAPITAL
+              </h6>
+              <div class="mb-3">
+                <label class="form-label" style="color: var(--text-secondary);">Pasivos:</label>
+                <table class="tabla-cuentas" id="tablaCuentasPasivo2">
+                  <thead>
+                    <tr>
+                      <th>Cuenta</th>
+                      <th>Monto</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bodyPasivo2">
+                  </tbody>
+                </table>
+                <button class="btn btn-primary-glow mt-3" onclick="abrirModalCuenta('pasivo2')">
+                  <i class="fas fa-plus"></i> Agregar Pasivo
+                </button>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" style="color: var(--text-secondary);">Capital/Patrimonio:</label>
+                <table class="tabla-cuentas" id="tablaCuentasCapital2">
+                  <thead>
+                    <tr>
+                      <th>Cuenta</th>
+                      <th>Monto</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bodyCapital2">
+                  </tbody>
+                </table>
+                <button class="btn btn-primary-glow mt-3" onclick="abrirModalCuenta('capital2')">
+                  <i class="fas fa-plus"></i> Agregar Capital
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: ESTADO DE RESULTADOS -->
+    <div class="tab-pane fade" id="contenido-resultados" role="tabpanel">
+      <!-- Gráficos Estado de Resultados -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-chart-pie"></i> Composición de Ingresos y Gastos
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-lg-6">
+              <h6 style="color: var(--primary); margin-bottom: 15px;">Distribución de Ingresos</h6>
+              <div class="chart-container">
+                <canvas id="chartIngresos"></canvas>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <h6 style="color: var(--primary); margin-bottom: 15px;">Distribución de Gastos</h6>
+              <div class="chart-container">
+                <canvas id="chartGastos"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-file-invoice-dollar"></i> Estado de Resultados - Período Actual
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h6 style="color: var(--primary); margin-bottom: 15px;">
+                <i class="fas fa-arrow-up"></i> INGRESOS
+              </h6>
+              <table class="tabla-cuentas" id="tablaCuentasIngresos">
+                <thead>
+                  <tr>
+                    <th>Cuenta</th>
+                    <th>Monto</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="bodyIngresos">
+                </tbody>
+              </table>
+              <button class="btn btn-primary-glow mt-3" onclick="abrirModalCuenta('ingresos')">
+                <i class="fas fa-plus"></i> Agregar Ingreso
+              </button>
+            </div>
+
+            <div class="col-md-6">
+              <h6 style="color: var(--primary); margin-bottom: 15px;">
+                <i class="fas fa-arrow-down"></i> GASTOS
+              </h6>
+              <table class="tabla-cuentas" id="tablaCuentasGastos">
+                <thead>
+                  <tr>
+                    <th>Cuenta</th>
+                    <th>Monto</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="bodyGastos">
+                </tbody>
+              </table>
+              <button class="btn btn-primary-glow mt-3" onclick="abrirModalCuenta('gastos')">
+                <i class="fas fa-plus"></i> Agregar Gasto
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: EOAF -->
+    <div class="tab-pane fade" id="contenido-eoaf" role="tabpanel">
+      <div class="card mb-4">
+        <div class="card-body text-center">
+          <button class="btn btn-primary-glow" onclick="calcularEstadoOrigen()">
+            <i class="fas fa-calculator"></i> Calcular Estado de Origen y Aplicación
+          </button>
+          <button class="btn btn-primary-glow" onclick="limpiarTodo()">
+            <i class="fas fa-redo"></i> Limpiar Todo
+          </button>
+        </div>
+      </div>
+
+      <!-- Resultados EOAF -->
+      <section id="resultados" style="display: none;">
+        <!-- Gráficos EOAF -->
+        <div class="card mb-5">
+          <div class="card-header">
+            <i class="fas fa-chart-bar"></i> Visualización de Origen y Aplicación
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-lg-6">
+                <h6 style="color: var(--primary); margin-bottom: 15px;">Comparativa Orígenes vs Aplicaciones</h6>
+                <div class="chart-container">
+                  <canvas id="chartEOAF"></canvas>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <h6 style="color: var(--primary); margin-bottom: 15px;">Distribución de Orígenes</h6>
+                <div class="chart-container">
+                  <canvas id="chartOrigenes"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-6">
+                <h6 style="color: var(--primary); margin-bottom: 15px;">Distribución de Aplicaciones</h6>
+                <div class="chart-container">
+                  <canvas id="chartAplicaciones"></canvas>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <h6 style="color: var(--primary); margin-bottom: 15px;">Composición del Balance Actual</h6>
+                <div class="chart-container">
+                  <canvas id="chartComposicion"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado de Origen y Aplicación -->
+        <div class="card mb-5">
+          <div class="card-header">
+            <i class="fas fa-exchange-alt"></i> Estado de Origen y Aplicación de Fondos
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <!-- Orígenes -->
+              <div class="col-lg-6">
+                <h5 style="color: var(--success); margin-bottom: 20px; font-weight: 700;">
+                  <i class="fas fa-arrow-up"></i> ORÍGENES DE FONDOS
+                </h5>
+                <table class="tabla-origen-aplicacion">
+                  <tbody id="tablaOrigenes">
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Aplicaciones -->
+              <div class="col-lg-6">
+                <h5 style="color: var(--danger); margin-bottom: 20px; font-weight: 700;">
+                  <i class="fas fa-arrow-down"></i> APLICACIONES DE FONDOS
+                </h5>
+                <table class="tabla-origen-aplicacion">
+                  <tbody id="tablaAplicaciones">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Métricas Clave -->
+        <div class="card mb-5">
+          <div class="card-header">
+            <i class="fas fa-tachometer-alt"></i> Métricas Clave
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="metric-card">
+                  <div class="metric-value" id="totalOrigenes">0.00</div>
+                  <div class="metric-label">Total Orígenes</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="metric-card">
+                  <div class="metric-value" id="totalAplicaciones">0.00</div>
+                  <div class="metric-label">Total Aplicaciones</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="metric-card">
+                  <div class="metric-value" id="variacionEfectivo">0.00</div>
+                  <div class="metric-label">Variación Neta</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="metric-card">
+                  <div class="metric-value" id="utilidadPeriodo">0.00</div>
+                  <div class="metric-label">Utilidad del Período</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resumen Financiero -->
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-file-alt"></i> Resumen Financiero y Recomendaciones
+          </div>
+          <div class="card-body">
+            <div id="resumenFinanciero">
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Agregar/Editar Cuentas -->
+<div class="modal fade" id="modalCuenta" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-edit"></i> <span id="modalTitulo">Agregar Cuenta</span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label" style="color: var(--primary); font-weight: 700;">Nombre de la Cuenta</label>
+          <input type="text" id="inputNombreCuenta" class="input-futurista" placeholder="Ej: Caja">
+        </div>
+        <div class="mb-3">
+          <label class="form-label" style="color: var(--primary); font-weight: 700;">Monto</label>
+          <input type="number" id="inputMontoCuenta" class="input-futurista" placeholder="0.00" step="0.01">
+        </div>
+      </div>
+      <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary-glow" onclick="guardarCuenta()">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  let datosBalance = {
+    activo1: [],
+    pasivo1: [],
+    capital1: [],
+    activo2: [],
+    pasivo2: [],
+    capital2: [],
+    ingresos: [],
+    gastos: []
+  };
+
+  let cuentaActual = null;
+  let indexActual = null;
+  let charts = {};
+
+  const colores = [
+    '#00d9ff', '#0099cc', '#ff006e', '#00ff88', '#ffaa00',
+    '#ff3366', '#00ccff', '#0066ff', '#ff00cc', '#00ff00'
+  ];
+
+  function abrirModalCuenta(tipo) {
+    cuentaActual = tipo;
+    indexActual = null;
+    document.getElementById('modalTitulo').textContent = 'Agregar Cuenta';
+    document.getElementById('inputNombreCuenta').value = '';
+    document.getElementById('inputMontoCuenta').value = '';
+    
+    const modal = new bootstrap.Modal(document.getElementById('modalCuenta'));
+    modal.show();
+    
+    setTimeout(() => {
+      document.getElementById('inputNombreCuenta').focus();
+    }, 300);
+  }
+
+  function editarCuenta(tipo, index) {
+    cuentaActual = tipo;
+    indexActual = index;
+    const cuenta = datosBalance[tipo][index];
+    
+    document.getElementById('modalTitulo').textContent = 'Editar Cuenta';
+    document.getElementById('inputNombreCuenta').value = cuenta.nombre;
+    document.getElementById('inputMontoCuenta').value = cuenta.monto;
+    
+    const modal = new bootstrap.Modal(document.getElementById('modalCuenta'));
+    modal.show();
+    
+    setTimeout(() => {
+      document.getElementById('inputNombreCuenta').focus();
+    }, 300);
+  }
+
+  function guardarCuenta() {
+    const nombre = document.getElementById('inputNombreCuenta').value.trim();
+    const monto = parseFloat(document.getElementById('inputMontoCuenta').value) || 0;
+
+    if (!nombre) {
+      alert('Por favor ingrese un nombre para la cuenta');
+      return;
+    }
+
+    if (indexActual !== null) {
+      datosBalance[cuentaActual][indexActual] = { nombre, monto };
+    } else {
+      datosBalance[cuentaActual].push({ nombre, monto });
+    }
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modalCuenta'));
+    modal.hide();
+
+    actualizarTablas();
+    actualizarGraficosBalance();
+  }
+
+  function eliminarCuenta(tipo, index) {
+    if (confirm('¿Está seguro de que desea eliminar esta cuenta?')) {
+      datosBalance[tipo].splice(index, 1);
+      actualizarTablas();
+      actualizarGraficosBalance();
+    }
+  }
+
+  function actualizarTablas() {
+    ['activo1', 'pasivo1', 'capital1', 'activo2', 'pasivo2', 'capital2', 'ingresos', 'gastos'].forEach(tipo => {
+      actualizarTablaBalance(tipo);
+    });
+  }
+
+  function actualizarTablaBalance(tipo) {
+    const bodyId = 'body' + tipo.charAt(0).toUpperCase() + tipo.slice(1);
+    const tbody = document.getElementById(bodyId);
+    
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    
+    datosBalance[tipo].forEach((cuenta, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${cuenta.nombre}</td>
+        <td>${cuenta.monto.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+        <td class="acciones">
+          <button class="btn-sm-glow" onclick="editarCuenta('${tipo}', ${index})">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn-danger-sm" onclick="eliminarCuenta('${tipo}', ${index})">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function calcularTotalCuentas(tipo) {
+    return datosBalance[tipo].reduce((sum, cuenta) => sum + cuenta.monto, 0);
+  }
+
+  function actualizarGraficosBalance() {
+    const totalActivo1 = calcularTotalCuentas('activo1');
+    const totalPasivo1 = calcularTotalCuentas('pasivo1');
+    const totalCapital1 = calcularTotalCuentas('capital1');
+
+    const totalActivo2 = calcularTotalCuentas('activo2');
+    const totalPasivo2 = calcularTotalCuentas('pasivo2');
+    const totalCapital2 = calcularTotalCuentas('capital2');
+
+    crearGraficoBalance('chartBalance1', totalActivo1, totalPasivo1, totalCapital1);
+    crearGraficoBalance('chartBalance2', totalActivo2, totalPasivo2, totalCapital2);
+    crearGraficosResultados();
+  }
+
+  function crearGraficoBalance(canvasId, activo, pasivo, capital) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+
+    if (charts[canvasId]) {
+      charts[canvasId].destroy();
+    }
+
+    charts[canvasId] = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Activos', 'Pasivos', 'Capital'],
+        datasets: [{
+          data: [activo, pasivo, capital],
+          backgroundColor: ['#00d9ff', '#ff3366', '#00ff88'],
+          borderColor: '#0a0e27',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: '#e0e0e0',
+              font: { size: 12, weight: 'bold' }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function crearGraficosResultados() {
+    crearGraficoResultado('chartIngresos', 'ingresos', 'Ingresos');
+    crearGraficoResultado('chartGastos', 'gastos', 'Gastos');
+  }
+
+  function crearGraficoResultado(canvasId, tipo, titulo) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+
+    if (charts[canvasId]) {
+      charts[canvasId].destroy();
+    }
+
+    const labels = datosBalance[tipo].map(c => c.nombre);
+    const data = datosBalance[tipo].map(c => c.monto);
+
+    charts[canvasId] = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: labels.length > 0 ? labels : ['Sin datos'],
+        datasets: [{
+          data: data.length > 0 ? data : [1],
+          backgroundColor: colores,
+          borderColor: '#0a0e27',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: '#e0e0e0',
+              font: { size: 11, weight: 'bold' }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function calcularEstadoOrigen() {
+    const totalActivo1 = calcularTotalCuentas('activo1');
+    const totalPasivo1 = calcularTotalCuentas('pasivo1');
+    const totalCapital1 = calcularTotalCuentas('capital1');
+
+    const totalActivo2 = calcularTotalCuentas('activo2');
+    const totalPasivo2 = calcularTotalCuentas('pasivo2');
+    const totalCapital2 = calcularTotalCuentas('capital2');
+
+    let origenes = [];
+    let aplicaciones = [];
+
+    procesarVariacionesCuentas('activo1', 'activo2', origenes, aplicaciones, 'Activo');
+    procesarVariacionesCuentas('pasivo1', 'pasivo2', origenes, aplicaciones, 'Pasivo');
+    procesarVariacionesCuentas('capital1', 'capital2', origenes, aplicaciones, 'Capital');
+
+    const totalIngresos = calcularTotalCuentas('ingresos');
+    const totalGastos = calcularTotalCuentas('gastos');
+    const utilidadPeriodo = totalIngresos - totalGastos;
+
+    if (utilidadPeriodo > 0) {
+      origenes.push({ concepto: 'Utilidad del Período', monto: utilidadPeriodo });
+    } else if (utilidadPeriodo < 0) {
+      aplicaciones.push({ concepto: 'Pérdida del Período', monto: Math.abs(utilidadPeriodo) });
+    }
+
+    const totalOrigenes = origenes.reduce((sum, item) => sum + item.monto, 0);
+    const totalAplicaciones = aplicaciones.reduce((sum, item) => sum + item.monto, 0);
+    const variacionNeta = totalOrigenes - totalAplicaciones;
+
+    // Generar tabla de Orígenes
+    let htmlOrigenes = '';
+    origenes.forEach(item => {
+      htmlOrigenes += `
+        <tr class="origen">
+          <td class="concepto">${item.concepto}</td>
+          <td class="monto">${item.monto.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+        </tr>
+      `;
+    });
+    htmlOrigenes += `
+      <tr class="total-final">
+        <td class="concepto"><strong>TOTAL ORÍGENES</strong></td>
+        <td class="monto"><strong>${totalOrigenes.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></td>
+      </tr>
+    `;
+    document.getElementById('tablaOrigenes').innerHTML = htmlOrigenes;
+
+    // Generar tabla de Aplicaciones
+    let htmlAplicaciones = '';
+    aplicaciones.forEach(item => {
+      htmlAplicaciones += `
+        <tr class="aplicacion">
+          <td class="concepto">${item.concepto}</td>
+          <td class="monto">${item.monto.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>
+        </tr>
+      `;
+    });
+    htmlAplicaciones += `
+      <tr class="total-final">
+        <td class="concepto"><strong>TOTAL APLICACIONES</strong></td>
+        <td class="monto"><strong>${totalAplicaciones.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></td>
+      </tr>
+    `;
+    document.getElementById('tablaAplicaciones').innerHTML = htmlAplicaciones;
+
+    // Actualizar métricas
+    document.getElementById('totalOrigenes').textContent = totalOrigenes.toLocaleString('es-ES', { minimumFractionDigits: 2 });
+    document.getElementById('totalAplicaciones').textContent = totalAplicaciones.toLocaleString('es-ES', { minimumFractionDigits: 2 });
+    document.getElementById('variacionEfectivo').textContent = variacionNeta.toLocaleString('es-ES', { minimumFractionDigits: 2 });
+    document.getElementById('utilidadPeriodo').textContent = utilidadPeriodo.toLocaleString('es-ES', { minimumFractionDigits: 2 });
+
+    // Crear gráficos EOAF
+    crearGraficosEOAF(origenes, aplicaciones, totalOrigenes, totalAplicaciones, totalActivo2, totalPasivo2, totalCapital2);
+
+    // Generar resumen financiero
+    generarResumenFinanciero(totalOrigenes, totalAplicaciones, variacionNeta, utilidadPeriodo, totalIngresos, totalGastos);
+
+    document.getElementById('resultados').style.display = 'block';
+    document.getElementById('tab-eoaf').click();
+  }
+
+  function crearGraficosEOAF(origenes, aplicaciones, totalOrigenes, totalAplicaciones, totalActivo, totalPasivo, totalCapital) {
+    // Gráfico Comparativa EOAF
+    const ctxEOAF = document.getElementById('chartEOAF');
+    if (ctxEOAF) {
+      if (charts['chartEOAF']) charts['chartEOAF'].destroy();
+
+      charts['chartEOAF'] = new Chart(ctxEOAF, {
+        type: 'bar',
+        data: {
+          labels: ['Orígenes', 'Aplicaciones'],
+          datasets: [{
+            label: 'Monto',
+            data: [totalOrigenes, totalAplicaciones],
+            backgroundColor: ['#00ff88', '#ff3366'],
+            borderColor: '#0a0e27',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#e0e0e0', font: { size: 12, weight: 'bold' } } }
+          },
+          scales: {
+            y: {
+              ticks: { color: '#e0e0e0' },
+              grid: { color: 'rgba(0, 217, 255, 0.1)' }
+            },
+            x: {
+              ticks: { color: '#e0e0e0' },
+              grid: { color: 'rgba(0, 217, 255, 0.1)' }
+            }
+          }
+        }
+      });
+    }
+
+    // Gráfico Distribución Orígenes
+    const ctxOrigenes = document.getElementById('chartOrigenes');
+    if (ctxOrigenes) {
+      if (charts['chartOrigenes']) charts['chartOrigenes'].destroy();
+
+      const origenesLabels = origenes.map(o => o.concepto);
+      const origenesData = origenes.map(o => o.monto);
+
+      charts['chartOrigenes'] = new Chart(ctxOrigenes, {
+        type: 'doughnut',
+        data: {
+          labels: origenesLabels.length > 0 ? origenesLabels : ['Sin datos'],
+          datasets: [{
+            data: origenesData.length > 0 ? origenesData : [1],
+            backgroundColor: colores,
+            borderColor: '#0a0e27',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#e0e0e0', font: { size: 10, weight: 'bold' } } }
+          }
+        }
+      });
+    }
+
+    // Gráfico Distribución Aplicaciones
+    const ctxAplicaciones = document.getElementById('chartAplicaciones');
+    if (ctxAplicaciones) {
+      if (charts['chartAplicaciones']) charts['chartAplicaciones'].destroy();
+
+      const aplicacionesLabels = aplicaciones.map(a => a.concepto);
+      const aplicacionesData = aplicaciones.map(a => a.monto);
+
+      charts['chartAplicaciones'] = new Chart(ctxAplicaciones, {
+        type: 'doughnut',
+        data: {
+          labels: aplicacionesLabels.length > 0 ? aplicacionesLabels : ['Sin datos'],
+          datasets: [{
+            data: aplicacionesData.length > 0 ? aplicacionesData : [1],
+            backgroundColor: colores,
+            borderColor: '#0a0e27',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#e0e0e0', font: { size: 10, weight: 'bold' } } }
+          }
+        }
+      });
+    }
+
+    // Gráfico Composición del Balance
+    const ctxComposicion = document.getElementById('chartComposicion');
+    if (ctxComposicion) {
+      if (charts['chartComposicion']) charts['chartComposicion'].destroy();
+
+      charts['chartComposicion'] = new Chart(ctxComposicion, {
+        type: 'pie',
+        data: {
+          labels: ['Activos', 'Pasivos', 'Capital'],
+          datasets: [{
+            data: [totalActivo, totalPasivo, totalCapital],
+            backgroundColor: ['#00d9ff', '#ff3366', '#00ff88'],
+            borderColor: '#0a0e27',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#e0e0e0', font: { size: 12, weight: 'bold' } } }
+          }
+        }
+      });
+    }
+  }
+
+  function procesarVariacionesCuentas(tipo1, tipo2, origenes, aplicaciones, categoria) {
+    const cuentas1 = datosBalance[tipo1];
+    const cuentas2 = datosBalance[tipo2];
+
+    const mapaCuentas2 = {};
+    cuentas2.forEach(cuenta => {
+      mapaCuentas2[cuenta.nombre] = cuenta.monto;
+    });
+
+    cuentas1.forEach(cuenta1 => {
+      const monto1 = cuenta1.monto;
+      const monto2 = mapaCuentas2[cuenta1.nombre] || 0;
+      const variacion = monto2 - monto1;
+
+      if (variacion !== 0) {
+        if (categoria === 'Activo') {
+          if (variacion > 0) {
+            aplicaciones.push({ concepto: `Aumento ${cuenta1.nombre}`, monto: variacion });
+          } else {
+            origenes.push({ concepto: `Disminución ${cuenta1.nombre}`, monto: Math.abs(variacion) });
+          }
+        } else if (categoria === 'Pasivo') {
+          if (variacion > 0) {
+            origenes.push({ concepto: `Aumento ${cuenta1.nombre}`, monto: variacion });
+          } else {
+            aplicaciones.push({ concepto: `Disminución ${cuenta1.nombre}`, monto: Math.abs(variacion) });
+          }
+        } else if (categoria === 'Capital') {
+          if (variacion > 0) {
+            origenes.push({ concepto: `Aumento ${cuenta1.nombre}`, monto: variacion });
+          } else {
+            aplicaciones.push({ concepto: `Disminución ${cuenta1.nombre}`, monto: Math.abs(variacion) });
+          }
+        }
+      }
+    });
+
+    cuentas2.forEach(cuenta2 => {
+      if (!cuentas1.find(c => c.nombre === cuenta2.nombre)) {
+        if (categoria === 'Activo') {
+          aplicaciones.push({ concepto: `Nuevo ${cuenta2.nombre}`, monto: cuenta2.monto });
+        } else {
+          origenes.push({ concepto: `Nuevo ${cuenta2.nombre}`, monto: cuenta2.monto });
+        }
+      }
+    });
+  }
+
+  function generarResumenFinanciero(totalOrigenes, totalAplicaciones, variacionNeta, utilidadPeriodo, totalIngresos, totalGastos) {
+    let resumen = '';
+
+    const diferencia = Math.abs(totalOrigenes - totalAplicaciones);
+    const balanceado = diferencia < 1;
+
+    if (balanceado) {
+      resumen += `
+        <div class="resumen-card positivo">
+          <div class="resumen-titulo"><i class="fas fa-check-circle"></i> Estado Balanceado</div>
+          <div class="resumen-texto">El estado de origen y aplicación está correctamente balanceado. Los orígenes (${totalOrigenes.toLocaleString('es-ES', { minimumFractionDigits: 2 })}) coinciden con las aplicaciones (${totalAplicaciones.toLocaleString('es-ES', { minimumFractionDigits: 2 })}).</div>
+        </div>
+      `;
+    } else {
+      resumen += `
+        <div class="resumen-card advertencia">
+          <div class="resumen-titulo"><i class="fas fa-exclamation-triangle"></i> Diferencia Detectada</div>
+          <div class="resumen-texto">Existe una diferencia de ${diferencia.toLocaleString('es-ES', { minimumFractionDigits: 2 })} entre orígenes y aplicaciones.</div>
+        </div>
+      `;
+    }
+
+    if (utilidadPeriodo > 0) {
+      resumen += `
+        <div class="resumen-card positivo">
+          <div class="resumen-titulo"><i class="fas fa-arrow-up"></i> Utilidad Positiva</div>
+          <div class="resumen-texto">La empresa generó una utilidad de ${utilidadPeriodo.toLocaleString('es-ES', { minimumFractionDigits: 2 })}. Ingresos: ${totalIngresos.toLocaleString('es-ES', { minimumFractionDigits: 2 })} | Gastos: ${totalGastos.toLocaleString('es-ES', { minimumFractionDigits: 2 })}.</div>
+        </div>
+      `;
+    } else if (utilidadPeriodo < 0) {
+      resumen += `
+        <div class="resumen-card negativo">
+          <div class="resumen-titulo"><i class="fas fa-arrow-down"></i> Pérdida en el Período</div>
+          <div class="resumen-texto">La empresa registró una pérdida de ${Math.abs(utilidadPeriodo).toLocaleString('es-ES', { minimumFractionDigits: 2 })}.</div>
+        </div>
+      `;
+    }
+
+    if (variacionNeta > 0) {
+      resumen += `
+        <div class="resumen-card positivo">
+          <div class="resumen-titulo"><i class="fas fa-plus-circle"></i> Variación Neta Positiva</div>
+          <div class="resumen-texto">La empresa generó un excedente de ${variacionNeta.toLocaleString('es-ES', { minimumFractionDigits: 2 })}.</div>
+        </div>
+      `;
+    } else if (variacionNeta < 0) {
+      resumen += `
+        <div class="resumen-card negativo">
+          <div class="resumen-titulo"><i class="fas fa-minus-circle"></i> Variación Neta Negativa</div>
+          <div class="resumen-texto">La empresa utilizó ${Math.abs(variacionNeta).toLocaleString('es-ES', { minimumFractionDigits: 2 })} más de lo que generó.</div>
+        </div>
+      `;
+    }
+
+    resumen += `
+      <div class="resumen-card">
+        <div class="resumen-titulo"><i class="fas fa-lightbulb"></i> Recomendaciones Clave</div>
+        <div class="resumen-texto">
+          <ul style="margin: 0; padding-left: 20px;">
+            <li>Monitoree continuamente las variaciones en activos y pasivos.</li>
+            <li>Asegúrese de que los orígenes de fondos sean suficientes para cubrir las aplicaciones.</li>
+            <li>Analice las tendencias en ingresos y gastos para optimizar rentabilidad.</li>
+            <li>Mantenga un flujo de caja positivo para garantizar solvencia operativa.</li>
+            <li>Revise periódicamente la composición de activos y pasivos.</li>
+          </ul>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('resumenFinanciero').innerHTML = resumen;
+  }
+
+  function limpiarTodo() {
+    if (confirm('¿Está seguro de que desea limpiar todos los datos?')) {
+      datosBalance = {
+        activo1: [], pasivo1: [], capital1: [],
+        activo2: [], pasivo2: [], capital2: [],
+        ingresos: [], gastos: []
+      };
+      actualizarTablas();
+      document.getElementById('resultados').style.display = 'none';
+      document.getElementById('tab-balance').click();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    actualizarTablas();
+  });
+</script>
+{% endblock %}
