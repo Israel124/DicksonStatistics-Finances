@@ -43,10 +43,11 @@ def login_view(request):
     
     return render(request, 'login.html')
 
+
 def logout_view(request):
     logout(request)
     messages.success(request, 'Has cerrado sesión exitosamente.')
-    return redirect('home')
+    return redirect('login')
 
 @login_required
 def home_view(request):
