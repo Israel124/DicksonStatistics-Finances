@@ -358,6 +358,10 @@ def metodo_directo(request):
 def metodo_indirecto(request):
     return render(request, 'metodoindirecto.html')
 
+@login_required
+def prof(request):
+    return render(request, 'proforma.html')
+
 #Liquidez (TODO: implementar lógica)
 @login_required
 def liquidez(request):

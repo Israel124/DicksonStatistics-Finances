@@ -28,5 +28,6 @@ urlpatterns = [
     path('presupuesto-caja/', views.presupuesto_caja, name='presupuesto_caja'),
     path('directo/', views.metodo_directo, name='directo'),
     path('indirecto/', views.metodo_indirecto, name='indirecto'),
+    path('proforma/', views.prof, name= 'proforma'),
     
 ]

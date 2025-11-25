@@ -200,6 +200,7 @@
             background: rgba(192, 183, 232, 0.2);
             color: var(--accent-purple);
             font-size: 0.9rem;
+            flex-shrink: 0;
         }
         
         .text-muted {
@@ -288,6 +289,8 @@
             padding: 0.8rem 2rem;
             border-radius: 8px;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
         }
         
         .btn-explore:hover {
@@ -303,6 +306,8 @@
             padding: 0.8rem 2rem;
             border-radius: 8px;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
         }
         
         .btn-outline-light:hover {
@@ -496,6 +501,10 @@
             .analysis-dropdown .dropdown-menu {
                 min-width: 280px;
             }
+
+            body {
+                padding-top: 70px;
+            }
         }
     </style>
     
@@ -607,6 +616,18 @@
                                     <div>
                                         <div class="fw-semibold">Estados Proforma</div>
                                         <small class="text-muted">Proyección de estados financieros futuros</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {% if request.resolver_match.url_name == 'estado_resultados_proforma' %}active{% endif %}" 
+                                   href="{% url 'proforma' %}">
+                                    <div class="analysis-icon">
+                                        <i class="fas fa-crystal-ball"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Proforma por Porcentaje</div>
+                                        <small class="text-muted">Estado de Resultados Proforma por método de porcentaje de ventas</small>
                                     </div>
                                 </a>
                             </li>
@@ -914,7 +935,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2023 RazoNix. Todos los derechos reservados.</p>
+                <p>&copy; 2024 RazoNix. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
