@@ -4,2086 +4,1013 @@
 
 {% block extra_css %}
 <style>
-    :root {
-        --dark-bg: #0a0a12;
-        --darker-bg: #07070f;
-        --dark-card: #121225;
-        --neon-purple: #8b5cf6;
-        --neon-blue: #3b82f6;
-        --neon-cyan: #06b6d4;
-        --neon-pink: #ec4899;
-        --white: #ffffff;
-        --light-text: #f1f5f9;
-        --medium-text: #94a3b8;
-        --glow-purple: 0 0 20px rgba(139, 92, 246, 0.7);
-        --glow-blue: 0 0 20px rgba(59, 130, 246, 0.7);
-        --success-color: #10b981;
-        --danger-color: #ef4444;
-        --warning-color: #f59e0b;
-        --info-color: #3b82f6;
+  :root {
+    --primary: #00d9ff;
+    --secondary: #0099cc;
+    --accent: #ff006e;
+    --dark-bg: #0a0e27;
+    --card-bg: #1a1f3a;
+    --border-color: #2d3561;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --success: #00ff88;
+    --warning: #ffaa00;
+    --danger: #ff3366;
+  }
+
+  .section-header {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 0, 110, 0.1) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(0, 217, 255, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(0, 217, 255, 0.6); }
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
     }
-    
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
-    
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: var(--light-text);
-        line-height: 1.6;
-        background-color: var(--dark-bg);
-        overflow-x: hidden;
+  }
+
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
     }
-    
-    /* Background Animation */
-    .bg-animation {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-        overflow: hidden;
+    to {
+      opacity: 1;
+      transform: scale(1);
     }
-    
-    .floating-shapes {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-    }
-    
-    .shape {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(139, 92, 246, 0.1);
-        animation: float 15s infinite linear;
-    }
-    
-    .shape:nth-child(1) {
-        width: 80px;
-        height: 80px;
-        top: 20%;
-        left: 10%;
-        animation-delay: 0s;
-    }
-    
-    .shape:nth-child(2) {
-        width: 120px;
-        height: 120px;
-        top: 60%;
-        left: 80%;
-        animation-delay: -5s;
-    }
-    
-    .shape:nth-child(3) {
-        width: 60px;
-        height: 60px;
-        top: 80%;
-        left: 20%;
-        animation-delay: -10s;
-    }
-    
-    @keyframes float {
-        0% {
-            transform: translateY(0) rotate(0deg);
-            opacity: 0.5;
-        }
-        50% {
-            transform: translateY(-20px) rotate(180deg);
-            opacity: 0.8;
-        }
-        100% {
-            transform: translateY(0) rotate(360deg);
-            opacity: 0.5;
-        }
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+    animation: slideInUp 0.6s ease-out;
+  }
+
+  .card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 12px 48px rgba(0, 217, 255, 0.2);
+    transform: translateY(-5px);
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .card-body {
+    padding: 25px;
+  }
+
+  .btn-primary-glow {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border: none;
+    color: var(--dark-bg);
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+    cursor: pointer;
+  }
+
+  .btn-primary-glow:hover {
+    box-shadow: 0 0 40px rgba(0, 217, 255, 0.6);
+    transform: translateY(-2px);
+    color: var(--dark-bg);
+  }
+
+  .btn-danger-glow {
+    background: var(--danger);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 0, 110, 0.3);
+    cursor: pointer;
+  }
+
+  .btn-danger-glow:hover {
+    box-shadow: 0 0 40px rgba(255, 0, 110, 0.6);
+    transform: translateY(-2px);
+    color: white;
+  }
+
+  .input-futurista {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+  }
+
+  .input-futurista:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    color: var(--text-primary);
+  }
+
+  .input-futurista::placeholder {
+    color: var(--text-secondary);
+  }
+
+  .metric-card {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    animation: fadeInScale 0.6s ease-out;
+  }
+
+  .metric-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 8px 32px rgba(0, 217, 255, 0.15);
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  .metric-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .metric-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 8px;
+  }
+
+  .metric-interpretation {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .badge-estado {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    animation: fadeInScale 0.6s ease-out;
+  }
+
+  .badge-excelente {
+    background: rgba(0, 255, 136, 0.2);
+    color: var(--success);
+    border: 1px solid var(--success);
+  }
+
+  .badge-aceptable {
+    background: rgba(255, 170, 0, 0.2);
+    color: var(--warning);
+    border: 1px solid var(--warning);
+  }
+
+  .badge-deficiente {
+    background: rgba(255, 51, 102, 0.2);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+  }
+
+  .control-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    animation: slideInUp 0.6s ease-out;
+  }
+
+  .formula-box {
+    background: rgba(0, 217, 255, 0.05);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    font-family: 'Courier New', monospace;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+  }
+
+  .interpretacion-box {
+    background: rgba(255, 0, 110, 0.05);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .nav-tabs .nav-link {
+    color: var(--text-secondary);
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+  }
+
+  .nav-tabs .nav-link:hover {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+
+  .nav-tabs .nav-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: transparent;
+  }
+
+  .monto-editable {
+    background: rgba(0, 217, 255, 0.1);
+    border: 1px solid var(--primary);
+    border-radius: 5px;
+    padding: 8px 12px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+  }
+
+  .monto-editable:hover {
+    background: rgba(0, 217, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+  }
+
+  .input-monto-modal {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid var(--primary);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    width: 100%;
+    text-align: right;
+  }
+
+  .input-monto-modal:focus {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+    outline: none;
+  }
+
+  .modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+  }
+
+  .modal-header {
+    border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+  }
+
+  .modal-header .btn-close {
+    filter: invert(1);
+  }
+
+  .modal-title {
+    color: var(--primary);
+    font-weight: 700;
+  }
+
+  .modal-body {
+    color: var(--text-primary);
+  }
+
+  .tabla-liquidez {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .tabla-liquidez td {
+    padding: 12px 15px;
+    border: none;
+    color: var(--text-primary);
+  }
+
+  .tabla-liquidez .concepto {
+    text-align: left;
+    font-weight: 500;
+    min-width: 200px;
+  }
+
+  .tabla-liquidez .valor {
+    text-align: right;
+    min-width: 120px;
+  }
+
+  .tabla-liquidez .subtotal {
+    background: rgba(0, 217, 255, 0.05);
+    font-weight: 600;
+    border-bottom: 1px dashed var(--border-color);
+  }
+
+  .chart-container {
+    position: relative;
+    height: 400px;
+    margin: 20px 0;
+    animation: fadeInScale 0.8s ease-out;
+  }
+
+  .chart-container-small {
+    position: relative;
+    height: 300px;
+    margin: 20px 0;
+    animation: fadeInScale 0.8s ease-out;
+  }
+
+  .chart-wrapper {
+    background: rgba(0, 217, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .chart-title {
+    color: var(--primary);
+    font-weight: 700;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 1.5rem;
     }
 
-    /* Animaciones de carga mejoradas */
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+    .metric-value {
+      font-size: 1.8rem;
     }
 
-    @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.05); }
-        100% { transform: scale(1); }
-    }
-
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {
-            transform: translateY(0);
-        }
-        40% {
-            transform: translateY(-10px);
-        }
-        60% {
-            transform: translateY(-5px);
-        }
-    }
-
-    .loading {
-        display: inline-block;
-        animation: spin 1s linear infinite;
-    }
-
-    .pulse-effect {
-        animation: pulse 2s infinite;
-    }
-
-    .slide-in {
-        animation: slideIn 0.5s ease-out;
-    }
-
-    .bounce-effect {
-        animation: bounce 2s infinite;
-    }
-    
-    .analysis-section {
-        padding: 120px 0 60px;
-        min-height: calc(100vh - 76px);
-        position: relative;
-    }
-    
     .section-header {
-        background: rgba(18, 18, 37, 0.8);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 2.5rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
-        margin-bottom: 2rem;
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        position: relative;
-        overflow: hidden;
+      padding: 25px;
     }
-    
-    .section-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
-    }
-    
-    .section-title {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: var(--white);
-        margin-bottom: 0.5rem;
-        text-shadow: var(--glow-purple);
-    }
-    
-    .section-title .highlight {
-        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-    
-    .section-subtitle {
-        color: var(--medium-text);
-        margin-bottom: 2rem;
-        font-size: 1.1rem;
-    }
-    
+
     .control-panel {
-        background: rgba(18, 18, 37, 0.8);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
-        margin-bottom: 2rem;
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        transition: all 0.3s ease;
-    }
-    
-    .control-panel:hover {
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
-    }
-    
-    .btn-modern {
-        padding: 0.875rem 1.75rem;
-        border-radius: 12px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        cursor: pointer;
-        font-size: 0.95rem;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .btn-modern::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        transition: left 0.5s;
-    }
-    
-    .btn-modern:hover::before {
-        left: 100%;
-    }
-    
-    .btn-primary-modern {
-        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
-        color: white;
-        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-    }
-    
-    .btn-primary-modern:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.6);
-        color: white;
-    }
-    
-    .btn-outline-modern {
-        background: transparent;
-        border: 2px solid var(--neon-cyan);
-        color: var(--neon-cyan);
-    }
-    
-    .btn-outline-modern:hover {
-        background: var(--neon-cyan);
-        color: var(--dark-bg);
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(6, 182, 212, 0.4);
-    }
-    
-    .btn-success-modern {
-        background: var(--success-color);
-        color: white;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-    }
-    
-    .btn-success-modern:hover {
-        background: #059669;
-        transform: translateY(-3px);
-        color: white;
-        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.6);
-    }
-    
-    .btn-danger-modern {
-        background: var(--danger-color);
-        color: white;
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-    }
-    
-    .btn-danger-modern:hover {
-        background: #dc2626;
-        transform: translateY(-3px);
-        color: white;
-        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.6);
-    }
-    
-    .btn-warning-modern {
-        background: var(--warning-color);
-        color: white;
-        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
-    }
-    
-    .btn-warning-modern:hover {
-        background: #d97706;
-        transform: translateY(-3px);
-        color: white;
-        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.6);
+      flex-direction: column;
     }
 
-    .btn-info-modern {
-        background: var(--info-color);
-        color: white;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-    }
-    
-    .btn-info-modern:hover {
-        background: #2563eb;
-        transform: translateY(-3px);
-        color: white;
-        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.6);
-    }
-    
-    .analysis-table-container {
-        background: rgba(18, 18, 37, 0.8);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
-        overflow: hidden;
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        margin-bottom: 2rem;
-        transition: all 0.3s ease;
-    }
-    
-    .analysis-table-container:hover {
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
-    }
-    
-    .table-modern {
-        margin: 0;
-        border-collapse: separate;
-        border-spacing: 0;
-        width: 100%;
-        background: transparent;
-    }
-    
-    .table-modern thead th {
-        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
-        border-bottom: none;
-        padding: 1.5rem 1rem;
-        font-weight: 700;
-        color: white;
-        text-align: center;
-        vertical-align: middle;
-        font-size: 1.1rem;
-        position: relative;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    }
-    
-    .table-modern thead th::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 10%;
-        right: 10%;
-        height: 2px;
-        background: rgba(255, 255, 255, 0.5);
-    }
-    
-    .table-modern tbody td {
-        padding: 1.25rem 1rem;
-        border-bottom: 1px solid rgba(139, 92, 246, 0.1);
-        vertical-align: middle;
-        transition: all 0.2s ease;
-        background: transparent;
-        color: var(--light-text);
-        text-align: center;
-    }
-    
-    .table-modern tbody tr:hover td {
-        background: rgba(139, 92, 246, 0.1);
-        transform: scale(1.01);
-    }
-    
-    .table-modern .account-name {
-        font-weight: 600;
-        color: var(--light-text);
-        min-width: 250px;
-        font-size: 1rem;
-        text-align: left;
-    }
-    
-    /* NUEVOS ESTILOS PARA CONTROLES NUMÉRICOS CON FLECHAS */
-    .number-input-container {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        justify-content: center;
-    }
-    
-    .number-input-wrapper {
-        position: relative;
-        display: flex;
-        align-items: center;
-        background: rgba(139, 92, 246, 0.1);
-        border: 2px solid rgba(139, 92, 246, 0.3);
-        border-radius: 10px;
-        transition: all 0.3s ease;
-        max-width: 150px;
-        margin: 0 auto;
-    }
-    
-    .number-input-wrapper:focus-within {
-        border-color: var(--neon-purple);
-        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-        background: rgba(139, 92, 246, 0.15);
-    }
-    
-    .number-input {
-        border: none;
-        background: transparent;
-        padding: 0.75rem 3rem 0.75rem 1rem;
-        font-size: 1rem;
-        font-weight: 500;
-        color: var(--light-text);
-        text-align: right;
-        width: 100%;
-        border-radius: 10px;
-        outline: none;
-    }
-    
-    .number-controls {
-        position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        display: flex;
-        flex-direction: column;
-        width: 2rem;
-        border-left: 1px solid rgba(139, 92, 246, 0.3);
-    }
-    
-    .number-control {
-        flex: 1;
-        background: rgba(139, 92, 246, 0.2);
-        border: none;
-        color: var(--light-text);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-        font-size: 0.8rem;
-    }
-    
-    .number-control:hover {
-        background: rgba(139, 92, 246, 0.4);
-    }
-    
-    .number-control:first-child {
-        border-bottom: 1px solid rgba(139, 92, 246, 0.3);
-    }
-    
-    .number-control:active {
-        background: rgba(139, 92, 246, 0.6);
-    }
-    
-    .period-header {
-        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue)) !important;
-        color: white !important;
-        position: relative;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.7) !important;
-    }
-    
-    .period-header span {
-        color: white !important;
-        font-weight: 700;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.7) !important;
-    }
-    
-    .period-header small {
-        color: rgba(255, 255, 255, 0.9) !important;
-        font-weight: 500;
-        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5) !important;
-    }
-    
-    /* CORRECCIÓN ESPECÍFICA PARA EL SELECTOR DE PERÍODO */
-    .form-control-modern {
-        border: 2px solid rgba(139, 92, 246, 0.3);
-        border-radius: 12px;
-        padding: 0.875rem 1.25rem;
-        transition: all 0.3s ease;
-        font-size: 1rem;
-        background: rgba(139, 92, 246, 0.1);
-        color: var(--light-text) !important;
-    }
-    
-    .form-control-modern:focus {
-        border-color: var(--neon-purple);
-        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-        background: rgba(139, 92, 246, 0.15);
-        color: var(--light-text) !important;
-    }
-    
-    /* Estilos específicos para el dropdown del selector de período */
-    select.form-control-modern {
-        color: var(--light-text) !important;
-        background: rgba(139, 92, 246, 0.1) !important;
-    }
-    
-    select.form-control-modern option {
-        background: var(--dark-card) !important;
-        color: var(--light-text) !important;
-        padding: 10px;
-    }
-    
-    select.form-control-modern:focus {
-        background: rgba(139, 92, 246, 0.15) !important;
-        color: var(--light-text) !important;
-    }
-    
-    /* Asegurar que el texto sea legible en toda la aplicación */
-    .table-modern thead th {
-        color: white !important;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.7) !important;
-    }
-    
-    /* Ajustes adicionales para mejor contraste */
-    .section-title {
-        color: var(--white) !important;
-        text-shadow: var(--glow-purple) !important;
-    }
-    
-    .form-label-modern {
-        color: var(--light-text) !important;
-    }
-    
-    .report-title {
-        color: var(--light-text) !important;
-    }
-    
-    .file-upload-area {
-        border: 2px dashed rgba(139, 92, 246, 0.5);
-        border-radius: 16px;
-        padding: 2.5rem;
-        text-align: center;
-        transition: all 0.3s ease;
-        background: rgba(139, 92, 246, 0.05);
-        cursor: pointer;
-        position: relative;
-    }
-    
-    .file-upload-area:hover {
-        border-color: var(--neon-purple);
-        background: rgba(139, 92, 246, 0.1);
-        transform: translateY(-5px);
-    }
-    
-    .file-upload-area.dragover {
-        border-color: var(--neon-purple);
-        background: rgba(139, 92, 246, 0.15);
-        transform: scale(1.02);
-    }
-    
-    .upload-icon {
-        font-size: 3.5rem;
-        color: var(--neon-purple);
-        margin-bottom: 1rem;
-        text-shadow: var(--glow-purple);
-    }
-    
-    .file-input {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        cursor: pointer;
-    }
-    
-    .file-name {
-        margin-top: 0.5rem;
-        font-size: 1rem;
-        color: var(--neon-purple);
-        font-weight: 600;
-        word-break: break-all;
-        text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
-    }
-    
-    .export-options {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-    }
-    
-    .modal-modern .modal-content {
-        border-radius: 20px;
-        border: none;
-        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
-        overflow: hidden;
-        background: var(--dark-card);
-        color: var(--light-text);
-    }
-    
-    .modal-modern .modal-header {
-        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
-        color: white;
-        border-radius: 20px 20px 0 0;
-        border: none;
-        padding: 1.75rem 2rem;
-    }
-    
-    .modal-modern .modal-title {
-        font-weight: 700;
-        font-size: 1.5rem;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    }
-    
-    .modal-modern .btn-close {
-        filter: invert(1);
-        opacity: 0.8;
-    }
-    
-    .modal-modern .btn-close:hover {
-        opacity: 1;
-    }
-    
-    .form-group-modern {
-        margin-bottom: 1.75rem;
-    }
-    
-    .form-label-modern {
-        font-weight: 600;
-        color: var(--light-text);
-        margin-bottom: 0.75rem;
-        font-size: 1rem;
-    }
-    
-    .ratio-badge {
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        display: block;
-        margin: 0.5rem auto 0;
-        width: fit-content;
-        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    .control-panel > * {
+      width: 100%;
     }
 
-    .ratio-good {
-        background: linear-gradient(135deg, var(--success-color), var(--neon-cyan));
-        color: white;
-        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
+    .chart-container {
+      height: 300px;
     }
 
-    .ratio-warning {
-        background: linear-gradient(135deg, var(--warning-color), #f59e0b);
-        color: white;
-        box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+    .chart-container-small {
+      height: 250px;
     }
-
-    .ratio-danger {
-        background: linear-gradient(135deg, var(--danger-color), #f87171);
-        color: white;
-        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
-    }
-
-    .ratio-info {
-        background: linear-gradient(135deg, var(--info-color), var(--neon-blue));
-        color: white;
-        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
-    }
-    
-    .calculation-row {
-        background: rgba(6, 182, 212, 0.1) !important;
-        font-weight: 700;
-    }
-    
-    .calculation-row td {
-        border-top: 2px solid rgba(139, 92, 246, 0.3);
-    }
-    
-    .empty-row {
-        text-align: center;
-        color: var(--medium-text);
-        font-style: italic;
-        padding: 3rem !important;
-        font-size: 1.1rem;
-    }
-    
-    .action-buttons {
-        display: flex;
-        gap: 0.75rem;
-        justify-content: center;
-    }
-    
-    .btn-sm-modern {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-        border-radius: 8px;
-    }
-    
-    .report-type-selector {
-        background: rgba(18, 18, 37, 0.8);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        transition: all 0.3s ease;
-    }
-    
-    .report-type-selector:hover {
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
-    }
-    
-    .report-type-buttons {
-        display: flex;
-        gap: 1.5rem;
-        flex-wrap: wrap;
-    }
-    
-    .report-type-btn {
-        flex: 1;
-        min-width: 220px;
-        padding: 2rem;
-        border: 2px solid rgba(139, 92, 246, 0.3);
-        border-radius: 16px;
-        background: rgba(139, 92, 246, 0.05);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .report-type-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-    }
-    
-    .report-type-btn.active {
-        border-color: var(--neon-purple);
-        background: rgba(139, 92, 246, 0.1);
-        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
-        transform: translateY(-5px);
-    }
-    
-    .report-type-btn.active::before {
-        transform: scaleX(1);
-    }
-    
-    .report-type-btn:hover {
-        border-color: var(--neon-purple);
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
-    }
-    
-    .report-icon {
-        font-size: 2.5rem;
-        color: var(--neon-purple);
-        margin-bottom: 1rem;
-        text-shadow: var(--glow-purple);
-    }
-    
-    .report-title {
-        font-weight: 700;
-        color: var(--light-text);
-        margin-bottom: 0.75rem;
-        font-size: 1.25rem;
-    }
-    
-    .report-description {
-        color: var(--medium-text);
-        font-size: 1rem;
-        line-height: 1.5;
-    }
-    
-    .period-selector {
-        background: rgba(18, 18, 37, 0.8);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        transition: all 0.3s ease;
-    }
-    
-    .period-selector:hover {
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
-    }
-    
-    .period-info {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        padding: 1.5rem;
-        background: rgba(139, 92, 246, 0.1);
-        border-radius: 12px;
-        margin-top: 1.5rem;
-        border-left: 4px solid var(--neon-purple);
-    }
-    
-    .period-badge {
-        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 20px;
-        font-weight: 700;
-        box-shadow: 0 4px 10px rgba(139, 92, 246, 0.4);
-        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    }
-    
-    .selected-row {
-        background-color: rgba(139, 92, 246, 0.15) !important;
-        border-left: 4px solid var(--neon-purple);
-        cursor: pointer;
-        transform: scale(1.01);
-        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
-    }
-    
-    .selectable-row {
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    
-    .selectable-row:hover {
-        background-color: rgba(139, 92, 246, 0.1) !important;
-    }
-    
-    .account-header-row {
-        background-color: rgba(139, 92, 246, 0.2) !important;
-        font-weight: 700;
-        color: var(--light-text);
-        font-size: 1.1rem;
-    }
-    
-    .account-total-row {
-        background-color: rgba(6, 182, 212, 0.2) !important;
-        font-weight: 700;
-        color: var(--light-text);
-        font-size: 1.1rem;
-    }
-    
-    .deleted-accounts-section {
-        background: rgba(18, 18, 37, 0.8);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        transition: all 0.3s ease;
-    }
-    
-    .deleted-accounts-section:hover {
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
-    }
-    
-    .deleted-accounts-list {
-        max-height: 200px;
-        overflow-y: auto;
-        border: 1px solid rgba(139, 92, 246, 0.3);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-top: 1rem;
-        background: rgba(139, 92, 246, 0.05);
-    }
-    
-    .deleted-account-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-        transition: all 0.2s ease;
-    }
-    
-    .deleted-account-item:hover {
-        background: rgba(139, 92, 246, 0.1);
-        border-radius: 8px;
-    }
-    
-    .deleted-account-item:last-child {
-        border-bottom: none;
-    }
-    
-    .deleted-account-category {
-        font-size: 0.85rem;
-        color: var(--medium-text);
-        background: rgba(139, 92, 246, 0.2);
-        padding: 0.35rem 0.75rem;
-        border-radius: 6px;
-    }
-
-    /* Nuevos estilos para indicadores de liquidez */
-    .liquidity-indicators {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
-    .indicator-card {
-        background: rgba(18, 18, 37, 0.8);
-        backdrop-filter: blur(10px);
-        border-radius: 16px;
-        padding: 1.5rem;
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .indicator-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
-    }
-
-    .indicator-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-    }
-
-    .indicator-value {
-        font-size: 2rem;
-        font-weight: 800;
-        margin: 1rem 0;
-        text-align: center;
-    }
-
-    .indicator-label {
-        color: var(--medium-text);
-        font-size: 0.9rem;
-        text-align: center;
-    }
-
-    .interpretation-section {
-        background: rgba(18, 18, 37, 0.8);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
-        border: 1px solid rgba(139, 92, 246, 0.2);
-    }
-
-    .interpretation-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .interpretation-icon {
-        font-size: 2rem;
-        color: var(--neon-cyan);
-    }
-
-    .interpretation-content {
-        line-height: 1.6;
-    }
-
-    .interpretation-point {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.75rem;
-        margin-bottom: 0.75rem;
-        padding: 0.75rem;
-        background: rgba(139, 92, 246, 0.05);
-        border-radius: 8px;
-        border-left: 3px solid var(--neon-purple);
-    }
-
-    .interpretation-point i {
-        color: var(--neon-purple);
-        margin-top: 0.25rem;
-    }
-
-    /* Animations */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Responsive Design */
-    @media (max-width: 1200px) {
-        .section-title {
-            font-size: 2.25rem;
-        }
-        
-        .report-type-btn {
-            min-width: 200px;
-        }
-
-        .liquidity-indicators {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        }
-    }
-
-    @media (max-width: 992px) {
-        .section-header {
-            padding: 2rem;
-        }
-        
-        .section-title {
-            font-size: 2rem;
-        }
-        
-        .report-type-buttons {
-            gap: 1rem;
-        }
-        
-        .report-type-btn {
-            min-width: 180px;
-            padding: 1.5rem;
-        }
-        
-        .report-icon {
-            font-size: 2rem;
-        }
-
-        .liquidity-indicators {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .analysis-section {
-            padding: 100px 0 40px;
-        }
-        
-        .section-header {
-            padding: 1.5rem;
-            border-radius: 16px;
-        }
-        
-        .section-title {
-            font-size: 1.75rem;
-        }
-        
-        .section-subtitle {
-            font-size: 1rem;
-        }
-        
-        .control-panel {
-            padding: 1.5rem;
-            border-radius: 16px;
-        }
-        
-        .table-responsive {
-            font-size: 0.9rem;
-        }
-        
-        .table-modern thead th,
-        .table-modern tbody td {
-            padding: 1rem 0.75rem;
-        }
-        
-        .table-modern .account-name {
-            min-width: 180px;
-        }
-        
-        .number-input-wrapper {
-            max-width: 130px;
-        }
-        
-        .number-input {
-            padding: 0.6rem 2.5rem 0.6rem 0.8rem;
-            font-size: 0.9rem;
-        }
-        
-        .number-controls {
-            width: 1.8rem;
-        }
-        
-        .export-options {
-            flex-direction: column;
-            width: 100%;
-        }
-        
-        .export-options .btn-modern {
-            width: 100%;
-            justify-content: center;
-        }
-        
-        .report-type-buttons {
-            flex-direction: column;
-        }
-        
-        .report-type-btn {
-            min-width: 100%;
-        }
-        
-        .control-panel .d-flex {
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        
-        .control-panel .btn-modern {
-            width: 100%;
-            justify-content: center;
-        }
-        
-        .period-info {
-            flex-direction: column;
-            text-align: center;
-            gap: 1rem;
-        }
-        
-        .deleted-account-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.75rem;
-        }
-        
-        .deleted-account-item .d-flex {
-            width: 100%;
-            justify-content: space-between;
-        }
-        
-        .btn-modern {
-            padding: 0.75rem 1.5rem;
-        }
-
-        .indicator-card {
-            padding: 1.25rem;
-        }
-
-        .indicator-value {
-            font-size: 1.75rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .section-header {
-            padding: 1.25rem;
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
-        }
-        
-        .control-panel, .report-type-selector, .period-selector, .deleted-accounts-section {
-            padding: 1.25rem;
-            border-radius: 16px;
-        }
-        
-        .table-modern thead th,
-        .table-modern tbody td {
-            padding: 0.75rem 0.5rem;
-        }
-        
-        .table-modern .account-name {
-            min-width: 150px;
-            font-size: 0.9rem;
-        }
-        
-        .number-input-wrapper {
-            max-width: 110px;
-        }
-        
-        .number-input {
-            padding: 0.5rem 2rem 0.5rem 0.6rem;
-            font-size: 0.85rem;
-        }
-        
-        .number-controls {
-            width: 1.6rem;
-        }
-        
-        .report-type-btn {
-            padding: 1.25rem;
-        }
-        
-        .report-icon {
-            font-size: 1.75rem;
-        }
-        
-        .report-title {
-            font-size: 1.1rem;
-        }
-        
-        .btn-modern {
-            font-size: 0.9rem;
-            padding: 0.7rem 1.25rem;
-        }
-
-        .interpretation-section {
-            padding: 1.5rem;
-        }
-    }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Background Animation -->
-<div class="bg-animation">
-    <div class="floating-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
+<div class="container-fluid p-4" style="position: relative; z-index: 1;">
+  <section class="section-header">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="section-title"><i class="fas fa-water" style="margin-right: 15px; text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);"></i>Análisis de Razones de Liquidez</h1>
+        <p class="section-subtitle">Evalúa la capacidad de tu empresa para cumplir con sus obligaciones de corto plazo</p>
+      </div>
+      <div class="col-lg-4 text-center">
+        <div style="font-size: 4rem; color: var(--primary); text-shadow: 0 0 30px rgba(0, 217, 255, 0.5);">
+          <i class="fas fa-chart-pie"></i>
+        </div>
+      </div>
     </div>
+  </section>
+
+  <div class="control-panel">
+    <div style="flex: 1; min-width: 250px;">
+      <label style="color: var(--primary); font-weight: 700; display: block; margin-bottom: 8px;">Período a Analizar</label>
+      <select id="periodSeleccionado" class="input-futurista" style="width: 100%;">
+        <option value="2022">2022</option>
+        <option value="2023" selected>2023</option>
+        <option value="2024">2024</option>
+      </select>
+    </div>
+    <button class="btn btn-primary-glow" onclick="actualizarLiquidez()" style="align-self: flex-end;">
+      <i class="fas fa-sync"></i> Actualizar
+    </button>
+    <button class="btn btn-danger-glow" onclick="limpiarDatosLiquidez()" style="align-self: flex-end;">
+      <i class="fas fa-trash"></i> Limpiar
+    </button>
+  </div>
+
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="tab-datos" data-bs-toggle="tab" data-bs-target="#contenido-datos" type="button">
+        <i class="fas fa-database"></i> Datos del Balance
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="tab-razones" data-bs-toggle="tab" data-bs-target="#contenido-razones" type="button">
+        <i class="fas fa-calculator"></i> Cálculo de Razones
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="tab-graficos" data-bs-toggle="tab" data-bs-target="#contenido-graficos" type="button">
+        <i class="fas fa-chart-bar"></i> Gráficos
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane fade show active" id="contenido-datos" role="tabpanel">
+      <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-top: 30px; margin-bottom: 30px; border-bottom: 2px solid var(--primary); padding-bottom: 15px;">
+        <i class="fas fa-database"></i> Datos del Balance General
+      </h2>
+
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-header">
+              <i class="fas fa-coins"></i> Activos Circulantes
+            </div>
+            <div class="card-body">
+              <table class="tabla-liquidez">
+                <tbody>
+                  <tr>
+                    <td class="concepto">Efectivo</td>
+                    <td class="valor"><span class="monto-editable" onclick="abrirModalEdicion('efectivo')">0.00</span></td>
+                  </tr>
+                  <tr>
+                    <td class="concepto">Cuentas por Cobrar</td>
+                    <td class="valor"><span class="monto-editable" onclick="abrirModalEdicion('cuentasPorCobrar')">0.00</span></td>
+                  </tr>
+                  <tr>
+                    <td class="concepto">Inventarios</td>
+                    <td class="valor"><span class="monto-editable" onclick="abrirModalEdicion('inventarios')">0.00</span></td>
+                  </tr>
+                  <tr class="subtotal">
+                    <td class="concepto"><strong>Total Activos Circulantes</strong></td>
+                    <td class="valor"><strong id="totalActivoCirculante">0.00</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-header">
+              <i class="fas fa-credit-card"></i> Pasivos Circulantes
+            </div>
+            <div class="card-body">
+              <table class="tabla-liquidez">
+                <tbody>
+                  <tr>
+                    <td class="concepto">Cuentas por Pagar</td>
+                    <td class="valor"><span class="monto-editable" onclick="abrirModalEdicion('cuentasPorPagar')">0.00</span></td>
+                  </tr>
+                  <tr>
+                    <td class="concepto">Deuda Corto Plazo</td>
+                    <td class="valor"><span class="monto-editable" onclick="abrirModalEdicion('deudaCortoPlazo')">0.00</span></td>
+                  </tr>
+                  <tr>
+                    <td class="concepto">Otros Pasivos</td>
+                    <td class="valor"><span class="monto-editable" onclick="abrirModalEdicion('otrosPasivos')">0.00</span></td>
+                  </tr>
+                  <tr class="subtotal">
+                    <td class="concepto"><strong>Total Pasivos Circulantes</strong></td>
+                    <td class="valor"><strong id="totalPasivoCirculante">0.00</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="contenido-razones" role="tabpanel">
+      <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-top: 30px; margin-bottom: 30px; border-bottom: 2px solid var(--primary); padding-bottom: 15px;">
+        <i class="fas fa-calculator"></i> Razones de Liquidez Calculadas
+      </h2>
+
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-briefcase"></i> 1. Capital Neto de Trabajo (CNT)
+        </div>
+        <div class="card-body">
+          <div class="formula-box">
+            <strong>Fórmula:</strong><br>
+            CNT = Activos Circulantes - Pasivos Circulantes
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="metric-card">
+                <div class="metric-value" id="valorCNT">0.00</div>
+                <div class="metric-label">Capital Neto de Trabajo</div>
+                <div id="estadoCNT" class="badge-estado badge-aceptable"></div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="interpretacion-box">
+                <strong>📊 Interpretación:</strong><br>
+                • <strong>Positivo:</strong> Suficientes activos para cubrir pasivos<br>
+                • <strong>Negativo:</strong> Posible problema de liquidez<br>
+                • <strong>Ideal:</strong> 10-20% de las ventas anuales
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-balance-scale"></i> 2. Razón Circulante
+        </div>
+        <div class="card-body">
+          <div class="formula-box">
+            <strong>Fórmula:</strong><br>
+            Razón Circulante = Activos Circulantes ÷ Pasivos Circulantes
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="metric-card">
+                <div class="metric-value" id="valorRazonCirculante">0.00</div>
+                <div class="metric-label">Razón Circulante (veces)</div>
+                <div id="estadoRazonCirculante" class="badge-estado badge-aceptable"></div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="interpretacion-box">
+                <strong>📊 Interpretación:</strong><br>
+                • <strong>Ideal:</strong> 1.5 - 2.0 veces<br>
+                • <strong>Aceptable:</strong> Mayor a 1.0<br>
+                • <strong>Menor a 1.0:</strong> Riesgo de insolvencia
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-flask"></i> 3. Prueba Ácida
+        </div>
+        <div class="card-body">
+          <div class="formula-box">
+            <strong>Fórmula:</strong><br>
+            Prueba Ácida = (Activos Circulantes - Inventarios) ÷ Pasivos Circulantes
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="metric-card">
+                <div class="metric-value" id="valorPruebaAcida">0.00</div>
+                <div class="metric-label">Prueba Ácida (veces)</div>
+                <div id="estadoPruebaAcida" class="badge-estado badge-aceptable"></div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="interpretacion-box">
+                <strong>📊 Interpretación:</strong><br>
+                • <strong>Ideal:</strong> 1.0 - 1.2 veces<br>
+                • <strong>Aceptable:</strong> 0.8 - 1.5 veces<br>
+                • <strong>Uso:</strong> Más conservador que razón circulante
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="contenido-graficos" role="tabpanel">
+      <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-top: 30px; margin-bottom: 30px; border-bottom: 2px solid var(--primary); padding-bottom: 15px;">
+        <i class="fas fa-chart-bar"></i> Visualización de Datos
+      </h2>
+
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="chart-wrapper">
+            <div class="chart-title">📊 Composición de Activos Circulantes</div>
+            <div class="chart-container-small">
+              <canvas id="chartActivosComposicion"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="chart-wrapper">
+            <div class="chart-title">💳 Composición de Pasivos Circulantes</div>
+            <div class="chart-container-small">
+              <canvas id="chartPasivosComposicion"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-lg-12">
+          <div class="chart-wrapper">
+            <div class="chart-title">⚖️ Activos Circulantes vs Pasivos Circulantes</div>
+            <div class="chart-container">
+              <canvas id="chartActivosPasivos"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<section class="analysis-section">
-    <div class="container">
-        <!-- Header -->
-        <div class="section-header">
-            <h1 class="section-title">Razones de <span class="highlight">Liquidez</span></h1>
-            <p class="section-subtitle">Análisis de la capacidad de pago a corto plazo con indicadores financieros avanzados</p>
-        </div>
-
-        <!-- Selector de Tipo de Análisis -->
-        <div class="report-type-selector">
-            <h5 class="form-label-modern mb-3">Seleccionar Tipo de Análisis</h5>
-            <div class="report-type-buttons">
-                <div class="report-type-btn active" data-report-type="basic">
-                    <div class="report-icon">
-                        <i class="fas fa-tachometer-alt"></i>
-                    </div>
-                    <div class="report-title">Análisis Básico</div>
-                    <div class="report-description">Razones fundamentales de liquidez</div>
-                </div>
-                <div class="report-type-btn" data-report-type="advanced">
-                    <div class="report-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="report-title">Análisis Avanzado</div>
-                    <div class="report-description">Indicadores complementarios y tendencias</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Selector de Período -->
-        <div class="period-selector">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h5 class="form-label-modern">Período de Análisis</h5>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <select class="form-control-modern" id="periodSelect" style="min-width: 200px;">
-                            <option value="">Seleccionar período...</option>
-                            <option value="2024">Año 2024</option>
-                            <option value="2023">Año 2023</option>
-                            <option value="2022">Año 2022</option>
-                        </select>
-                        <button class="btn btn-outline-modern btn-modern" data-bs-toggle="modal" data-bs-target="#addPeriodModal">
-                            <i class="fas fa-plus"></i> Nuevo Período
-                        </button>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="export-options justify-content-md-end">
-                        <button class="btn btn-success-modern btn-modern" id="exportExcel">
-                            <i class="fas fa-file-excel"></i> Exportar Excel
-                        </button>
-                        <button class="btn btn-outline-modern btn-modern" id="exportPDF">
-                            <i class="fas fa-file-pdf"></i> Exportar PDF
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Información del Período Seleccionado -->
-            <div class="period-info" id="periodInfo" style="display: none;">
-                <div class="period-badge" id="currentPeriodBadge">2024</div>
-                <div>
-                    <strong id="currentReportType">Análisis Básico</strong>
-                    <div class="text-muted" id="periodDates">Período: Ene 2024 - Dic 2024</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Indicadores de Liquidez -->
-        <div class="liquidity-indicators" id="liquidityIndicators">
-            <!-- Los indicadores se generan dinámicamente -->
-        </div>
-
-        <!-- Tabla de Razones de Liquidez -->
-        <div class="analysis-table-container">
-            <div class="table-responsive">
-                <table class="table table-modern">
-                    <thead>
-                        <tr>
-                            <th class="account-name">Concepto</th>
-                            <th class="period-header">
-                                <span id="tablePeriodTitle">Período</span>
-                                <br>
-                                <small id="tablePeriodSubtitle">Valores y Cálculos</small>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody id="analysisTableBody">
-                        <!-- Filas se generan dinámicamente -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Interpretación de Resultados -->
-        <div class="interpretation-section" id="interpretationSection">
-            <div class="interpretation-header">
-                <div class="interpretation-icon">
-                    <i class="fas fa-lightbulb"></i>
-                </div>
-                <h4 class="mb-0">Interpretación de Resultados</h4>
-            </div>
-            <div class="interpretation-content" id="interpretationContent">
-                <!-- El contenido se genera dinámicamente -->
-            </div>
-        </div>
-
-        <!-- Sección para cuentas eliminadas -->
-        <div class="deleted-accounts-section" id="deletedAccountsSection">
-            <h5 class="form-label-modern">Cuentas Eliminadas</h5>
-            <p class="text-muted">Puedes restaurar cuentas que hayas eliminado anteriormente:</p>
-            <div class="deleted-accounts-list" id="deletedAccountsList">
-                <!-- Las cuentas eliminadas aparecerán aquí -->
-            </div>
-        </div>
-
-        <!-- Botones de Acción -->
-        <div class="control-panel">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <div class="d-flex gap-2 flex-wrap">
-                        <button class="btn btn-outline-modern btn-modern" id="addRowBtn">
-                            <i class="fas fa-plus-circle"></i> Agregar Fila
-                        </button>
-                        <button class="btn btn-outline-modern btn-modern" id="calculateBtn">
-                            <i class="fas fa-calculator"></i> Calcular Razones
-                        </button>
-                        <button class="btn btn-danger-modern btn-modern" id="deleteRowBtn" disabled>
-                            <i class="fas fa-trash"></i> Eliminar Cuenta
-                        </button>
-                        <button class="btn btn-outline-modern btn-modern" id="clearBtn">
-                            <i class="fas fa-broom"></i> Limpiar Tabla
-                        </button>
-                        <button class="btn btn-outline-modern btn-modern" data-bs-toggle="modal" data-bs-target="#importModal">
-                            <i class="fas fa-file-import"></i> Importar Datos
-                        </button>
-                    </div>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <button class="btn btn-primary-modern btn-modern" id="saveAnalysis">
-                        <i class="fas fa-save"></i> Guardar Análisis
-                    </button>
-                </div>
-            </div>
-        </div>
+<div class="modal fade" id="modalEdicion" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Valor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label" style="color: var(--primary); font-weight: 700;" id="labelConcepto"></label>
+        <input type="number" id="inputValor" class="input-monto-modal" placeholder="0.00" step="0.01">
+      </div>
+      <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary-glow" onclick="guardarEdicionLiquidez()">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+      </div>
     </div>
-</section>
-
-<!-- Modal para Agregar Período -->
-<div class="modal fade modal-modern" id="addPeriodModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Agregar Nuevo Período</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="periodForm">
-                    <div class="form-group-modern">
-                        <label class="form-label-modern">Nombre del Período</label>
-                        <input type="text" class="form-control form-control-modern" id="periodName" 
-                               placeholder="Ej: Primer Trimestre 2024" required>
-                    </div>
-                    <div class="form-group-modern">
-                        <label class="form-label-modern">Año</label>
-                        <input type="number" class="form-control form-control-modern" id="periodYear" 
-                               min="2020" max="2030" value="2024" required>
-                    </div>
-                    <div class="form-group-modern">
-                        <label class="form-label-modern">Tipo de Período</label>
-                        <select class="form-control form-control-modern" id="periodType">
-                            <option value="annual">Anual</option>
-                            <option value="semester">Semestral</option>
-                            <option value="quarterly">Trimestral</option>
-                            <option value="monthly">Mensual</option>
-                        </select>
-                    </div>
-                    <div class="form-group-modern">
-                        <label class="form-label-modern">Moneda</label>
-                        <select class="form-control form-control-modern" id="currency">
-                            <option value="USD">Dólar Americano (USD)</option>
-                            <option value="EUR">Euro (EUR)</option>
-                            <option value="MXN">Peso Mexicano (MXN)</option>
-                            <option value="COP">Peso Colombiano (COP)</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-modern btn-modern" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary-modern btn-modern" id="savePeriod">Agregar Período</button>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
 
-<!-- Modal para Importar Datos -->
-<div class="modal fade modal-modern" id="importModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Importar Datos</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="file-upload-area" id="excelUploadArea">
-                            <input type="file" class="file-input" id="excelFile" accept=".xlsx, .xls">
-                            <div class="upload-icon">
-                                <i class="fas fa-file-excel"></i>
-                            </div>
-                            <h5>Importar desde Excel</h5>
-                            <p class="text-muted">Haz clic aquí o arrastra tu archivo Excel</p>
-                            <div class="file-name" id="excelFileName"></div>
-                            <small class="text-muted">Formatos soportados: .xlsx, .xls</small>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="file-upload-area" id="pdfUploadArea">
-                            <input type="file" class="file-input" id="pdfFile" accept=".pdf">
-                            <div class="upload-icon">
-                                <i class="fas fa-file-pdf"></i>
-                            </div>
-                            <h5>Importar desde PDF</h5>
-                            <p class="text-muted">Haz clic aquí o arrastra tu archivo PDF</p>
-                            <div class="file-name" id="pdfFileName"></div>
-                            <small class="text-muted">Formato soportado: .pdf</small>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <h6>Instrucciones de Importación:</h6>
-                    <ul class="text-muted">
-                        <li>Para Excel: La primera columna debe contener los nombres de las cuentas</li>
-                        <li>La segunda columna debe contener los valores numéricos</li>
-                        <li>Para PDF: El sistema extraerá automáticamente las tablas detectadas</li>
-                        <li>Los datos importados reemplazarán la información actual</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-modern btn-modern" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary-modern btn-modern" id="processImport">Procesar Archivos</button>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Variables globales
-        let analysisData = [];
-        let deletedAccounts = [];
-        let currentPeriod = '';
-        let currentReportType = 'basic'; // 'basic' or 'advanced'
-        let selectedFiles = {
-            excel: null,
-            pdf: null
-        };
-        let selectedRowIndex = -1; // Para rastrear la fila seleccionada
-        
-        // Inicializar aplicación
-        function initializeApp() {
-            updateTableData();
-            renderTable();
-            setupFileUpload();
-            setupEventListeners();
-            updateDeletedAccountsSection();
-            updateLiquidityIndicators();
-            updateInterpretation();
-        }
-        
-        // Actualizar datos según el tipo de reporte
-        function updateTableData() {
-            if (currentReportType === 'basic') {
-                analysisData = [
-                    { account: 'ACTIVO CORRIENTE', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Efectivo y Equivalentes de Efectivo', values: {}, category: 'current-assets' },
-                    { account: 'Inversiones Temporales', values: {}, category: 'current-assets' },
-                    { account: 'Cuentas por Cobrar Comerciales', values: {}, category: 'current-assets' },
-                    { account: 'Inventarios', values: {}, category: 'current-assets' },
-                    { account: 'Otros Activos Corrientes', values: {}, category: 'current-assets' },
-                    { account: 'TOTAL ACTIVO CORRIENTE', values: {}, isTotal: true, category: 'total' },
-                    { account: 'PASIVO CORRIENTE', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Cuentas por Pagar Comerciales', values: {}, category: 'current-liabilities' },
-                    { account: 'Préstamos a Corto Plazo', values: {}, category: 'current-liabilities' },
-                    { account: 'Porción Corriente de Deuda L/P', values: {}, category: 'current-liabilities' },
-                    { account: 'Impuestos por Pagar', values: {}, category: 'current-liabilities' },
-                    { account: 'Otros Pasivos Corrientes', values: {}, category: 'current-liabilities' },
-                    { account: 'TOTAL PASIVO CORRIENTE', values: {}, isTotal: true, category: 'total' },
-                    { account: 'CÁLCULO DE RAZONES', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Capital de Trabajo Neto', values: {}, isCalculation: true, category: 'calculation' },
-                    { account: 'Razón Corriente', values: {}, isCalculation: true, category: 'calculation' },
-                    { account: 'Prueba Ácida', values: {}, isCalculation: true, category: 'calculation' },
-                    { account: 'Prueba Defensiva', values: {}, isCalculation: true, category: 'calculation' }
-                ];
-            } else {
-                analysisData = [
-                    { account: 'ANÁLISIS AVANZADO DE LIQUIDEZ', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Activo Corriente', values: {}, category: 'current-assets' },
-                    { account: 'Pasivo Corriente', values: {}, category: 'current-liabilities' },
-                    { account: 'Efectivo y Equivalentes', values: {}, category: 'current-assets' },
-                    { account: 'Valores Negociables', values: {}, category: 'current-assets' },
-                    { account: 'Cuentas por Cobrar', values: {}, category: 'current-assets' },
-                    { account: 'Inventarios', values: {}, category: 'current-assets' },
-                    { account: 'RAZONES BÁSICAS', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Razón Corriente', values: {}, isCalculation: true, category: 'calculation' },
-                    { account: 'Prueba Ácida', values: {}, isCalculation: true, category: 'calculation' },
-                    { account: 'RAZONES COMPLEMENTARIAS', values: {}, isHeader: true, category: 'header' },
-                    { account: 'Capital de Trabajo Neto', values: {}, isCalculation: true, category: 'calculation' },
-                    { account: 'Razón de Efectivo', values: {}, isCalculation: true, category: 'calculation' },
-                    { account: 'Razón de Liquidez Inmediata', values: {}, isCalculation: true, category: 'calculation' },
-                    { account: 'Rotación de Cuentas por Cobrar', values: {}, isCalculation: true, category: 'calculation' },
-                    { account: 'Rotación de Inventarios', values: {}, isCalculation: true, category: 'calculation' }
-                ];
+  let chartActivosComposicion, chartPasivosComposicion, chartActivosPasivos;
+
+  let datosLiquidez = {
+    2022: {
+      efectivo: 50000,
+      cuentasPorCobrar: 75000,
+      inventarios: 100000,
+      cuentasPorPagar: 60000,
+      deudaCortoPlazo: 40000,
+      otrosPasivos: 20000
+    },
+    2023: {
+      efectivo: 60000,
+      cuentasPorCobrar: 85000,
+      inventarios: 110000,
+      cuentasPorPagar: 70000,
+      deudaCortoPlazo: 45000,
+      otrosPasivos: 25000
+    },
+    2024: {
+      efectivo: 70000,
+      cuentasPorCobrar: 95000,
+      inventarios: 120000,
+      cuentasPorPagar: 80000,
+      deudaCortoPlazo: 50000,
+      otrosPasivos: 30000
+    }
+  };
+
+  let conceptoActual = null;
+
+  const coloresFuturistas = {
+    primary: '#00d9ff',
+    secondary: '#0099cc',
+    accent: '#ff006e',
+    success: '#00ff88',
+    warning: '#ffaa00',
+    danger: '#ff3366',
+    dark: '#0a0e27',
+    cardBg: '#1a1f3a'
+  };
+
+  function abrirModalEdicion(concepto) {
+    conceptoActual = concepto;
+    const periodo = document.getElementById('periodSeleccionado').value;
+    const valor = datosLiquidez[periodo][concepto] || 0;
+    
+    const etiquetas = {
+      'efectivo': 'Efectivo',
+      'cuentasPorCobrar': 'Cuentas por Cobrar',
+      'inventarios': 'Inventarios',
+      'cuentasPorPagar': 'Cuentas por Pagar',
+      'deudaCortoPlazo': 'Deuda Corto Plazo',
+      'otrosPasivos': 'Otros Pasivos'
+    };
+
+    document.getElementById('labelConcepto').textContent = `${etiquetas[concepto]} - ${periodo}`;
+    document.getElementById('inputValor').value = valor;
+    
+    const modal = new bootstrap.Modal(document.getElementById('modalEdicion'));
+    modal.show();
+    
+    setTimeout(() => {
+      document.getElementById('inputValor').focus();
+      document.getElementById('inputValor').select();
+    }, 300);
+  }
+
+  function guardarEdicionLiquidez() {
+    const valor = parseFloat(document.getElementById('inputValor').value) || 0;
+    const periodo = document.getElementById('periodSeleccionado').value;
+    datosLiquidez[periodo][conceptoActual] = valor;
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modalEdicion'));
+    modal.hide();
+    
+    actualizarLiquidez();
+  }
+
+  function calcularTotales() {
+    const periodo = document.getElementById('periodSeleccionado').value;
+    const datos = datosLiquidez[periodo];
+
+    const totalAC = datos.efectivo + datos.cuentasPorCobrar + datos.inventarios;
+    const totalPC = datos.cuentasPorPagar + datos.deudaCortoPlazo + datos.otrosPasivos;
+
+    return { totalAC, totalPC, datos };
+  }
+
+  function obtenerEstado(valor, minimo, maximo) {
+    if (valor >= minimo && valor <= maximo) {
+      return { clase: 'badge-excelente', texto: '✓ Excelente' };
+    } else if (valor >= minimo * 0.8 && valor <= maximo * 1.2) {
+      return { clase: 'badge-aceptable', texto: '⚠ Aceptable' };
+    } else {
+      return { clase: 'badge-deficiente', texto: '✗ Deficiente' };
+    }
+  }
+
+  function crearGraficoActivosComposicion(datos, totalAC) {
+    const ctx = document.getElementById('chartActivosComposicion');
+    if (!ctx) return;
+    
+    if (chartActivosComposicion) {
+      chartActivosComposicion.destroy();
+    }
+
+    chartActivosComposicion = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Efectivo', 'Cuentas por Cobrar', 'Inventarios'],
+        datasets: [{
+          data: [datos.efectivo, datos.cuentasPorCobrar, datos.inventarios],
+          backgroundColor: [
+            coloresFuturistas.success,
+            coloresFuturistas.primary,
+            coloresFuturistas.warning
+          ],
+          borderColor: [
+            coloresFuturistas.success,
+            coloresFuturistas.primary,
+            coloresFuturistas.warning
+          ],
+          borderWidth: 2,
+          hoverOffset: 10
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#e0e0e0',
+              font: { size: 12, weight: 'bold' },
+              padding: 15
             }
+          }
         }
-        
-        // Renderizar tabla
-        function renderTable() {
-            const tbody = document.getElementById('analysisTableBody');
-            tbody.innerHTML = '';
-            
-            if (!currentPeriod) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="2" class="empty-row">
-                            <i class="fas fa-calendar-alt me-2"></i>Selecciona un período para comenzar
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            if (analysisData.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="2" class="empty-row">
-                            <i class="fas fa-table me-2"></i>No hay datos disponibles. Agrega filas o importa datos.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            analysisData.forEach((row, index) => {
-                const tr = document.createElement('tr');
-                tr.classList.add('slide-in');
-                
-                // Agregar clase de selección si es la fila seleccionada
-                if (index === selectedRowIndex) {
-                    tr.classList.add('selected-row');
-                }
-                
-                // Agregar clases según el tipo de fila
-                if (row.isHeader) {
-                    tr.classList.add('account-header-row');
-                } else if (row.isTotal || row.isCalculation) {
-                    tr.classList.add('account-total-row');
-                } else {
-                    tr.classList.add('selectable-row');
-                }
-                
-                const value = row.values[currentPeriod] || '';
-                const calculatedValue = row.isCalculation ? calculateRatio(row.account) : '';
-                
-                let accountCell = row.account;
-                if (row.isHeader || row.isTotal || row.isCalculation) {
-                    accountCell = `<strong>${row.account}</strong>`;
-                }
-                
-                tr.innerHTML = `
-                    <td class="account-name">${accountCell}</td>
-                    <td class="editable-cell">
-                        ${!row.isHeader ? `
-                            <div class="number-input-container">
-                                <div class="number-input-wrapper">
-                                    <input type="number" 
-                                           class="number-input" 
-                                           value="${row.isCalculation ? calculatedValue : value}" 
-                                           data-row="${index}"
-                                           placeholder="0.00"
-                                           step="0.01"
-                                           min="0"
-                                           ${row.isTotal || row.isCalculation ? 'readonly' : ''}>
-                                    <div class="number-controls">
-                                        <button type="button" class="number-control increase" data-row="${index}">
-                                            <i class="fas fa-chevron-up"></i>
-                                        </button>
-                                        <button type="button" class="number-control decrease" data-row="${index}">
-                                            <i class="fas fa-chevron-down"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            ${row.isCalculation ? `<div class="ratio-badge ${getRatioClass(row.account, calculatedValue)}">${getRatioInterpretation(row.account, calculatedValue)}</div>` : ''}
-                        ` : ''}
-                    </td>
-                `;
-                
-                tbody.appendChild(tr);
-            });
-            
-            // Agregar event listeners a los inputs
-            attachInputListeners();
-            
-            // Agregar event listeners para selección de filas
-            attachRowSelectionListeners();
-            
-            // Actualizar estado del botón de eliminar
-            updateDeleteButtonState();
-            
-            // Actualizar sección de cuentas eliminadas
-            updateDeletedAccountsSection();
-            
-            // Actualizar indicadores
-            updateLiquidityIndicators();
-            
-            // Actualizar interpretación
-            updateInterpretation();
-        }
-        
-        // Calcular razones de liquidez
-        function calculateRatio(ratioName) {
-            const currentAssets = getTotalValue('TOTAL ACTIVO CORRIENTE') || getTotalValue('Activo Corriente');
-            const currentLiabilities = getTotalValue('TOTAL PASIVO CORRIENTE') || getTotalValue('Pasivo Corriente');
-            const cash = getAccountValue('Efectivo y Equivalentes de Efectivo') || getAccountValue('Efectivo y Equivalentes');
-            const marketableSecurities = getAccountValue('Inversiones Temporales') || getAccountValue('Valores Negociables');
-            const accountsReceivable = getAccountValue('Cuentas por Cobrar Comerciales') || getAccountValue('Cuentas por Cobrar');
-            const inventory = getAccountValue('Inventarios');
-            
-            switch(ratioName) {
-                case 'Capital de Trabajo Neto':
-                    return (currentAssets - currentLiabilities).toFixed(2);
-                case 'Razón Corriente':
-                    return currentLiabilities > 0 ? (currentAssets / currentLiabilities).toFixed(2) : '0.00';
-                case 'Prueba Ácida':
-                    const quickAssets = cash + marketableSecurities + accountsReceivable;
-                    return currentLiabilities > 0 ? (quickAssets / currentLiabilities).toFixed(2) : '0.00';
-                case 'Prueba Defensiva':
-                    return currentLiabilities > 0 ? (cash / currentLiabilities).toFixed(2) : '0.00';
-                case 'Razón de Efectivo':
-                    return currentLiabilities > 0 ? (cash / currentLiabilities).toFixed(2) : '0.00';
-                case 'Razón de Liquidez Inmediata':
-                    const immediateAssets = cash + marketableSecurities;
-                    return currentLiabilities > 0 ? (immediateAssets / currentLiabilities).toFixed(2) : '0.00';
-                default:
-                    return '0.00';
-            }
-        }
-        
-        // Obtener valor de cuenta específica
-        function getAccountValue(accountName) {
-            const account = analysisData.find(item => item.account === accountName);
-            return account && account.values[currentPeriod] ? parseFloat(account.values[currentPeriod]) : 0;
-        }
-        
-        // Obtener valor total
-        function getTotalValue(totalName) {
-            const total = analysisData.find(item => item.account === totalName);
-            return total && total.values[currentPeriod] ? parseFloat(total.values[currentPeriod]) : 0;
-        }
-        
-        // Obtener clase CSS para la razón
-        function getRatioClass(ratioName, value) {
-            const numValue = parseFloat(value) || 0;
-            
-            switch(ratioName) {
-                case 'Razón Corriente':
-                    if (numValue >= 2.0) return 'ratio-good';
-                    if (numValue >= 1.5) return 'ratio-warning';
-                    return 'ratio-danger';
-                case 'Prueba Ácida':
-                    if (numValue >= 1.0) return 'ratio-good';
-                    if (numValue >= 0.8) return 'ratio-warning';
-                    return 'ratio-danger';
-                case 'Prueba Defensiva':
-                case 'Razón de Efectivo':
-                    if (numValue >= 0.2) return 'ratio-good';
-                    if (numValue >= 0.1) return 'ratio-warning';
-                    return 'ratio-danger';
-                case 'Razón de Liquidez Inmediata':
-                    if (numValue >= 0.5) return 'ratio-good';
-                    if (numValue >= 0.3) return 'ratio-warning';
-                    return 'ratio-danger';
-                default:
-                    return 'ratio-info';
-            }
-        }
-        
-        // Obtener interpretación de la razón
-        function getRatioInterpretation(ratioName, value) {
-            const numValue = parseFloat(value) || 0;
-            
-            switch(ratioName) {
-                case 'Razón Corriente':
-                    if (numValue >= 2.0) return 'Excelente';
-                    if (numValue >= 1.5) return 'Aceptable';
-                    return 'Precaución';
-                case 'Prueba Ácida':
-                    if (numValue >= 1.0) return 'Óptima';
-                    if (numValue >= 0.8) return 'Adecuada';
-                    return 'Riesgo';
-                case 'Prueba Defensiva':
-                case 'Razón de Efectivo':
-                    if (numValue >= 0.2) return 'Sólida';
-                    if (numValue >= 0.1) return 'Moderada';
-                    return 'Baja';
-                case 'Razón de Liquidez Inmediata':
-                    if (numValue >= 0.5) return 'Alta';
-                    if (numValue >= 0.3) return 'Media';
-                    return 'Baja';
-                default:
-                    return 'Calculado';
-            }
-        }
-        
-        // Actualizar indicadores de liquidez
-        function updateLiquidityIndicators() {
-            const indicatorsContainer = document.getElementById('liquidityIndicators');
-            
-            if (!currentPeriod) {
-                indicatorsContainer.innerHTML = '';
-                return;
-            }
-            
-            const currentRatio = calculateRatio('Razón Corriente');
-            const quickRatio = calculateRatio('Prueba Ácida');
-            const cashRatio = calculateRatio('Prueba Defensiva');
-            const workingCapital = calculateRatio('Capital de Trabajo Neto');
-            
-            indicatorsContainer.innerHTML = `
-                <div class="indicator-card">
-                    <div class="indicator-label">Razón Corriente</div>
-                    <div class="indicator-value ${getRatioClass('Razón Corriente', currentRatio)}">${currentRatio}</div>
-                    <div class="ratio-badge ${getRatioClass('Razón Corriente', currentRatio)}">
-                        ${getRatioInterpretation('Razón Corriente', currentRatio)}
-                    </div>
-                </div>
-                <div class="indicator-card">
-                    <div class="indicator-label">Prueba Ácida</div>
-                    <div class="indicator-value ${getRatioClass('Prueba Ácida', quickRatio)}">${quickRatio}</div>
-                    <div class="ratio-badge ${getRatioClass('Prueba Ácida', quickRatio)}">
-                        ${getRatioInterpretation('Prueba Ácida', quickRatio)}
-                    </div>
-                </div>
-                <div class="indicator-card">
-                    <div class="indicator-label">Razón de Efectivo</div>
-                    <div class="indicator-value ${getRatioClass('Prueba Defensiva', cashRatio)}">${cashRatio}</div>
-                    <div class="ratio-badge ${getRatioClass('Prueba Defensiva', cashRatio)}">
-                        ${getRatioInterpretation('Prueba Defensiva', cashRatio)}
-                    </div>
-                </div>
-                <div class="indicator-card">
-                    <div class="indicator-label">Capital de Trabajo</div>
-                    <div class="indicator-value ratio-info">${workingCapital}</div>
-                    <div class="ratio-badge ratio-info">
-                        ${parseFloat(workingCapital) >= 0 ? 'Positivo' : 'Negativo'}
-                    </div>
-                </div>
-            `;
-        }
-        
-        // Actualizar interpretación
-        function updateInterpretation() {
-            const interpretationContent = document.getElementById('interpretationContent');
-            
-            if (!currentPeriod) {
-                interpretationContent.innerHTML = '<p class="text-muted">Selecciona un período para ver la interpretación de los resultados.</p>';
-                return;
-            }
-            
-            const currentRatio = parseFloat(calculateRatio('Razón Corriente')) || 0;
-            const quickRatio = parseFloat(calculateRatio('Prueba Ácida')) || 0;
-            const cashRatio = parseFloat(calculateRatio('Prueba Defensiva')) || 0;
-            const workingCapital = parseFloat(calculateRatio('Capital de Trabajo Neto')) || 0;
-            
-            let interpretationHTML = '';
-            
-            // Interpretación de Razón Corriente
-            if (currentRatio >= 2.0) {
-                interpretationHTML += `
-                    <div class="interpretation-point">
-                        <i class="fas fa-check-circle"></i>
-                        <div>
-                            <strong>Razón Corriente (${currentRatio}):</strong> Excelente capacidad de pago a corto plazo. 
-                            La empresa cuenta con suficientes activos corrientes para cubrir sus obligaciones.
-                        </div>
-                    </div>
-                `;
-            } else if (currentRatio >= 1.5) {
-                interpretationHTML += `
-                    <div class="interpretation-point">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <div>
-                            <strong>Razón Corriente (${currentRatio}):</strong> Situación aceptable, pero se recomienda monitorear 
-                            la evolución del capital de trabajo.
-                        </div>
-                    </div>
-                `;
-            } else {
-                interpretationHTML += `
-                    <div class="interpretation-point">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <div>
-                            <strong>Razón Corriente (${currentRatio}):</strong> Precaución. La empresa podría enfrentar 
-                            dificultades para cumplir con sus obligaciones a corto plazo.
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // Interpretación de Prueba Ácida
-            if (quickRatio >= 1.0) {
-                interpretationHTML += `
-                    <div class="interpretation-point">
-                        <i class="fas fa-check-circle"></i>
-                        <div>
-                            <strong>Prueba Ácida (${quickRatio}):</strong> Liquidez inmediata óptima sin depender de la venta de inventarios.
-                        </div>
-                    </div>
-                `;
-            } else if (quickRatio >= 0.8) {
-                interpretationHTML += `
-                    <div class="interpretation-point">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <div>
-                            <strong>Prueba Ácida (${quickRatio}):</strong> Liquidez adecuada, pero cercana al límite mínimo recomendado.
-                        </div>
-                    </div>
-                `;
-            } else {
-                interpretationHTML += `
-                    <div class="interpretation-point">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <div>
-                            <strong>Prueba Ácida (${quickRatio}):</strong> Riesgo de liquidez. La empresa depende significativamente 
-                            de la venta de inventarios para cumplir obligaciones.
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // Interpretación general
-            interpretationHTML += `
-                <div class="interpretation-point">
-                    <i class="fas fa-chart-line"></i>
-                    <div>
-                        <strong>Recomendaciones:</strong> 
-                        ${currentRatio < 1.5 ? 'Considere mejorar la gestión del capital de trabajo y revisar la estructura de deuda.' : 'Mantenga la actual gestión de activos y pasivos corrientes.'}
-                        ${quickRatio < 0.8 ? 'Evalúe estrategias para aumentar la liquidez inmediata.' : ''}
-                    </div>
-                </div>
-            `;
-            
-            interpretationContent.innerHTML = interpretationHTML;
-        }
-        
-        // Función para ajustar valores con incremento/decremento
-        function adjustValue(rowIndex, direction) {
-            if (!analysisData[rowIndex].values) {
-                analysisData[rowIndex].values = {};
-            }
-            
-            const currentValue = parseFloat(analysisData[rowIndex].values[currentPeriod]) || 0;
-            const step = 1000; // Incremento de 1000 para valores financieros
-            const newValue = Math.max(0, currentValue + (direction * step));
-            
-            analysisData[rowIndex].values[currentPeriod] = newValue;
-            
-            // Re-renderizar para actualizar cálculos
-            renderTable();
-        }
-        
-        // Adjuntar event listeners a los inputs
-        function attachInputListeners() {
-            // Event listeners para inputs numéricos
-            document.querySelectorAll('.number-input').forEach(input => {
-                input.addEventListener('input', function() {
-                    const rowIndex = parseInt(this.dataset.row);
-                    const value = this.value.trim();
-                    
-                    if (!analysisData[rowIndex].values) {
-                        analysisData[rowIndex].values = {};
-                    }
-                    
-                    analysisData[rowIndex].values[currentPeriod] = value === '' ? '' : parseFloat(value) || 0;
-                    
-                    // Re-renderizar para actualizar cálculos
-                    renderTable();
-                });
-                
-                // Permitir solo números y punto decimal
-                input.addEventListener('keypress', function(e) {
-                    const char = String.fromCharCode(e.which);
-                    if (!/[\d.]/.test(char)) {
-                        e.preventDefault();
-                    }
-                });
-            });
-            
-            // Event listeners para botones de incremento/decremento
-            document.querySelectorAll('.number-control.increase').forEach(button => {
-                button.addEventListener('click', function() {
-                    const rowIndex = parseInt(this.dataset.row);
-                    if (!analysisData[rowIndex].isCalculation) {
-                        adjustValue(rowIndex, 1);
-                    }
-                });
-            });
-            
-            document.querySelectorAll('.number-control.decrease').forEach(button => {
-                button.addEventListener('click', function() {
-                    const rowIndex = parseInt(this.dataset.row);
-                    if (!analysisData[rowIndex].isCalculation) {
-                        adjustValue(rowIndex, -1);
-                    }
-                });
-            });
-        }
-        
-        // Configurar event listeners
-        function setupEventListeners() {
-            // Selector de tipo de reporte
-            document.querySelectorAll('.report-type-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.report-type-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    currentReportType = this.dataset.reportType;
-                    selectedRowIndex = -1; // Resetear selección al cambiar tipo de reporte
-                    deletedAccounts = []; // Limpiar cuentas eliminadas
-                    updateTableData();
-                    renderTable();
-                    
-                    // Actualizar información del período
-                    updatePeriodInfo();
-                });
-            });
-            
-            // Selector de período
-            document.getElementById('periodSelect').addEventListener('change', function() {
-                currentPeriod = this.value;
-                selectedRowIndex = -1; // Resetear selección al cambiar período
-                renderTable();
-                updatePeriodInfo();
-            });
-            
-            // Calcular razones con animación
-            document.getElementById('calculateBtn').addEventListener('click', function() {
-                if (!currentPeriod) {
-                    showAlert('Primero selecciona un período', 'error');
-                    return;
-                }
-                
-                const btn = this;
-                const originalText = btn.innerHTML;
-                
-                // Aplicar animación de carga
-                btn.innerHTML = '<i class="fas fa-spinner loading"></i> Calculando...';
-                btn.disabled = true;
-                
-                // Simular cálculo con delay
-                setTimeout(() => {
-                    renderTable();
-                    
-                    // Restaurar botón
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                    
-                    showAlert('Razones de liquidez calculadas correctamente', 'success');
-                }, 1500);
-            });
-            
-            // Los demás event listeners se mantienen similares a los templates anteriores...
-            // (Agregar fila, eliminar, limpiar, importar, exportar, guardar)
-        }
-        
-        // Actualizar información del período
-        function updatePeriodInfo() {
-            const periodInfo = document.getElementById('periodInfo');
-            const periodBadge = document.getElementById('currentPeriodBadge');
-            const reportType = document.getElementById('currentReportType');
-            const periodDates = document.getElementById('periodDates');
-            const tablePeriodTitle = document.getElementById('tablePeriodTitle');
-            const tablePeriodSubtitle = document.getElementById('tablePeriodSubtitle');
-            
-            if (currentPeriod) {
-                periodInfo.style.display = 'flex';
-                periodBadge.textContent = currentPeriod;
-                
-                // Actualizar tipo de reporte
-                let reportTypeText = '';
-                switch(currentReportType) {
-                    case 'basic':
-                        reportTypeText = 'Análisis Básico';
-                        break;
-                    case 'advanced':
-                        reportTypeText = 'Análisis Avanzado';
-                        break;
-                }
-                reportType.textContent = reportTypeText;
-                
-                periodDates.textContent = `Período: Ene ${currentPeriod} - Dic ${currentPeriod}`;
-                tablePeriodTitle.textContent = `Período ${currentPeriod}`;
-                tablePeriodSubtitle.textContent = 'Valores y Cálculos';
-            } else {
-                periodInfo.style.display = 'none';
-            }
-        }
-        
-        // Función para mostrar alertas
-        function showAlert(message, type) {
-            // Crear elemento de alerta
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
-            alertDiv.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                z-index: 9999;
-                min-width: 300px;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-                border-radius: 12px;
-                border: none;
-                background: ${type === 'success' ? 'linear-gradient(135deg, var(--success-color), var(--neon-cyan))' : 
-                          type === 'error' ? 'linear-gradient(135deg, var(--danger-color), #f87171)' : 
-                          'linear-gradient(135deg, var(--neon-blue), var(--neon-purple))'};
-                color: white;
-            `;
-            alertDiv.innerHTML = `
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
-                    <div>
-                        <strong class="d-block">${type === 'success' ? 'Éxito' : type === 'error' ? 'Error' : 'Información'}</strong>
-                        ${message}
-                    </div>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            
-            document.body.appendChild(alertDiv);
-            
-            // Auto-remover después de 4 segundos
-            setTimeout(() => {
-                if (alertDiv.parentNode) {
-                    alertDiv.remove();
-                }
-            }, 4000);
-        }
-        
-        // Inicializar
-        initializeApp();
+      }
     });
+  }
+
+  function crearGraficoPasivosComposicion(datos, totalPC) {
+    const ctx = document.getElementById('chartPasivosComposicion');
+    if (!ctx) return;
+    
+    if (chartPasivosComposicion) {
+      chartPasivosComposicion.destroy();
+    }
+
+    chartPasivosComposicion = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Cuentas por Pagar', 'Deuda Corto Plazo', 'Otros Pasivos'],
+        datasets: [{
+          data: [datos.cuentasPorPagar, datos.deudaCortoPlazo, datos.otrosPasivos],
+          backgroundColor: [
+            coloresFuturistas.danger,
+            coloresFuturistas.accent,
+            coloresFuturistas.warning
+          ],
+          borderColor: [
+            coloresFuturistas.danger,
+            coloresFuturistas.accent,
+            coloresFuturistas.warning
+          ],
+          borderWidth: 2,
+          hoverOffset: 10
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              color: '#e0e0e0',
+              font: { size: 12, weight: 'bold' },
+              padding: 15
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function crearGraficoActivosPasivos(totalAC, totalPC) {
+    const ctx = document.getElementById('chartActivosPasivos');
+    if (!ctx) return;
+    
+    if (chartActivosPasivos) {
+      chartActivosPasivos.destroy();
+    }
+
+    chartActivosPasivos = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Activos Circulantes', 'Pasivos Circulantes'],
+        datasets: [{
+          label: 'Monto',
+          data: [totalAC, totalPC],
+          backgroundColor: [
+            coloresFuturistas.success,
+            coloresFuturistas.danger
+          ],
+          borderColor: [
+            coloresFuturistas.success,
+            coloresFuturistas.danger
+          ],
+          borderWidth: 2,
+          borderRadius: 10
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#e0e0e0' },
+            grid: { color: 'rgba(0, 217, 255, 0.1)' }
+          },
+          y: {
+            ticks: { color: '#e0e0e0' },
+            grid: { color: 'rgba(0, 217, 255, 0.1)' }
+          }
+        }
+      }
+    });
+  }
+
+  function actualizarLiquidez() {
+    const { totalAC, totalPC, datos } = calcularTotales();
+
+    document.getElementById('totalActivoCirculante').textContent = totalAC.toLocaleString('es-ES', { minimumFractionDigits: 2 });
+    document.getElementById('totalPasivoCirculante').textContent = totalPC.toLocaleString('es-ES', { minimumFractionDigits: 2 });
+
+    const cnt = totalAC - totalPC;
+    document.getElementById('valorCNT').textContent = cnt.toLocaleString('es-ES', { minimumFractionDigits: 2 });
+    const estadoCNT = cnt > 0 ? 'badge-excelente' : 'badge-deficiente';
+    document.getElementById('estadoCNT').className = `badge-estado ${estadoCNT}`;
+    document.getElementById('estadoCNT').textContent = cnt > 0 ? '✓ Positivo' : '✗ Negativo';
+
+    const razonCirculante = totalPC > 0 ? (totalAC / totalPC).toFixed(2) : 0;
+    document.getElementById('valorRazonCirculante').textContent = razonCirculante;
+    const estadoRC = obtenerEstado(parseFloat(razonCirculante), 1.5, 2.0);
+    document.getElementById('estadoRazonCirculante').className = `badge-estado ${estadoRC.clase}`;
+    document.getElementById('estadoRazonCirculante').textContent = estadoRC.texto;
+
+    const activosLiquidos = totalAC - datos.inventarios;
+    const pruebaAcida = totalPC > 0 ? (activosLiquidos / totalPC).toFixed(2) : 0;
+    document.getElementById('valorPruebaAcida').textContent = pruebaAcida;
+    const estadoPA = obtenerEstado(parseFloat(pruebaAcida), 1.0, 1.2);
+    document.getElementById('estadoPruebaAcida').className = `badge-estado ${estadoPA.clase}`;
+    document.getElementById('estadoPruebaAcida').textContent = estadoPA.texto;
+
+    crearGraficoActivosComposicion(datos, totalAC);
+    crearGraficoPasivosComposicion(datos, totalPC);
+    crearGraficoActivosPasivos(totalAC, totalPC);
+  }
+
+  function limpiarDatosLiquidez() {
+    const periodo = document.getElementById('periodSeleccionado').value;
+    datosLiquidez[periodo] = {
+      efectivo: 0,
+      cuentasPorCobrar: 0,
+      inventarios: 0,
+      cuentasPorPagar: 0,
+      deudaCortoPlazo: 0,
+      otrosPasivos: 0
+    };
+    actualizarLiquidez();
+  }
+
+  document.addEventListener('DOMContentLoaded', actualizarLiquidez);
 </script>
 {% endblock %}
+
+

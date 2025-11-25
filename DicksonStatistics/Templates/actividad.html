@@ -1,0 +1,850 @@
+{% extends 'base.html' %}
+
+{% block title %}Razones de Actividad - DicksonStatistics{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --primary: #00d9ff;
+    --secondary: #0099cc;
+    --accent: #ff006e;
+    --dark-bg: #0a0e27;
+    --card-bg: #1a1f3a;
+    --border-color: #2d3561;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --success: #00ff88;
+    --warning: #ffaa00;
+    --danger: #ff3366;
+  }
+
+  .section-header {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 0, 110, 0.1) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+  }
+
+  .card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 12px 48px rgba(0, 217, 255, 0.2);
+    transform: translateY(-5px);
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .card-body {
+    padding: 25px;
+  }
+
+  .metric-card {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .metric-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 8px 32px rgba(0, 217, 255, 0.15);
+  }
+
+  .metric-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .metric-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .razon-tabla {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .razon-tabla td {
+    padding: 15px;
+    border: none;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .razon-tabla th {
+    background: rgba(0, 217, 255, 0.1);
+    color: var(--primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    padding: 15px;
+    border: none;
+    border-bottom: 2px solid var(--primary);
+  }
+
+  .razon-nombre {
+    font-weight: 600;
+    color: var(--primary);
+    min-width: 200px;
+  }
+
+  .razon-valor {
+    text-align: right;
+    font-weight: 600;
+    min-width: 120px;
+  }
+
+  .interpretacion-box {
+    background: rgba(0, 217, 255, 0.05);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 25px;
+    color: var(--text-primary);
+    line-height: 1.8;
+  }
+
+  .interpretacion-titulo {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .interpretacion-contenido {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .badge-periodo {
+    background: rgba(0, 217, 255, 0.2);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 30px;
+  }
+
+  .nav-tabs .nav-link {
+    color: var(--text-secondary);
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+  }
+
+  .nav-tabs .nav-link:hover {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+
+  .nav-tabs .nav-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: transparent;
+  }
+
+  .input-futurista {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+  }
+
+  .input-futurista:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    color: var(--text-primary);
+  }
+
+  .form-label {
+    color: #ffffff !important;
+    font-weight: 600;
+  }
+
+  .btn-primary-glow {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border: none;
+    color: var(--dark-bg);
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+  }
+
+  .btn-primary-glow:hover {
+    box-shadow: 0 0 40px rgba(0, 217, 255, 0.6);
+    transform: translateY(-2px);
+    color: var(--dark-bg);
+  }
+
+  .indicador-tendencia {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid var(--success);
+    border-radius: 8px;
+    color: var(--success);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .indicador-tendencia.negativa {
+    background: rgba(255, 51, 102, 0.1);
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .resumen-card {
+    background: rgba(0, 217, 255, 0.08);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 1.5rem;
+    }
+
+    .metric-value {
+      font-size: 1.8rem;
+    }
+
+    .section-header {
+      padding: 25px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4" style="position: relative; z-index: 1;">
+  <section class="section-header">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="section-title"><i class="fas fa-chart-line" style="margin-right: 15px; text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);"></i>Razones Financieras de Actividad</h1>
+        <p class="section-subtitle">Análisis comparativo de eficiencia operativa y gestión de activos para 2 períodos</p>
+      </div>
+      <div class="col-lg-4 text-center">
+        <div style="font-size: 4rem; color: var(--primary); text-shadow: 0 0 30px rgba(0, 217, 255, 0.5);">
+          <i class="fas fa-tachometer-alt"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card mb-5">
+    <div class="card-header">
+      <i class="fas fa-database"></i> Ingreso de Datos Financieros
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <h5 style="color: var(--primary); margin-bottom: 20px;"><span class="badge-periodo">Período 1</span></h5>
+          <div class="mb-3">
+            <label class="form-label">Ventas Netas</label>
+            <input type="number" class="input-futurista form-control" id="p1_ventas" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Inventario Promedio</label>
+            <input type="number" class="input-futurista form-control" id="p1_inventario" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Costo de Ventas</label>
+            <input type="number" class="input-futurista form-control" id="p1_costo" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cuentas por Cobrar Promedio</label>
+            <input type="number" class="input-futurista form-control" id="p1_cxc" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Activos Totales Promedio</label>
+            <input type="number" class="input-futurista form-control" id="p1_activos" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Activos Fijos Promedio</label>
+            <input type="number" class="input-futurista form-control" id="p1_activos_fijos" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cuentas por Pagar Promedio</label>
+            <input type="number" class="input-futurista form-control" id="p1_cxp" placeholder="0.00" step="0.01">
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <h5 style="color: var(--primary); margin-bottom: 20px;"><span class="badge-periodo">Período 2</span></h5>
+          <div class="mb-3">
+            <label class="form-label">Ventas Netas</label>
+            <input type="number" class="input-futurista form-control" id="p2_ventas" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Inventario Promedio</label>
+            <input type="number" class="input-futurista form-control" id="p2_inventario" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Costo de Ventas</label>
+            <input type="number" class="input-futurista form-control" id="p2_costo" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cuentas por Cobrar Promedio</label>
+            <input type="number" class="input-futurista form-control" id="p2_cxc" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Activos Totales Promedio</label>
+            <input type="number" class="input-futurista form-control" id="p2_activos" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Activos Fijos Promedio</label>
+            <input type="number" class="input-futurista form-control" id="p2_activos_fijos" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cuentas por Pagar Promedio</label>
+            <input type="number" class="input-futurista form-control" id="p2_cxp" placeholder="0.00" step="0.01">
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-12 text-center">
+          <button class="btn btn-primary-glow" onclick="calcularRazones()">
+            <i class="fas fa-calculator"></i> Calcular Razones
+          </button>
+          <button class="btn btn-secondary ms-2" onclick="limpiarDatos()">
+            <i class="fas fa-redo"></i> Limpiar
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="analisis" class="mb-5">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-rotacion" data-bs-toggle="tab" data-bs-target="#contenido-rotacion" type="button">
+          <i class="fas fa-sync"></i> Rotación de Inventarios
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-cobro" data-bs-toggle="tab" data-bs-target="#contenido-cobro" type="button">
+          <i class="fas fa-hourglass-end"></i> Período de Cobro
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-pago" data-bs-toggle="tab" data-bs-target="#contenido-pago" type="button">
+          <i class="fas fa-calendar-check"></i> Período de Pago
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-activos" data-bs-toggle="tab" data-bs-target="#contenido-activos" type="button">
+          <i class="fas fa-building"></i> Rotación de Activos
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-ciclo" data-bs-toggle="tab" data-bs-target="#contenido-ciclo" type="button">
+          <i class="fas fa-circle-notch"></i> Ciclo Operativo
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="contenido-rotacion" role="tabpanel">
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-sync"></i> Rotación de Inventarios
+          </div>
+          <div class="card-body">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 1</div>
+                  <div class="metric-value" id="ri_p1">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">veces al año</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 2</div>
+                  <div class="metric-value" id="ri_p2">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">veces al año</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="chartRotacionInventarios"></canvas>
+            </div>
+
+            <table class="razon-tabla">
+              <thead>
+                <tr>
+                  <th>Concepto</th>
+                  <th>Período 1</th>
+                  <th>Período 2</th>
+                  <th>Variación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="razon-nombre">Rotación de Inventarios</td>
+                  <td class="razon-valor" id="ri_p1_tabla">0.00</td>
+                  <td class="razon-valor" id="ri_p2_tabla">0.00</td>
+                  <td class="razon-valor" id="ri_var">0.00%</td>
+                </tr>
+                <tr>
+                  <td class="razon-nombre">Días de Inventario</td>
+                  <td class="razon-valor" id="di_p1">0.00</td>
+                  <td class="razon-valor" id="di_p2">0.00</td>
+                  <td class="razon-valor" id="di_var">0.00%</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="interpretacion-box">
+              <div class="interpretacion-titulo">
+                <i class="fas fa-lightbulb"></i> Interpretación Financiera
+              </div>
+              <div class="interpretacion-contenido" id="interp_rotacion">
+                Ingrese los datos para obtener el análisis.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="contenido-cobro" role="tabpanel">
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-hourglass-end"></i> Período Promedio de Cobro
+          </div>
+          <div class="card-body">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 1</div>
+                  <div class="metric-value" id="pc_p1">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">días</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 2</div>
+                  <div class="metric-value" id="pc_p2">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">días</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="chartPeriodoCobro"></canvas>
+            </div>
+
+            <div class="interpretacion-box">
+              <div class="interpretacion-titulo">
+                <i class="fas fa-lightbulb"></i> Interpretación Financiera
+              </div>
+              <div class="interpretacion-contenido" id="interp_cobro">
+                Ingrese los datos para obtener el análisis.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="contenido-pago" role="tabpanel">
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-calendar-check"></i> Período Promedio de Pago
+          </div>
+          <div class="card-body">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 1</div>
+                  <div class="metric-value" id="pp_p1">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">días</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 2</div>
+                  <div class="metric-value" id="pp_p2">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">días</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="chartPeriodoPago"></canvas>
+            </div>
+
+            <div class="interpretacion-box">
+              <div class="interpretacion-titulo">
+                <i class="fas fa-lightbulb"></i> Interpretación Financiera
+              </div>
+              <div class="interpretacion-contenido" id="interp_pago">
+                Ingrese los datos para obtener el análisis.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="contenido-activos" role="tabpanel">
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-building"></i> Rotación de Activos
+          </div>
+          <div class="card-body">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 1</div>
+                  <div class="metric-value" id="ra_p1">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">veces al año</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 2</div>
+                  <div class="metric-value" id="ra_p2">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">veces al año</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="chartRotacionActivos"></canvas>
+            </div>
+
+            <div class="interpretacion-box">
+              <div class="interpretacion-titulo">
+                <i class="fas fa-lightbulb"></i> Interpretación Financiera
+              </div>
+              <div class="interpretacion-contenido" id="interp_activos">
+                Ingrese los datos para obtener el análisis.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="contenido-ciclo" role="tabpanel">
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-circle-notch"></i> Ciclo Operativo
+          </div>
+          <div class="card-body">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Ciclo Operativo - Período 1</div>
+                  <div class="metric-value" id="co_p1">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">días</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Ciclo Operativo - Período 2</div>
+                  <div class="metric-value" id="co_p2">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">días</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="chartCicloOperativo"></canvas>
+            </div>
+
+            <div class="interpretacion-box">
+              <div class="interpretacion-titulo">
+                <i class="fas fa-lightbulb"></i> Interpretación Financiera
+              </div>
+              <div class="interpretacion-contenido" id="interp_ciclo">
+                Ingrese los datos para obtener el análisis.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header">
+      <i class="fas fa-chart-pie"></i> Resumen Ejecutivo
+    </div>
+    <div class="card-body">
+      <div id="resumen-ejecutivo">
+        <div class="text-center" style="color: var(--text-secondary); padding: 40px;">
+          <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 15px;"></i>
+          <p>Ingrese los datos para obtener el resumen ejecutivo</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  let charts = {};
+
+  function calcularRazones() {
+    const p1 = {
+      ventas: parseFloat(document.getElementById('p1_ventas').value) || 0,
+      inventario: parseFloat(document.getElementById('p1_inventario').value) || 0,
+      costo: parseFloat(document.getElementById('p1_costo').value) || 0,
+      cxc: parseFloat(document.getElementById('p1_cxc').value) || 0,
+      activos: parseFloat(document.getElementById('p1_activos').value) || 0,
+      activos_fijos: parseFloat(document.getElementById('p1_activos_fijos').value) || 0,
+      cxp: parseFloat(document.getElementById('p1_cxp').value) || 0
+    };
+
+    const p2 = {
+      ventas: parseFloat(document.getElementById('p2_ventas').value) || 0,
+      inventario: parseFloat(document.getElementById('p2_inventario').value) || 0,
+      costo: parseFloat(document.getElementById('p2_costo').value) || 0,
+      cxc: parseFloat(document.getElementById('p2_cxc').value) || 0,
+      activos: parseFloat(document.getElementById('p2_activos').value) || 0,
+      activos_fijos: parseFloat(document.getElementById('p2_activos_fijos').value) || 0,
+      cxp: parseFloat(document.getElementById('p2_cxp').value) || 0
+    };
+
+    const razones = calcularTodasLasRazones(p1, p2);
+    actualizarUI(razones);
+    crearGraficos(razones);
+  }
+
+  function calcularTodasLasRazones(p1, p2) {
+    return {
+      ri_p1: p1.inventario > 0 ? p1.costo / p1.inventario : 0,
+      ri_p2: p2.inventario > 0 ? p2.costo / p2.inventario : 0,
+      di_p1: p1.inventario > 0 ? 365 / (p1.costo / p1.inventario) : 0,
+      di_p2: p2.inventario > 0 ? 365 / (p2.costo / p2.inventario) : 0,
+      rcxc_p1: p1.cxc > 0 ? p1.ventas / p1.cxc : 0,
+      rcxc_p2: p2.cxc > 0 ? p2.ventas / p2.cxc : 0,
+      ppc_p1: p1.cxc > 0 ? 365 / (p1.ventas / p1.cxc) : 0,
+      ppc_p2: p2.cxc > 0 ? 365 / (p2.ventas / p2.cxc) : 0,
+      rcxp_p1: p1.cxp > 0 ? p1.costo / p1.cxp : 0,
+      rcxp_p2: p2.cxp > 0 ? p2.costo / p2.cxp : 0,
+      ppp_p1: p1.cxp > 0 ? 365 / (p1.costo / p1.cxp) : 0,
+      ppp_p2: p2.cxp > 0 ? 365 / (p2.costo / p2.cxp) : 0,
+      rat_p1: p1.activos > 0 ? p1.ventas / p1.activos : 0,
+      rat_p2: p2.activos > 0 ? p2.ventas / p2.activos : 0,
+      raf_p1: p1.activos_fijos > 0 ? p1.ventas / p1.activos_fijos : 0,
+      raf_p2: p2.activos_fijos > 0 ? p2.ventas / p2.activos_fijos : 0
+    };
+  }
+
+  function actualizarUI(razones) {
+    document.getElementById('ri_p1').textContent = razones.ri_p1.toFixed(2);
+    document.getElementById('ri_p2').textContent = razones.ri_p2.toFixed(2);
+    document.getElementById('di_p1').textContent = razones.di_p1.toFixed(2);
+    document.getElementById('di_p2').textContent = razones.di_p2.toFixed(2);
+    document.getElementById('pc_p1').textContent = razones.ppc_p1.toFixed(2);
+    document.getElementById('pc_p2').textContent = razones.ppc_p2.toFixed(2);
+    document.getElementById('pp_p1').textContent = razones.ppp_p1.toFixed(2);
+    document.getElementById('pp_p2').textContent = razones.ppp_p2.toFixed(2);
+    document.getElementById('ra_p1').textContent = razones.rat_p1.toFixed(2);
+    document.getElementById('ra_p2').textContent = razones.rat_p2.toFixed(2);
+    document.getElementById('co_p1').textContent = (razones.di_p1 + razones.ppc_p1).toFixed(2);
+    document.getElementById('co_p2').textContent = (razones.di_p2 + razones.ppc_p2).toFixed(2);
+  }
+
+  function crearGraficos(razones) {
+    crearOActualizarGrafico('chartRotacionInventarios', {
+      labels: ['Período 1', 'Período 2'],
+      datasets: [{
+        label: 'Rotación de Inventarios',
+        data: [razones.ri_p1, razones.ri_p2],
+        borderColor: '#00d9ff',
+        backgroundColor: 'rgba(0, 217, 255, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    }, 'chartRotacionInventarios');
+
+    crearOActualizarGrafico('chartPeriodoCobro', {
+      labels: ['Período 1', 'Período 2'],
+      datasets: [{
+        label: 'Período de Cobro',
+        data: [razones.ppc_p1, razones.ppc_p2],
+        borderColor: '#ff006e',
+        backgroundColor: 'rgba(255, 0, 110, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    }, 'chartPeriodoCobro');
+
+    crearOActualizarGrafico('chartPeriodoPago', {
+      labels: ['Período 1', 'Período 2'],
+      datasets: [{
+        label: 'Período de Pago',
+        data: [razones.ppp_p1, razones.ppp_p2],
+        borderColor: '#00ff88',
+        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    }, 'chartPeriodoPago');
+
+    crearOActualizarGrafico('chartRotacionActivos', {
+      labels: ['Período 1', 'Período 2'],
+      datasets: [{
+        label: 'Rotación de Activos',
+        data: [razones.rat_p1, razones.rat_p2],
+        borderColor: '#00d9ff',
+        backgroundColor: 'rgba(0, 217, 255, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    }, 'chartRotacionActivos');
+
+    crearOActualizarGrafico('chartCicloOperativo', {
+      labels: ['Período 1', 'Período 2'],
+      datasets: [{
+        label: 'Ciclo Operativo',
+        data: [razones.di_p1 + razones.ppc_p1, razones.di_p2 + razones.ppc_p2],
+        borderColor: '#00d9ff',
+        backgroundColor: 'rgba(0, 217, 255, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    }, 'chartCicloOperativo');
+  }
+
+  function crearOActualizarGrafico(canvasId, data, chartId) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    
+    if (charts[chartId]) {
+      charts[chartId].data = data;
+      charts[chartId].update();
+    } else {
+      charts[chartId] = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#e0e0e0',
+                font: { size: 12, weight: 'bold' }
+              }
+            }
+          },
+          scales: {
+            y: {
+              ticks: { color: '#a0a0a0' },
+              grid: { color: 'rgba(45, 53, 97, 0.3)' }
+            },
+            x: {
+              ticks: { color: '#a0a0a0' },
+              grid: { color: 'rgba(45, 53, 97, 0.3)' }
+            }
+          }
+        }
+      });
+    }
+  }
+
+  function limpiarDatos() {
+    document.querySelectorAll('.input-futurista').forEach(input => {
+      input.value = '';
+    });
+  }
+</script>
+{% endblock %}
+

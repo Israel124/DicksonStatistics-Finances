@@ -370,3 +370,13 @@ def perfil(request):
 #configuracion pendien
 def configuracion(request):
     return render(request, 'config.html'),
+
+@login_required
+def prof(request):
+    return render(request, 'proforma.html')
+
+def presupuestocaja(request):
+    return render(request, 'presuepuestocaja.html')
+
+def presupuestocaja(request):
+    return render(request, 'presupuestocaja.html')

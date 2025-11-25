@@ -181,7 +181,36 @@
         }
 
         .analysis-dropdown .dropdown-menu {
-            min-width: 280px;
+            min-width: 320px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        /* Estilos para la barra deslizadora */
+        .analysis-dropdown .dropdown-menu::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .analysis-dropdown .dropdown-menu::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .analysis-dropdown .dropdown-menu::-webkit-scrollbar-thumb {
+            background: rgba(192, 183, 232, 0.3);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .analysis-dropdown .dropdown-menu::-webkit-scrollbar-thumb:hover {
+            background: rgba(192, 183, 232, 0.6);
+        }
+
+        /* Para Firefox */
+        .analysis-dropdown .dropdown-menu {
+            scrollbar-color: rgba(192, 183, 232, 0.3) rgba(255, 255, 255, 0.05);
+            scrollbar-width: thin;
         }
 
         .analysis-dropdown .dropdown-item {
@@ -200,6 +229,7 @@
             background: rgba(192, 183, 232, 0.2);
             color: var(--accent-purple);
             font-size: 0.9rem;
+            flex-shrink: 0;
         }
         
         .text-muted {
@@ -592,6 +622,31 @@
                                     </div>
                                 </a>
                             </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item {% if request.resolver_match.url_name == 'proforma' %}active{% endif %}" 
+                                   href="{% url 'proforma' %}">
+                                    <div class="analysis-icon">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Proforma</div>
+                                        <small class="text-muted">Estados financieros proyectados</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {% if request.resolver_match.url_name == 'cash_budget' %}active{% endif %}" 
+                                   href="{% url 'cash_budget' %}">
+                                    <div class="analysis-icon">
+                                        <i class="fas fa-piggy-bank"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Presupuesto de Caja</div>
+                                        <small class="text-muted">Proyección de flujo de efectivo</small>
+                                    </div>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -643,12 +698,9 @@
                                 </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <form method="post" action="{% url 'logout' %}" style="display:inline;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="dropdown-item text-danger" style="background:none;border:none;padding:0;">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                        </button>
-                                    </form>
+                                    <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                    </a>
                                 </li>
                             </ul>
                         </div>
