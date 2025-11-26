@@ -1,0 +1,1041 @@
+{% extends 'base.html' %}
+
+{% block title %}Razones Financieras de Rentabilidad - DicksonStatistics{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --primary: #00d9ff;
+    --secondary: #0099cc;
+    --accent: #ff006e;
+    --dark-bg: #0a0e27;
+    --card-bg: #1a1f3a;
+    --border-color: #2d3561;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --success: #00ff88;
+    --warning: #ffaa00;
+    --danger: #ff3366;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: linear-gradient(135deg, var(--dark-bg) 0%, #0f1535 100%);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+  }
+
+  .section-header {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 0, 110, 0.1) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+  }
+
+  .card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 12px 48px rgba(0, 217, 255, 0.2);
+    transform: translateY(-5px);
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .card-body {
+    padding: 25px;
+  }
+
+  .metric-card {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .metric-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 8px 32px rgba(0, 217, 255, 0.15);
+  }
+
+  .metric-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .metric-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .metric-reference {
+    color: var(--warning);
+    font-size: 0.85rem;
+    margin-top: 8px;
+    font-weight: 600;
+  }
+
+  .razon-tabla {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .razon-tabla td {
+    padding: 15px;
+    border: none;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .razon-tabla th {
+    background: rgba(0, 217, 255, 0.1);
+    color: var(--primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    padding: 15px;
+    border: none;
+    border-bottom: 2px solid var(--primary);
+  }
+
+  .razon-nombre {
+    font-weight: 600;
+    color: var(--primary);
+    min-width: 200px;
+  }
+
+  .razon-valor {
+    text-align: right;
+    font-weight: 600;
+    min-width: 120px;
+  }
+
+  .formula-box {
+    background: rgba(0, 217, 255, 0.05);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
+  }
+
+  .interpretacion-box {
+    background: rgba(0, 217, 255, 0.05);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 25px;
+    color: var(--text-primary);
+    line-height: 1.8;
+  }
+
+  .interpretacion-titulo {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .interpretacion-contenido {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .badge-periodo {
+    background: rgba(0, 217, 255, 0.2);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 30px;
+  }
+
+  .nav-tabs .nav-link {
+    color: var(--text-secondary);
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+  }
+
+  .nav-tabs .nav-link:hover {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+
+  .nav-tabs .nav-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: transparent;
+  }
+
+  .input-futurista {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+  }
+
+  .input-futurista:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    color: var(--text-primary);
+  }
+
+  .form-label {
+    color: #ffffff !important;
+    font-weight: 600;
+  }
+
+  .btn-primary-glow {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border: none;
+    color: var(--dark-bg);
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+  }
+
+  .btn-primary-glow:hover {
+    box-shadow: 0 0 40px rgba(0, 217, 255, 0.6);
+    transform: translateY(-2px);
+    color: var(--dark-bg);
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .status-good {
+    background: rgba(0, 255, 136, 0.2);
+    color: var(--success);
+    border: 1px solid var(--success);
+  }
+
+  .status-warning {
+    background: rgba(255, 170, 0, 0.2);
+    color: var(--warning);
+    border: 1px solid var(--warning);
+  }
+
+  .status-danger {
+    background: rgba(255, 51, 102, 0.2);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+  }
+
+  .nombres-periodos {
+    background: rgba(0, 217, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 1.5rem;
+    }
+
+    .metric-value {
+      font-size: 1.8rem;
+    }
+
+    .section-header {
+      padding: 25px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4" style="position: relative; z-index: 1;">
+  <section class="section-header">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="section-title"><i class="fas fa-chart-line" style="margin-right: 15px; text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);"></i>Razones Financieras de Rentabilidad</h1>
+        <p class="section-subtitle">Análisis comparativo de rentabilidad según estándares industriales para 2 períodos</p>
+      </div>
+      <div class="col-lg-4 text-center">
+        <div style="font-size: 4rem; color: var(--primary); text-shadow: 0 0 30px rgba(0, 217, 255, 0.5);">
+          <i class="fas fa-chart-pie"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card mb-5">
+    <div class="card-header">
+      <i class="fas fa-calendar-alt"></i> Nombres de Períodos
+    </div>
+    <div class="card-body">
+      <div class="nombres-periodos">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Nombre del Período 1</label>
+              <input type="text" class="input-futurista form-control" id="nombre_p1" placeholder="Ej: 2023" value="Período 1">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Nombre del Período 2</label>
+              <input type="text" class="input-futurista form-control" id="nombre_p2" placeholder="Ej: 2024" value="Período 2">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card mb-5">
+    <div class="card-header">
+      <i class="fas fa-database"></i> Ingreso de Datos Financieros
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <h5 style="color: var(--primary); margin-bottom: 20px;"><span class="badge-periodo" id="badge_p1">Período 1</span></h5>
+          <div class="mb-3">
+            <label class="form-label">Utilidad Bruta</label>
+            <input type="number" class="input-futurista form-control" id="p1_ub" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Utilidad Operativa</label>
+            <input type="number" class="input-futurista form-control" id="p1_uo" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Utilidad Neta</label>
+            <input type="number" class="input-futurista form-control" id="p1_un" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Ventas Netas</label>
+            <input type="number" class="input-futurista form-control" id="p1_ventas" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Número de Acciones</label>
+            <input type="number" class="input-futurista form-control" id="p1_acciones" placeholder="0" step="1">
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <h5 style="color: var(--primary); margin-bottom: 20px;"><span class="badge-periodo" id="badge_p2">Período 2</span></h5>
+          <div class="mb-3">
+            <label class="form-label">Utilidad Bruta</label>
+            <input type="number" class="input-futurista form-control" id="p2_ub" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Utilidad Operativa</label>
+            <input type="number" class="input-futurista form-control" id="p2_uo" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Utilidad Neta</label>
+            <input type="number" class="input-futurista form-control" id="p2_un" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Ventas Netas</label>
+            <input type="number" class="input-futurista form-control" id="p2_ventas" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Número de Acciones</label>
+            <input type="number" class="input-futurista form-control" id="p2_acciones" placeholder="0" step="1">
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-12 text-center">
+          <button class="btn btn-primary-glow" onclick="calcularRazones()">
+            <i class="fas fa-calculator"></i> Calcular Razones
+          </button>
+          <button class="btn btn-secondary ms-2" onclick="limpiarDatos()">
+            <i class="fas fa-redo"></i> Limpiar
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="analisis" class="mb-5">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-margen-bruto" data-bs-toggle="tab" data-bs-target="#contenido-margen-bruto" type="button">
+          <i class="fas fa-percent"></i> Margen Bruto
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-margen-operativo" data-bs-toggle="tab" data-bs-target="#contenido-margen-operativo" type="button">
+          <i class="fas fa-cogs"></i> Margen Operativo
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-margen-neto" data-bs-toggle="tab" data-bs-target="#contenido-margen-neto" type="button">
+          <i class="fas fa-check-circle"></i> Margen Neto
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-utilidad-accion" data-bs-toggle="tab" data-bs-target="#contenido-utilidad-accion" type="button">
+          <i class="fas fa-share-alt"></i> Utilidad por Acción
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <!-- Margen Bruto -->
+      <div class="tab-pane fade show active" id="contenido-margen-bruto" role="tabpanel">
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-percent"></i> Margen de Utilidad Bruta (MUB)
+          </div>
+          <div class="card-body">
+            <div class="formula-box">
+              <strong>Fórmula:</strong> MUB = Utilidad Bruta / Ventas Netas<br>
+              <strong>Promedio Industrial:</strong> 20% - 40%
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label" id="label_mb_p1">Período 1</div>
+                  <div class="metric-value" id="mb_p1">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">%</div>
+                  <div class="metric-reference" id="mb_p1_status">Esperado: 20% - 40%</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label" id="label_mb_p2">Período 2</div>
+                  <div class="metric-value" id="mb_p2">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">%</div>
+                  <div class="metric-reference" id="mb_p2_status">Esperado: 20% - 40%</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="chartMargenBruto"></canvas>
+            </div>
+
+            <table class="razon-tabla">
+              <thead>
+                <tr>
+                  <th>Concepto</th>
+                  <th id="th_mb_p1">Período 1</th>
+                  <th id="th_mb_p2">Período 2</th>
+                  <th>Variación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="razon-nombre">Margen Bruto</td>
+                  <td class="razon-valor" id="mb_p1_tabla">0.00%</td>
+                  <td class="razon-valor" id="mb_p2_tabla">0.00%</td>
+                  <td class="razon-valor" id="mb_var">0.00%</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="interpretacion-box">
+              <div class="interpretacion-titulo">
+                <i class="fas fa-lightbulb"></i> Interpretación Financiera
+              </div>
+              <div class="interpretacion-contenido" id="interp_margen_bruto">
+                Ingrese los datos para obtener el análisis.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Margen Operativo -->
+      <div class="tab-pane fade" id="contenido-margen-operativo" role="tabpanel">
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-cogs"></i> Margen de Utilidad Operativa (MUO)
+          </div>
+          <div class="card-body">
+            <div class="formula-box">
+              <strong>Fórmula:</strong> MUO = Utilidad Operativa / Ventas Netas<br>
+              <strong>Promedio Industrial:</strong> 10% - 20%
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label" id="label_mo_p1">Período 1</div>
+                  <div class="metric-value" id="mo_p1">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">%</div>
+                  <div class="metric-reference" id="mo_p1_status">Esperado: 10% - 20%</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label" id="label_mo_p2">Período 2</div>
+                  <div class="metric-value" id="mo_p2">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">%</div>
+                  <div class="metric-reference" id="mo_p2_status">Esperado: 10% - 20%</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="chartMargenOperativo"></canvas>
+            </div>
+
+            <table class="razon-tabla">
+              <thead>
+                <tr>
+                  <th>Concepto</th>
+                  <th id="th_mo_p1">Período 1</th>
+                  <th id="th_mo_p2">Período 2</th>
+                  <th>Variación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="razon-nombre">Margen Operativo</td>
+                  <td class="razon-valor" id="mo_p1_tabla">0.00%</td>
+                  <td class="razon-valor" id="mo_p2_tabla">0.00%</td>
+                  <td class="razon-valor" id="mo_var">0.00%</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="interpretacion-box">
+              <div class="interpretacion-titulo">
+                <i class="fas fa-lightbulb"></i> Interpretación Financiera
+              </div>
+              <div class="interpretacion-contenido" id="interp_margen_operativo">
+                Ingrese los datos para obtener el análisis.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Margen Neto -->
+      <div class="tab-pane fade" id="contenido-margen-neto" role="tabpanel">
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-check-circle"></i> Margen de Utilidad Neta
+          </div>
+          <div class="card-body">
+            <div class="formula-box">
+              <strong>Fórmula:</strong> Margen Neto = Utilidad Neta / Ventas Netas<br>
+              <strong>Promedio Industrial:</strong> 5% - 10%
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label" id="label_mn_p1">Período 1</div>
+                  <div class="metric-value" id="mn_p1">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">%</div>
+                  <div class="metric-reference" id="mn_p1_status">Esperado: 5% - 10%</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label" id="label_mn_p2">Período 2</div>
+                  <div class="metric-value" id="mn_p2">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">%</div>
+                  <div class="metric-reference" id="mn_p2_status">Esperado: 5% - 10%</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="chartMargenNeto"></canvas>
+            </div>
+
+            <table class="razon-tabla">
+              <thead>
+                <tr>
+                  <th>Concepto</th>
+                  <th id="th_mn_p1">Período 1</th>
+                  <th id="th_mn_p2">Período 2</th>
+                  <th>Variación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="razon-nombre">Margen Neto</td>
+                  <td class="razon-valor" id="mn_p1_tabla">0.00%</td>
+                  <td class="razon-valor" id="mn_p2_tabla">0.00%</td>
+                  <td class="razon-valor" id="mn_var">0.00%</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="interpretacion-box">
+              <div class="interpretacion-titulo">
+                <i class="fas fa-lightbulb"></i> Interpretación Financiera
+              </div>
+              <div class="interpretacion-contenido" id="interp_margen_neto">
+                Ingrese los datos para obtener el análisis.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Utilidad por Acción -->
+      <div class="tab-pane fade" id="contenido-utilidad-accion" role="tabpanel">
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-share-alt"></i> Utilidad por Acción (EPS)
+          </div>
+          <div class="card-body">
+            <div class="formula-box">
+              <strong>Fórmula:</strong> EPS = Utilidad Neta / Número de Acciones<br>
+              <strong>Nota:</strong> Varía según la estructura de capital de cada empresa
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label" id="label_eps_p1">Período 1</div>
+                  <div class="metric-value" id="eps_p1">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">por acción</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label" id="label_eps_p2">Período 2</div>
+                  <div class="metric-value" id="eps_p2">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">por acción</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="chartEPS"></canvas>
+            </div>
+
+            <table class="razon-tabla">
+              <thead>
+                <tr>
+                  <th>Concepto</th>
+                  <th id="th_eps_p1">Período 1</th>
+                  <th id="th_eps_p2">Período 2</th>
+                  <th>Variación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="razon-nombre">Utilidad por Acción</td>
+                  <td class="razon-valor" id="eps_p1_tabla">0.00</td>
+                  <td class="razon-valor" id="eps_p2_tabla">0.00</td>
+                  <td class="razon-valor" id="eps_var">0.00%</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="interpretacion-box">
+              <div class="interpretacion-titulo">
+                <i class="fas fa-lightbulb"></i> Interpretación Financiera
+              </div>
+              <div class="interpretacion-contenido" id="interp_eps">
+                Ingrese los datos para obtener el análisis.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header">
+      <i class="fas fa-chart-pie"></i> Resumen Ejecutivo
+    </div>
+    <div class="card-body">
+      <div id="resumen-ejecutivo">
+        <div class="text-center" style="color: var(--text-secondary); padding: 40px;">
+          <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 15px;"></i>
+          <p>Ingrese los datos para obtener el resumen ejecutivo</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  let charts = {};
+
+  function actualizarNombresPeriodos() {
+    const nombre_p1 = document.getElementById('nombre_p1').value || 'Período 1';
+    const nombre_p2 = document.getElementById('nombre_p2').value || 'Período 2';
+    
+    document.getElementById('badge_p1').textContent = nombre_p1;
+    document.getElementById('badge_p2').textContent = nombre_p2;
+    
+    document.getElementById('label_mb_p1').textContent = nombre_p1;
+    document.getElementById('label_mb_p2').textContent = nombre_p2;
+    document.getElementById('label_mo_p1').textContent = nombre_p1;
+    document.getElementById('label_mo_p2').textContent = nombre_p2;
+    document.getElementById('label_mn_p1').textContent = nombre_p1;
+    document.getElementById('label_mn_p2').textContent = nombre_p2;
+    document.getElementById('label_eps_p1').textContent = nombre_p1;
+    document.getElementById('label_eps_p2').textContent = nombre_p2;
+    
+    document.getElementById('th_mb_p1').textContent = nombre_p1;
+    document.getElementById('th_mb_p2').textContent = nombre_p2;
+    document.getElementById('th_mo_p1').textContent = nombre_p1;
+    document.getElementById('th_mo_p2').textContent = nombre_p2;
+    document.getElementById('th_mn_p1').textContent = nombre_p1;
+    document.getElementById('th_mn_p2').textContent = nombre_p2;
+    document.getElementById('th_eps_p1').textContent = nombre_p1;
+    document.getElementById('th_eps_p2').textContent = nombre_p2;
+  }
+
+  document.getElementById('nombre_p1').addEventListener('change', actualizarNombresPeriodos);
+  document.getElementById('nombre_p2').addEventListener('change', actualizarNombresPeriodos);
+
+  function calcularRazones() {
+    actualizarNombresPeriodos();
+
+    const p1 = {
+      ub: parseFloat(document.getElementById('p1_ub').value) || 0,
+      uo: parseFloat(document.getElementById('p1_uo').value) || 0,
+      un: parseFloat(document.getElementById('p1_un').value) || 0,
+      ventas: parseFloat(document.getElementById('p1_ventas').value) || 0,
+      acciones: parseFloat(document.getElementById('p1_acciones').value) || 1
+    };
+
+    const p2 = {
+      ub: parseFloat(document.getElementById('p2_ub').value) || 0,
+      uo: parseFloat(document.getElementById('p2_uo').value) || 0,
+      un: parseFloat(document.getElementById('p2_un').value) || 0,
+      ventas: parseFloat(document.getElementById('p2_ventas').value) || 0,
+      acciones: parseFloat(document.getElementById('p2_acciones').value) || 1
+    };
+
+    const razones = calcularTodasLasRazones(p1, p2);
+    actualizarUI(razones, p1, p2);
+    crearGraficos(razones);
+    generarResumen(razones);
+  }
+
+  function calcularTodasLasRazones(p1, p2) {
+    return {
+      mb_p1: p1.ventas > 0 ? (p1.ub / p1.ventas) * 100 : 0,
+      mb_p2: p2.ventas > 0 ? (p2.ub / p2.ventas) * 100 : 0,
+      mo_p1: p1.ventas > 0 ? (p1.uo / p1.ventas) * 100 : 0,
+      mo_p2: p2.ventas > 0 ? (p2.uo / p2.ventas) * 100 : 0,
+      mn_p1: p1.ventas > 0 ? (p1.un / p1.ventas) * 100 : 0,
+      mn_p2: p2.ventas > 0 ? (p2.un / p2.ventas) * 100 : 0,
+      eps_p1: p1.acciones > 0 ? p1.un / p1.acciones : 0,
+      eps_p2: p2.acciones > 0 ? p2.un / p2.acciones : 0
+    };
+  }
+
+  function getStatus(valor, min, max) {
+    if (valor >= min && valor <= max) return 'good';
+    if (valor < min) return 'danger';
+    return 'warning';
+  }
+
+  function getStatusBadge(status) {
+    const badges = {
+      'good': '<span class="status-badge status-good"><i class="fas fa-check-circle"></i> Dentro del rango</span>',
+      'warning': '<span class="status-badge status-warning"><i class="fas fa-exclamation-triangle"></i> Por encima del rango</span>',
+      'danger': '<span class="status-badge status-danger"><i class="fas fa-times-circle"></i> Por debajo del rango</span>'
+    };
+    return badges[status] || '';
+  }
+
+  function actualizarUI(razones, p1, p2) {
+    document.getElementById('mb_p1').textContent = razones.mb_p1.toFixed(2);
+    document.getElementById('mb_p2').textContent = razones.mb_p2.toFixed(2);
+    document.getElementById('mo_p1').textContent = razones.mo_p1.toFixed(2);
+    document.getElementById('mo_p2').textContent = razones.mo_p2.toFixed(2);
+    document.getElementById('mn_p1').textContent = razones.mn_p1.toFixed(2);
+    document.getElementById('mn_p2').textContent = razones.mn_p2.toFixed(2);
+    document.getElementById('eps_p1').textContent = razones.eps_p1.toFixed(2);
+    document.getElementById('eps_p2').textContent = razones.eps_p2.toFixed(2);
+
+    document.getElementById('mb_p1_tabla').textContent = razones.mb_p1.toFixed(2) + '%';
+    document.getElementById('mb_p2_tabla').textContent = razones.mb_p2.toFixed(2) + '%';
+    document.getElementById('mo_p1_tabla').textContent = razones.mo_p1.toFixed(2) + '%';
+    document.getElementById('mo_p2_tabla').textContent = razones.mo_p2.toFixed(2) + '%';
+    document.getElementById('mn_p1_tabla').textContent = razones.mn_p1.toFixed(2) + '%';
+    document.getElementById('mn_p2_tabla').textContent = razones.mn_p2.toFixed(2) + '%';
+    document.getElementById('eps_p1_tabla').textContent = razones.eps_p1.toFixed(2);
+    document.getElementById('eps_p2_tabla').textContent = razones.eps_p2.toFixed(2);
+
+    const var_mb = ((razones.mb_p2 - razones.mb_p1) / razones.mb_p1 * 100) || 0;
+    const var_mo = ((razones.mo_p2 - razones.mo_p1) / razones.mo_p1 * 100) || 0;
+    const var_mn = ((razones.mn_p2 - razones.mn_p1) / razones.mn_p1 * 100) || 0;
+    const var_eps = ((razones.eps_p2 - razones.eps_p1) / razones.eps_p1 * 100) || 0;
+
+    document.getElementById('mb_var').textContent = var_mb.toFixed(2) + '%';
+    document.getElementById('mo_var').textContent = var_mo.toFixed(2) + '%';
+    document.getElementById('mn_var').textContent = var_mn.toFixed(2) + '%';
+    document.getElementById('eps_var').textContent = var_eps.toFixed(2) + '%';
+
+    document.getElementById('mb_p1_status').innerHTML = getStatusBadge(getStatus(razones.mb_p1, 20, 40));
+    document.getElementById('mb_p2_status').innerHTML = getStatusBadge(getStatus(razones.mb_p2, 20, 40));
+    document.getElementById('mo_p1_status').innerHTML = getStatusBadge(getStatus(razones.mo_p1, 10, 20));
+    document.getElementById('mo_p2_status').innerHTML = getStatusBadge(getStatus(razones.mo_p2, 10, 20));
+    document.getElementById('mn_p1_status').innerHTML = getStatusBadge(getStatus(razones.mn_p1, 5, 10));
+    document.getElementById('mn_p2_status').innerHTML = getStatusBadge(getStatus(razones.mn_p2, 5, 10));
+
+    actualizarInterpretaciones(razones, p1, p2);
+  }
+
+  function actualizarInterpretaciones(razones, p1, p2) {
+    const nombre_p1 = document.getElementById('nombre_p1').value || 'Período 1';
+    const nombre_p2 = document.getElementById('nombre_p2').value || 'Período 2';
+
+    const var_mb = ((razones.mb_p2 - razones.mb_p1) / razones.mb_p1 * 100) || 0;
+    const var_mo = ((razones.mo_p2 - razones.mo_p1) / razones.mo_p1 * 100) || 0;
+    const var_mn = ((razones.mn_p2 - razones.mn_p1) / razones.mn_p1 * 100) || 0;
+    const var_eps = ((razones.eps_p2 - razones.eps_p1) / razones.eps_p1 * 100) || 0;
+
+    const statusMB = getStatus(razones.mb_p2, 20, 40);
+    const statusMO = getStatus(razones.mo_p2, 10, 20);
+    const statusMN = getStatus(razones.mn_p2, 5, 10);
+
+    document.getElementById('interp_margen_bruto').innerHTML = `
+      El margen bruto en ${nombre_p1} es <strong>${razones.mb_p1.toFixed(2)}%</strong> y en ${nombre_p2} es <strong>${razones.mb_p2.toFixed(2)}%</strong>, 
+      representando una variación de <strong>${var_mb > 0 ? '+' : ''}${var_mb.toFixed(2)}%</strong>. 
+      ${var_mb > 0 ? 'La empresa mejoró su eficiencia en la producción y control de costos.' : 'La empresa experimentó una disminución en su rentabilidad bruta.'}
+      El rango industrial esperado es 20% - 40%. El ${nombre_p2} está ${statusMB === 'good' ? 'dentro' : statusMB === 'danger' ? 'por debajo' : 'por encima'} del rango.
+    `;
+
+    document.getElementById('interp_margen_operativo').innerHTML = `
+      El margen operativo en ${nombre_p1} es <strong>${razones.mo_p1.toFixed(2)}%</strong> y en ${nombre_p2} es <strong>${razones.mo_p2.toFixed(2)}%</strong>, 
+      con una variación de <strong>${var_mo > 0 ? '+' : ''}${var_mo.toFixed(2)}%</strong>. 
+      ${var_mo > 0 ? 'La empresa mejoró su eficiencia operativa.' : 'Los gastos operativos aumentaron proporcionalmente a las ventas.'}
+      El rango industrial esperado es 10% - 20%. El ${nombre_p2} está ${statusMO === 'good' ? 'dentro' : statusMO === 'danger' ? 'por debajo' : 'por encima'} del rango.
+    `;
+
+    document.getElementById('interp_margen_neto').innerHTML = `
+      El margen neto en ${nombre_p1} es <strong>${razones.mn_p1.toFixed(2)}%</strong> y en ${nombre_p2} es <strong>${razones.mn_p2.toFixed(2)}%</strong>, 
+      con una variación de <strong>${var_mn > 0 ? '+' : ''}${var_mn.toFixed(2)}%</strong>. 
+      ${var_mn > 0 ? 'La rentabilidad final de la empresa mejoró significativamente.' : 'La rentabilidad final de la empresa disminuyó.'}
+      El rango industrial esperado es 5% - 10%. El ${nombre_p2} está ${statusMN === 'good' ? 'dentro' : statusMN === 'danger' ? 'por debajo' : 'por encima'} del rango.
+    `;
+
+    document.getElementById('interp_eps').innerHTML = `
+      La utilidad por acción en ${nombre_p1} es <strong>$${razones.eps_p1.toFixed(2)}</strong> y en ${nombre_p2} es <strong>$${razones.eps_p2.toFixed(2)}</strong>, 
+      con una variación de <strong>${var_eps > 0 ? '+' : ''}${var_eps.toFixed(2)}%</strong>. 
+      ${var_eps > 0 ? 'Cada acción generó mayor utilidad en el ' + nombre_p2 + ', lo que es favorable para los accionistas.' : 'La utilidad por acción disminuyó, afectando negativamente a los accionistas.'}
+    `;
+  }
+
+  function crearGraficos(razones) {
+    const nombre_p1 = document.getElementById('nombre_p1').value || 'Período 1';
+    const nombre_p2 = document.getElementById('nombre_p2').value || 'Período 2';
+
+    crearOActualizarGrafico('chartMargenBruto', {
+      labels: [nombre_p1, nombre_p2],
+      datasets: [{
+        label: 'Margen Bruto (%)',
+        data: [razones.mb_p1, razones.mb_p2],
+        borderColor: '#00d9ff',
+        backgroundColor: 'rgba(0, 217, 255, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    }, 'chartMargenBruto');
+
+    crearOActualizarGrafico('chartMargenOperativo', {
+      labels: [nombre_p1, nombre_p2],
+      datasets: [{
+        label: 'Margen Operativo (%)',
+        data: [razones.mo_p1, razones.mo_p2],
+        borderColor: '#ff006e',
+        backgroundColor: 'rgba(255, 0, 110, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    }, 'chartMargenOperativo');
+
+    crearOActualizarGrafico('chartMargenNeto', {
+      labels: [nombre_p1, nombre_p2],
+      datasets: [{
+        label: 'Margen Neto (%)',
+        data: [razones.mn_p1, razones.mn_p2],
+        borderColor: '#00ff88',
+        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    }, 'chartMargenNeto');
+
+    crearOActualizarGrafico('chartEPS', {
+      labels: [nombre_p1, nombre_p2],
+      datasets: [{
+        label: 'EPS ($)',
+        data: [razones.eps_p1, razones.eps_p2],
+        borderColor: '#00d9ff',
+        backgroundColor: 'rgba(0, 217, 255, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    }, 'chartEPS');
+  }
+
+  function crearOActualizarGrafico(canvasId, data, chartId) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    
+    if (charts[chartId]) {
+      charts[chartId].data = data;
+      charts[chartId].update();
+    } else {
+      charts[chartId] = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#e0e0e0',
+                font: { size: 12, weight: 'bold' }
+              }
+            }
+          },
+          scales: {
+            y: {
+              ticks: { color: '#a0a0a0' },
+              grid: { color: 'rgba(45, 53, 97, 0.3)' }
+            },
+            x: {
+              ticks: { color: '#a0a0a0' },
+              grid: { color: 'rgba(45, 53, 97, 0.3)' }
+            }
+          }
+        }
+      });
+    }
+  }
+
+  function generarResumen(razones) {
+    const resumen = `
+      <div class="resumen-card">
+        <h5 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-chart-bar"></i> Análisis de Rentabilidad</h5>
+        <p><strong>Márgenes de Ganancia:</strong> Los márgenes bruto, operativo y neto indican qué porcentaje de cada venta se convierte en ganancia en diferentes niveles.</p>
+        <ul style="margin-top: 10px; margin-left: 20px;">
+          <li><strong>Margen Bruto (20%-40%):</strong> Rentabilidad antes de gastos operativos</li>
+          <li><strong>Margen Operativo (10%-20%):</strong> Rentabilidad de operaciones</li>
+          <li><strong>Margen Neto (5%-10%):</strong> Rentabilidad final después de todos los gastos</li>
+        </ul>
+        <p style="margin-top: 15px;"><strong>Utilidad por Acción (EPS):</strong> Indica la ganancia disponible para cada acción en circulación. Un EPS creciente es favorable para los accionistas.</p>
+      </div>
+    `;
+    document.getElementById('resumen-ejecutivo').innerHTML = resumen;
+  }
+
+  function limpiarDatos() {
+    document.querySelectorAll('.input-futurista').forEach(input => {
+      input.value = '';
+    });
+    document.getElementById('nombre_p1').value = 'Período 1';
+    document.getElementById('nombre_p2').value = 'Período 2';
+    actualizarNombresPeriodos();
+  }
+</script>
+{% endblock %}
