@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
-
-{% block title %}Sistema Dupont - DicksonStatistics{% endblock %}
+{% block title %}Sistema Dupont - RazoNix{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -15,25 +14,9 @@
         --white: #ffffff;
         --light-text: #f1f5f9;
         --medium-text: #94a3b8;
-        --glow-purple: 0 0 20px rgba(139, 92, 246, 0.7);
-        --glow-blue: 0 0 20px rgba(59, 130, 246, 0.7);
         --success-color: #10b981;
         --danger-color: #ef4444;
         --warning-color: #f59e0b;
-    }
-    
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: var(--light-text);
-        line-height: 1.6;
-        background-color: var(--dark-bg);
-        overflow-x: hidden;
     }
     
     /* Background Animation */
@@ -99,10 +82,109 @@
         }
     }
     
-    .analysis-section {
-        padding: 120px 0 60px;
-        min-height: calc(100vh - 76px);
+    /* Loading Overlay */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(10, 10, 18, 0.95);
+        backdrop-filter: blur(10px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .loading-content {
+        text-align: center;
+        color: var(--light-text);
+    }
+    
+    .loading-spinner {
+        width: 80px;
+        height: 80px;
         position: relative;
+        margin: 0 auto 2rem;
+    }
+    
+    .spinner-ring {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: 4px solid transparent;
+        border-radius: 50%;
+        animation: spin 1.5s linear infinite;
+    }
+    
+    .spinner-ring:nth-child(1) {
+        border-top: 4px solid var(--neon-purple);
+        animation-delay: 0s;
+    }
+    
+    .spinner-ring:nth-child(2) {
+        border-right: 4px solid var(--neon-cyan);
+        animation-delay: 0.1s;
+    }
+    
+    .spinner-ring:nth-child(3) {
+        border-bottom: 4px solid var(--neon-blue);
+        animation-delay: 0.2s;
+    }
+    
+    .spinner-ring:nth-child(4) {
+        border-left: 4px solid var(--neon-pink);
+        animation-delay: 0.3s;
+    }
+    
+    .loading-text {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan), var(--neon-blue));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .loading-subtext {
+        color: var(--medium-text);
+        font-size: 0.9rem;
+    }
+    
+    .progress-bar {
+        width: 200px;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        margin: 1rem auto;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+        border-radius: 3px;
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+    
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
     }
     
     .section-header {
@@ -132,7 +214,7 @@
         font-weight: 800;
         color: var(--white);
         margin-bottom: 0.5rem;
-        text-shadow: var(--glow-purple);
+        text-shadow: 0 0 20px rgba(139, 92, 246, 0.7);
     }
     
     .section-title .highlight {
@@ -206,6 +288,12 @@
         color: white;
     }
     
+    .btn-primary-modern:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
     .btn-outline-modern {
         background: transparent;
         border: 2px solid var(--neon-cyan);
@@ -219,46 +307,12 @@
         box-shadow: 0 6px 15px rgba(6, 182, 212, 0.4);
     }
     
-    .btn-success-modern {
-        background: var(--success-color);
-        color: white;
-        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    .btn-outline-modern:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
     }
     
-    .btn-success-modern:hover {
-        background: #059669;
-        transform: translateY(-3px);
-        color: white;
-        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.6);
-    }
-    
-    .btn-danger-modern {
-        background: var(--danger-color);
-        color: white;
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-    }
-    
-    .btn-danger-modern:hover {
-        background: #dc2626;
-        transform: translateY(-3px);
-        color: white;
-        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.6);
-    }
-    
-    .btn-warning-modern {
-        background: var(--warning-color);
-        color: white;
-        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
-    }
-    
-    .btn-warning-modern:hover {
-        background: #d97706;
-        transform: translateY(-3px);
-        color: white;
-        box-shadow: 0 8px 20px rgba(245, 158, 11, 0.6);
-    }
-    
-    /* CORRECCIÓN ESPECÍFICA PARA SELECTORES */
     .form-control-modern {
         border: 2px solid rgba(139, 92, 246, 0.3);
         border-radius: 12px;
@@ -276,59 +330,6 @@
         color: var(--light-text) !important;
     }
     
-    select.form-control-modern {
-        color: var(--light-text) !important;
-        background: rgba(139, 92, 246, 0.1) !important;
-    }
-    
-    select.form-control-modern option {
-        background: var(--dark-card) !important;
-        color: var(--light-text) !important;
-        padding: 10px;
-    }
-    
-    select.form-control-modern:focus {
-        background: rgba(139, 92, 246, 0.15) !important;
-        color: var(--light-text) !important;
-    }
-    
-    .modal-modern .modal-content {
-        border-radius: 20px;
-        border: none;
-        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
-        overflow: hidden;
-        background: var(--dark-card);
-        color: var(--light-text);
-    }
-    
-    .modal-modern .modal-header {
-        background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
-        color: white;
-        border-radius: 20px 20px 0 0;
-        border: none;
-        padding: 1.75rem 2rem;
-    }
-    
-    .modal-modern .modal-title {
-        font-weight: 700;
-        font-size: 1.5rem;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    }
-    
-    .modal-modern .btn-close {
-        filter: invert(1);
-        opacity: 0.8;
-    }
-    
-    .modal-modern .btn-close:hover {
-        opacity: 1;
-    }
-    
-    .form-group-modern {
-        margin-bottom: 1.75rem;
-        position: relative;
-    }
-    
     .form-label-modern {
         font-weight: 600;
         color: var(--light-text);
@@ -339,210 +340,10 @@
         gap: 0.5rem;
     }
     
-    .variation-badge {
-        background: linear-gradient(135deg, var(--success-color), var(--neon-cyan));
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        display: inline-block;
-        margin-top: 0.5rem;
-        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4);
-        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    .form-group-modern {
+        margin-bottom: 1.75rem;
     }
     
-    .variation-positive {
-        background: linear-gradient(135deg, var(--success-color), var(--neon-cyan));
-    }
-    
-    .variation-negative {
-        background: linear-gradient(135deg, var(--danger-color), #f87171);
-    }
-    
-    .variation-neutral {
-        background: linear-gradient(135deg, var(--medium-text), #94a3b8);
-    }
-    
-    .calculation-row {
-        background: rgba(6, 182, 212, 0.1) !important;
-        font-weight: 700;
-    }
-    
-    .calculation-row td {
-        border-top: 2px solid rgba(139, 92, 246, 0.3);
-    }
-    
-    .empty-row {
-        text-align: center;
-        color: var(--medium-text);
-        font-style: italic;
-        padding: 3rem !important;
-        font-size: 1.1rem;
-    }
-    
-    .action-buttons {
-        display: flex;
-        gap: 0.75rem;
-        justify-content: center;
-    }
-    
-    .btn-sm-modern {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-        border-radius: 8px;
-    }
-    
-    /* ANIMACIONES DE CARGA */
-    .loading-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(10, 10, 18, 0.9);
-        backdrop-filter: blur(10px);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-    }
-    
-    .loading-overlay.active {
-        opacity: 1;
-        visibility: visible;
-    }
-    
-    .loading-spinner {
-        width: 80px;
-        height: 80px;
-        position: relative;
-    }
-    
-    .spinner-ring {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        border: 4px solid transparent;
-        border-radius: 50%;
-        animation: spin 1.5s linear infinite;
-    }
-    
-    .spinner-ring:nth-child(1) {
-        border-top: 4px solid var(--neon-purple);
-        animation-delay: 0s;
-    }
-    
-    .spinner-ring:nth-child(2) {
-        border-right: 4px solid var(--neon-cyan);
-        animation-delay: 0.1s;
-    }
-    
-    .spinner-ring:nth-child(3) {
-        border-bottom: 4px solid var(--neon-blue);
-        animation-delay: 0.2s;
-    }
-    
-    .spinner-ring:nth-child(4) {
-        border-left: 4px solid var(--neon-pink);
-        animation-delay: 0.3s;
-    }
-    
-    .loading-content {
-        text-align: center;
-        color: var(--light-text);
-        margin-top: 2rem;
-    }
-    
-    .loading-text {
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan), var(--neon-blue));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-    
-    .loading-subtext {
-        color: var(--medium-text);
-        font-size: 0.9rem;
-    }
-    
-    .btn-loading {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .btn-loading::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 20px;
-        height: 20px;
-        margin: -10px 0 0 -10px;
-        border: 2px solid transparent;
-        border-top: 2px solid currentColor;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    
-    .btn-loading.loading {
-        pointer-events: none;
-        opacity: 0.8;
-    }
-    
-    .btn-loading.loading::after {
-        opacity: 1;
-    }
-    
-    .btn-loading.loading .btn-text {
-        opacity: 0;
-    }
-    
-    .progress-bar {
-        width: 200px;
-        height: 6px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 3px;
-        margin: 1rem auto;
-        overflow: hidden;
-    }
-    
-    .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
-        border-radius: 3px;
-        width: 0%;
-        transition: width 0.3s ease;
-        animation: progressPulse 2s ease-in-out infinite;
-    }
-    
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-    
-    @keyframes progressPulse {
-        0%, 100% {
-            opacity: 1;
-        }
-        50% {
-            opacity: 0.7;
-        }
-    }
-
-    /* ESTILOS ESPECÍFICOS PARA SISTEMA DUPONT */
     .result-section {
         background: rgba(18, 18, 37, 0.8);
         backdrop-filter: blur(10px);
@@ -554,10 +355,6 @@
         transition: all 0.3s ease;
     }
     
-    .result-section:hover {
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
-    }
-    
     .result-title {
         font-size: 1.5rem;
         font-weight: 700;
@@ -566,69 +363,6 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        text-align: center;
-    }
-    
-    .result-value {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: var(--neon-cyan);
-        text-align: center;
-        margin: 1rem 0;
-        text-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
-    }
-    
-    .roe-section {
-        background: rgba(139, 92, 246, 0.1);
-        border-radius: 16px;
-        padding: 2rem;
-        margin-top: 2rem;
-        text-align: center;
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .roe-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
-    }
-    
-    .roe-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--light-text);
-        margin-bottom: 1.5rem;
-    }
-    
-    .interpretation-box {
-        background: rgba(18, 18, 37, 0.9);
-        border-radius: 16px;
-        padding: 2rem;
-        margin-top: 1.5rem;
-        border-left: 4px solid var(--neon-purple);
-        text-align: left;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .interpretation-title {
-        font-weight: 700;
-        color: var(--light-text);
-        margin-bottom: 1rem;
-        font-size: 1.25rem;
-    }
-    
-    .ratio-result {
-        font-weight: 700;
-        color: var(--neon-cyan);
-        font-size: 1.5rem;
-        text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
     }
     
     .card {
@@ -669,60 +403,115 @@
         font-size: 1.1rem;
     }
     
-    .info-tooltip {
+    .ratio-result {
+        font-weight: 700;
         color: var(--neon-cyan);
-        cursor: help;
-        transition: all 0.3s ease;
+        font-size: 2rem;
+        text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
     }
     
-    .info-tooltip:hover {
-        color: var(--neon-purple);
-        text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
-    }
-    
-    .validation-message {
-        font-size: 0.8rem;
-        color: var(--danger-color);
-        margin-top: 0.5rem;
-        display: none;
-        font-weight: 500;
-    }
-    
-    .input-error {
-        border-color: var(--danger-color) !important;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important;
-    }
-    
-    .interpretation-section {
-        background: rgba(18, 18, 37, 0.8);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
+    .roe-section {
+        background: rgba(139, 92, 246, 0.1);
+        border-radius: 16px;
         padding: 2rem;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 50px rgba(139, 92, 246, 0.1);
-        margin-bottom: 2rem;
+        margin-top: 2rem;
+        text-align: center;
         border: 1px solid rgba(139, 92, 246, 0.2);
-        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
     }
     
-    .interpretation-section:hover {
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
+    .roe-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
     }
     
-    .interpretation-item {
+    .result-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--neon-cyan);
+        text-align: center;
+        margin: 1rem 0;
+        text-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+    }
+    
+    .interpretation-box {
+        background: rgba(18, 18, 37, 0.9);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-top: 1.5rem;
+        border-left: 4px solid var(--neon-purple);
+        text-align: left;
+    }
+    
+    .interpretation-title {
+        font-weight: 700;
+        color: var(--light-text);
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+    }
+    
+    .info-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 10px rgba(139, 92, 246, 0.4);
+    }
+    
+    .definition-box {
+        background: rgba(6, 182, 212, 0.1);
+        border-left: 4px solid var(--neon-cyan);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .definition-title {
+        font-weight: 700;
+        color: var(--neon-cyan);
+        margin-bottom: 0.5rem;
+    }
+    
+    .definition-text {
+        color: var(--medium-text);
+        font-size: 0.95rem;
+    }
+    
+    .formula-box {
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        font-family: 'Courier New', monospace;
+        color: var(--neon-cyan);
+        text-align: center;
+        font-weight: 600;
+    }
+    
+    .advantage-item {
         display: flex;
+        gap: 1rem;
         margin-bottom: 1.5rem;
         padding-bottom: 1.5rem;
         border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-        align-items: flex-start;
     }
     
-    .interpretation-item:last-child {
-        margin-bottom: 0;
-        padding-bottom: 0;
+    .advantage-item:last-child {
         border-bottom: none;
     }
     
-    .interpretation-icon {
+    .advantage-icon {
         width: 50px;
         height: 50px;
         border-radius: 50%;
@@ -731,52 +520,21 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 1.5rem;
         flex-shrink: 0;
         font-size: 1.25rem;
         box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
     }
     
-    .interpretation-content h5 {
+    .advantage-content h5 {
         margin-bottom: 0.5rem;
         color: var(--light-text);
         font-weight: 600;
-        font-size: 1.1rem;
     }
     
-    .interpretation-content p {
+    .advantage-content p {
         margin-bottom: 0;
         color: var(--medium-text);
-        line-height: 1.6;
-    }
-    
-    .roe-badge {
-        font-size: 1rem;
-        padding: 0.75rem 1.5rem;
-        margin-bottom: 1rem;
-        border-radius: 25px;
-        font-weight: 600;
-        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    }
-    
-    .input-group-modern {
-        position: relative;
-    }
-    
-    .input-group-modern .currency-symbol {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--neon-cyan);
-        font-weight: 600;
-        z-index: 5;
-        text-shadow: 0 0 5px rgba(6, 182, 212, 0.5);
-    }
-    
-    .input-group-modern .form-control-modern {
-        padding-left: 35px;
+        font-size: 0.95rem;
     }
     
     .table-modern {
@@ -797,19 +555,7 @@
         color: white;
         text-align: center;
         vertical-align: middle;
-        font-size: 1.1rem;
-        position: relative;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    }
-    
-    .table-modern thead th::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 10%;
-        right: 10%;
-        height: 2px;
-        background: rgba(255, 255, 255, 0.5);
+        font-size: 1rem;
     }
     
     .table-modern tbody td {
@@ -823,134 +569,76 @@
     
     .table-modern tbody tr:hover td {
         background: rgba(139, 92, 246, 0.1);
-        transform: scale(1.01);
     }
-
-    /* Responsive Design */
-    @media (max-width: 1200px) {
-        .section-title {
-            font-size: 2.25rem;
+    
+    .nav-tabs-modern {
+        border-bottom: 2px solid rgba(139, 92, 246, 0.2);
+    }
+    
+    .nav-tabs-modern .nav-link {
+        color: var(--medium-text);
+        border: none;
+        border-bottom: 3px solid transparent;
+        padding: 1rem 1.5rem;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+    
+    .nav-tabs-modern .nav-link:hover {
+        color: var(--neon-cyan);
+        border-bottom-color: var(--neon-cyan);
+    }
+    
+    .nav-tabs-modern .nav-link.active {
+        color: var(--white);
+        border-bottom-color: var(--neon-purple);
+        background: transparent;
+    }
+    
+    .tab-content {
+        padding-top: 2rem;
+    }
+    
+    .alert-custom {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        z-index: 9998;
+        min-width: 300px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        border-radius: 12px;
+        border: none;
+        color: white;
+        animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
         }
     }
-
-    @media (max-width: 992px) {
-        .section-header {
-            padding: 2rem;
-        }
-        
+    
+    @media (max-width: 768px) {
         .section-title {
             font-size: 2rem;
         }
         
         .result-value {
             font-size: 2rem;
-        }
-        
-        .interpretation-item {
-            flex-direction: column;
-            text-align: center;
-        }
-        
-        .interpretation-icon {
-            margin-right: 0;
-            margin-bottom: 1rem;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .analysis-section {
-            padding: 100px 0 40px;
-        }
-        
-        .section-header {
-            padding: 1.5rem;
-            border-radius: 16px;
-        }
-        
-        .section-title {
-            font-size: 1.75rem;
-        }
-        
-        .section-subtitle {
-            font-size: 1rem;
-        }
-        
-        .control-panel, .result-section, .interpretation-section {
-            padding: 1.5rem;
-            border-radius: 16px;
-        }
-        
-        .table-responsive {
-            font-size: 0.9rem;
         }
         
         .card-body {
             padding: 1.5rem;
-        }
-        
-        .result-value {
-            font-size: 1.75rem;
-        }
-        
-        .ratio-result {
-            font-size: 1.25rem;
-        }
-        
-        .control-panel .d-flex {
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        
-        .control-panel .btn-modern {
-            width: 100%;
-            justify-content: center;
         }
         
         .btn-modern {
             padding: 0.75rem 1.5rem;
-        }
-        
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-        }
-        
-        .loading-text {
-            font-size: 1rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .section-header {
-            padding: 1.25rem;
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
-        }
-        
-        .control-panel, .result-section, .interpretation-section {
-            padding: 1.25rem;
-            border-radius: 16px;
-        }
-        
-        .card-body {
-            padding: 1.25rem;
-        }
-        
-        .result-value {
-            font-size: 1.5rem;
-        }
-        
-        .btn-modern {
             font-size: 0.9rem;
-            padding: 0.7rem 1.25rem;
-        }
-        
-        .interpretation-icon {
-            width: 40px;
-            height: 40px;
-            font-size: 1rem;
         }
     }
 </style>
@@ -975,271 +663,276 @@
             <div class="spinner-ring"></div>
             <div class="spinner-ring"></div>
         </div>
-        <div class="loading-text" id="loadingMessage">Procesando...</div>
+        <div class="loading-text" id="loadingMessage">Calculando Sistema Dupont...</div>
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
         </div>
-        <div class="loading-subtext" id="loadingSubtext">Por favor espera</div>
+        <div class="loading-subtext" id="loadingSubtext">Analizando rentabilidad financiera</div>
     </div>
 </div>
 
-<section class="analysis-section">
-    <div class="container">
-        <!-- Header -->
-        <div class="section-header">
-            <h1 class="section-title">Sistema <span class="highlight">Dupont</span></h1>
-            <p class="section-subtitle">Analiza la rentabilidad de la empresa mediante el sistema de análisis financiero Dupont</p>
-        </div>
-
-        <!-- Panel de Entrada de Datos -->
-        <div class="control-panel">
-            <div class="row">
-                <div class="col-md-12">
-                    <h5 class="form-label-modern mb-3">
-                        <i class="fas fa-calculator"></i> Ingresar Datos Financieros
-                    </h5>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group-modern">
-                        <label class="form-label-modern" for="utilidadNeta">
-                            Utilidad Neta
-                            <i class="fas fa-info-circle info-tooltip" data-bs-toggle="tooltip" 
-                               title="Beneficio después de impuestos y todos los gastos"></i>
-                        </label>
-                        <div class="input-group-modern">
-                            <span class="currency-symbol">$</span>
-                            <input type="number" class="form-control form-control-modern" id="utilidadNeta" 
-                                   placeholder="Ej: 150000" min="0" step="0.01" value="150000">
-                        </div>
-                        <div class="validation-message" id="utilidadNetaError"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group-modern">
-                        <label class="form-label-modern" for="ventas">
-                            Ventas Netas
-                            <i class="fas fa-info-circle info-tooltip" data-bs-toggle="tooltip" 
-                               title="Ingresos totales por ventas después de descuentos y devoluciones"></i>
-                        </label>
-                        <div class="input-group-modern">
-                            <span class="currency-symbol">$</span>
-                            <input type="number" class="form-control form-control-modern" id="ventas" 
-                                   placeholder="Ej: 250000" min="0" step="0.01" value="250000">
-                        </div>
-                        <div class="validation-message" id="ventasError"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group-modern">
-                        <label class="form-label-modern" for="activoTotal">
-                            Activo Total
-                            <i class="fas fa-info-circle info-tooltip" data-bs-toggle="tooltip" 
-                               title="Total de recursos económicos propiedad de la empresa"></i>
-                        </label>
-                        <div class="input-group-modern">
-                            <span class="currency-symbol">$</span>
-                            <input type="number" class="form-control form-control-modern" id="activoTotal" 
-                                   placeholder="Ej: 100000" min="0" step="0.01" value="100000">
-                        </div>
-                        <div class="validation-message" id="activoTotalError"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group-modern">
-                        <label class="form-label-modern" for="patrimonio">
-                            Patrimonio
-                            <i class="fas fa-info-circle info-tooltip" data-bs-toggle="tooltip" 
-                               title="Capital contable o fondos propios de la empresa"></i>
-                        </label>
-                        <div class="input-group-modern">
-                            <span class="currency-symbol">$</span>
-                            <input type="number" class="form-control form-control-modern" id="patrimonio" 
-                                   placeholder="Ej: 30000" min="0" step="0.01" value="30000">
-                        </div>
-                        <div class="validation-message" id="patrimonioError"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col-md-12 text-end">
-                    <button class="btn btn-primary-modern btn-modern" id="calcularBtn">
-                        <i class="fas fa-calculator"></i> Calcular Sistema Dupont
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Resultados -->
-        <div class="result-section">
-            <h3 class="result-title">
-                <i class="fas fa-chart-line"></i> Resultados del Análisis Dupont
-            </h3>
-            
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Margen Neto de Utilidad</h5>
-                            <div class="ratio-result" id="margenResultado">0.60</div>
-                            <small class="text-muted">Eficiencia en conversión de ventas a ganancias</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Rotación de Activos Totales</h5>
-                            <div class="ratio-result" id="rotacionResultado">2.50</div>
-                            <small class="text-muted">Eficiencia en uso de activos para generar ventas</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">Apalancamiento Financiero</h5>
-                            <div class="ratio-result" id="apalancamientoResultado">3.33</div>
-                            <small class="text-muted">Grado de uso de deuda para financiar activos</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Sistema Dupont (ROE) -->
-            <div class="roe-section mt-4">
-                <h4 class="roe-title">Sistema Dupont (ROE)</h4>
-                <div class="result-value" id="resultadoDupont">4.99</div>
-                <p class="text-muted">Return on Equity - Rentabilidad sobre el Patrimonio</p>
-                
-                <!-- Interpretación Automática -->
-                <div class="interpretation-box">
-                    <h5 class="interpretation-title">Interpretación del Resultado</h5>
-                    <div id="interpretationText">
-                        <span class="badge roe-badge bg-success">ROE: 499%</span>
-                        <p class="mb-0">Un resultado de <strong>4.99</strong> indica que por cada unidad monetaria de patrimonio, la empresa genera <strong>4.99 unidades</strong> de utilidad neta. Esto representa una <strong>rentabilidad muy alta</strong> sobre el patrimonio.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Interpretación de Componentes -->
-        <div class="interpretation-section">
-            <h5 class="interpretation-title">
-                <i class="fas fa-lightbulb"></i> Interpretación de los Componentes Dupont
-            </h5>
-            
-            <div class="interpretation-item">
-                <div class="interpretation-icon">
-                    <i class="fas fa-percentage"></i>
-                </div>
-                <div class="interpretation-content">
-                    <h5>Margen Neto de Utilidad</h5>
-                    <p>Mide la eficiencia de la empresa en convertir ventas en ganancias. Un margen más alto indica mejor control de costos y gastos en relación con las ventas.</p>
-                </div>
-            </div>
-            
-            <div class="interpretation-item">
-                <div class="interpretation-icon">
-                    <i class="fas fa-sync-alt"></i>
-                </div>
-                <div class="interpretation-content">
-                    <h5>Rotación de Activos Totales</h5>
-                    <p>Evalúa la eficiencia en el uso de los activos para generar ventas. Una rotación más alta indica que la empresa está utilizando sus activos de manera más eficiente.</p>
-                </div>
-            </div>
-            
-            <div class="interpretation-item">
-                <div class="interpretation-icon">
-                    <i class="fas fa-balance-scale"></i>
-                </div>
-                <div class="interpretation-content">
-                    <h5>Apalancamiento Financiero</h5>
-                    <p>Indica el grado en que la empresa utiliza deuda para financiar sus activos. Un apalancamiento más alto puede aumentar el ROE, pero también incrementa el riesgo financiero.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Botones de Acción -->
-        <div class="control-panel">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <div class="d-flex gap-2 flex-wrap">
-                        <button class="btn btn-outline-modern btn-modern" id="limpiarBtn">
-                            <i class="fas fa-broom"></i> Limpiar Campos
-                        </button>
-                        <button class="btn btn-outline-modern btn-modern" data-bs-toggle="modal" data-bs-target="#ejemploModal">
-                            <i class="fas fa-book"></i> Ver Ejemplo
-                        </button>
-                        <button class="btn btn-outline-modern btn-modern" id="guardarBtn">
-                            <i class="fas fa-save"></i> Guardar Análisis
-                        </button>
-                    </div>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <button class="btn btn-success-modern btn-modern" id="exportarBtn">
-                        <i class="fas fa-file-export"></i> Exportar Resultados
-                    </button>
-                </div>
-            </div>
-        </div>
+<div class="container-fluid py-5">
+    <!-- Header -->
+    <div class="section-header mb-5">
+        <h1 class="section-title">
+            <i class="fas fa-chart-pie"></i> Sistema <span class="highlight">Dupont</span>
+        </h1>
+        <p class="section-subtitle">Análisis integral de la rentabilidad empresarial mediante el sistema Dupont</p>
     </div>
-</section>
-
-<!-- Modal de Ejemplo -->
-<div class="modal fade modal-modern" id="ejemploModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Ejemplo del Sistema Dupont</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="table-responsive">
-                    <table class="table table-modern">
-                        <thead>
-                            <tr>
-                                <th>Concepto</th>
-                                <th>Fórmula</th>
-                                <th>Cálculo</th>
-                                <th>Resultado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Margen Neto de Utilidad</td>
-                                <td>Utilidad Neta / Ventas</td>
-                                <td>150,000 / 250,000</td>
-                                <td>0.6</td>
-                            </tr>
-                            <tr>
-                                <td>Rotación de Activos Totales</td>
-                                <td>Ventas / Activo Total</td>
-                                <td>250,000 / 100,000</td>
-                                <td>2.5</td>
-                            </tr>
-                            <tr>
-                                <td>Apalancamiento Financiero</td>
-                                <td>Activo Total / Patrimonio</td>
-                                <td>100,000 / 30,000</td>
-                                <td>3.33</td>
-                            </tr>
-                            <tr class="calculation-row">
-                                <td colspan="3"><strong>Sistema Dupont (ROE)</strong></td>
-                                <td><strong>0.6 × 2.5 × 3.33 = 4.99</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
+    
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs nav-tabs-modern mb-4" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="calculadora-tab" data-bs-toggle="tab" data-bs-target="#calculadora" type="button" role="tab">
+                <i class="fas fa-calculator me-2"></i>Calculadora
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="teoria-tab" data-bs-toggle="tab" data-bs-target="#teoria" type="button" role="tab">
+                <i class="fas fa-book me-2"></i>Teoría
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- TAB 1: CALCULADORA -->
+        <div class="tab-pane fade show active" id="calculadora" role="tabpanel">
+            <!-- Panel de Entrada de Datos -->
+            <div class="control-panel">
+                <h5 class="form-label-modern mb-4">
+                    <i class="fas fa-input-numeric"></i> Ingresar Datos Financieros
+                </h5>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group-modern">
+                            <label class="form-label-modern" for="utilidadNeta">
+                                Utilidad Neta
+                                <i class="fas fa-info-circle" title="Beneficio después de impuestos"></i>
+                            </label>
+                            <input type="number" class="form-control form-control-modern" id="utilidadNeta" 
+                                   placeholder="Ej: 150000" value="150000">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group-modern">
+                            <label class="form-label-modern" for="ventas">
+                                Ventas Netas
+                                <i class="fas fa-info-circle" title="Ingresos totales por ventas"></i>
+                            </label>
+                            <input type="number" class="form-control form-control-modern" id="ventas" 
+                                   placeholder="Ej: 250000" value="250000">
+                        </div>
+                    </div>
                 </div>
-                <div class="alert alert-info mt-3" style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); color: var(--light-text);">
-                    <p><strong>Interpretación:</strong> Un resultado de 4.99 indica que por cada unidad monetaria de patrimonio, la empresa genera 4.99 unidades de utilidad neta. Esto representa una rentabilidad muy alta sobre el patrimonio.</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group-modern">
+                            <label class="form-label-modern" for="activoTotal">
+                                Activo Total
+                                <i class="fas fa-info-circle" title="Total de recursos económicos"></i>
+                            </label>
+                            <input type="number" class="form-control form-control-modern" id="activoTotal" 
+                                   placeholder="Ej: 100000" value="100000">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group-modern">
+                            <label class="form-label-modern" for="patrimonio">
+                                Patrimonio
+                                <i class="fas fa-info-circle" title="Capital contable o fondos propios"></i>
+                            </label>
+                            <input type="number" class="form-control form-control-modern" id="patrimonio" 
+                                   placeholder="Ej: 30000" value="30000">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-12 d-flex gap-2 justify-content-end flex-wrap">
+                        <button class="btn btn-outline-modern btn-modern" id="limpiarBtn">
+                            <i class="fas fa-broom"></i> Limpiar
+                        </button>
+                        <button class="btn btn-primary-modern btn-modern" id="calcularBtn">
+                            <i class="fas fa-calculator"></i> Calcular
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary-modern btn-modern" data-bs-dismiss="modal">Entendido</button>
+            
+            <!-- Resultados -->
+            <div class="result-section">
+                <h3 class="result-title">
+                    <i class="fas fa-chart-line"></i> Resultados del Análisis Dupont
+                </h3>
+                
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Margen Neto</h5>
+                                <div class="ratio-result" id="margenResultado">0.60</div>
+                                <small class="text-muted">Utilidad Neta / Ventas</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Rotación Activos</h5>
+                                <div class="ratio-result" id="rotacionResultado">2.50</div>
+                                <small class="text-muted">Ventas / Activo Total</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Apalancamiento</h5>
+                                <div class="ratio-result" id="apalancamientoResultado">3.33</div>
+                                <small class="text-muted">Activo Total / Patrimonio</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ROE -->
+                <div class="roe-section">
+                    <h4 class="interpretation-title">
+                        <i class="fas fa-crown"></i> Sistema Dupont (ROE)
+                    </h4>
+                    <div class="result-value" id="resultadoDupont">4.99</div>
+                    <p class="text-muted mb-0">Return on Equity - Rentabilidad sobre el Patrimonio</p>
+                    
+                    <div class="interpretation-box">
+                        <div id="interpretationText">
+                            <span class="info-badge">ROE: 499%</span>
+                            <p class="mb-0">Un resultado de <strong>4.99</strong> indica que por cada unidad monetaria de patrimonio, la empresa genera <strong>4.99 unidades</strong> de utilidad neta.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB 2: TEORÍA -->
+        <div class="tab-pane fade" id="teoria" role="tabpanel">
+            <div class="control-panel">
+                <h3 class="result-title mb-4">
+                    <i class="fas fa-book"></i> ¿Qué es el Sistema Dupont?
+                </h3>
+                
+                <div class="definition-box">
+                    <div class="definition-title">
+                        <i class="fas fa-star"></i> Definición
+                    </div>
+                    <div class="definition-text">
+                        El sistema Dupont es un indicador financiero que analiza el desempeño económico y laboral de una empresa. Fue creado por el ingeniero eléctrico <strong>F. Donaldson Brown en 1914</strong> y es una técnica utilizada para analizar la rentabilidad de una compañía combinando los principales indicativos financieros.
+                    </div>
+                </div>
+                
+                <h5 class="mt-4 mb-3">Componentes Principales</h5>
+                
+                <div class="definition-box">
+                    <div class="definition-title">1. Margen Neto de Utilidad</div>
+                    <div class="formula-box">Utilidad Neta / Ventas</div>
+                    <div class="definition-text">
+                        Mide la eficiencia de la empresa en convertir ventas en ganancias. Indica qué porcentaje de cada venta se convierte en utilidad neta.
+                    </div>
+                </div>
+                
+                <div class="definition-box">
+                    <div class="definition-title">2. Rotación del Activo</div>
+                    <div class="formula-box">Ventas / Activo Total</div>
+                    <div class="definition-text">
+                        Evalúa la eficiencia en el uso de los activos para generar ventas. Una rotación más alta indica mejor utilización de los recursos.
+                    </div>
+                </div>
+                
+                <div class="definition-box">
+                    <div class="definition-title">3. Multiplicador de Apalancamiento</div>
+                    <div class="formula-box">Activo Total / Patrimonio Total</div>
+                    <div class="definition-text">
+                        Indica el grado en que la empresa utiliza deuda para financiar sus activos. Un apalancamiento más alto puede aumentar el ROE pero también incrementa el riesgo.
+                    </div>
+                </div>
+                
+                <h5 class="mt-4 mb-3">Fórmula General</h5>
+                <div class="formula-box" style="font-size: 1.1rem;">
+                    ROE = (Utilidad Neta / Ventas) × (Ventas / Activo Total) × (Activo Total / Patrimonio)
+                </div>
+                
+                <h5 class="mt-4 mb-3">Ventajas del Sistema Dupont</h5>
+                
+                <div class="advantage-item">
+                    <div class="advantage-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="advantage-content">
+                        <h5>Análisis Multidimensional</h5>
+                        <p>Permite dividir el rendimiento sobre el capital en diferentes componentes para análisis detallado desde diversas dimensiones.</p>
+                    </div>
+                </div>
+                
+                <div class="advantage-item">
+                    <div class="advantage-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="advantage-content">
+                        <h5>Identificación de Problemas</h5>
+                        <p>Facilita encontrar dónde la empresa tiene problemas comparando con la media o con otras empresas del sector.</p>
+                    </div>
+                </div>
+                
+                <div class="advantage-item">
+                    <div class="advantage-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="advantage-content">
+                        <h5>Herramienta de Gestión</h5>
+                        <p>Utiliza las herramientas tradicionales de gestión del desempeño tanto económico como operativo.</p>
+                    </div>
+                </div>
+                
+                <div class="advantage-item">
+                    <div class="advantage-icon">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <div class="advantage-content">
+                        <h5>Integración Financiera</h5>
+                        <p>Combina el Estado de Resultados y el Balance de la empresa en dos medidas de rentabilidad: ROA y ROE.</p>
+                    </div>
+                </div>
+                
+                <h5 class="mt-4 mb-3">Interpretación de Resultados</h5>
+                
+                <div class="definition-box">
+                    <div class="definition-title">
+                        <i class="fas fa-arrow-up"></i> Resultado POSITIVO
+                    </div>
+                    <div class="definition-text">
+                        Cuando el ROE es superior al ROA. Esto indica que parte del activo se ha financiado con deuda y, de esta forma, ha crecido la rentabilidad financiera.
+                    </div>
+                </div>
+                
+                <div class="definition-box">
+                    <div class="definition-title">
+                        <i class="fas fa-equals"></i> Resultado NULO
+                    </div>
+                    <div class="definition-text">
+                        Cuando las dos ratios coinciden. Es el estado ideal, ya que no existe deuda en la empresa; todos los activos se financian con fondos propios.
+                    </div>
+                </div>
+                
+                <div class="definition-box">
+                    <div class="definition-title">
+                        <i class="fas fa-arrow-down"></i> Resultado NEGATIVO
+                    </div>
+                    <div class="definition-text">
+                        Cuando el ROE es inferior al ROA. Esto indica que el coste medio de la deuda es superior a la rentabilidad económica.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1249,371 +942,64 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // NUEVO: Sistema de loading mejorado
-        function showLoading(message = 'Procesando...', subtext = 'Por favor espera') {
-            const loadingOverlay = document.getElementById('globalLoading');
-            const loadingMessage = document.getElementById('loadingMessage');
-            const loadingSubtext = document.getElementById('loadingSubtext');
-            const progressFill = document.getElementById('progressFill');
-            
-            loadingMessage.textContent = message;
-            loadingSubtext.textContent = subtext;
-            progressFill.style.width = '0%';
-            
-            loadingOverlay.classList.add('active');
-            
-            // Animar progreso
-            let progress = 0;
-            const progressInterval = setInterval(() => {
-                progress += Math.random() * 10;
-                if (progress > 90) progress = 90;
-                progressFill.style.width = progress + '%';
-            }, 300);
-            
-            return {
-                hide: function() {
-                    clearInterval(progressInterval);
-                    progressFill.style.width = '100%';
-                    setTimeout(() => {
-                        loadingOverlay.classList.remove('active');
-                    }, 500);
-                },
-                updateProgress: function(value) {
-                    progressFill.style.width = value + '%';
-                },
-                updateMessage: function(newMessage) {
-                    loadingMessage.textContent = newMessage;
-                }
-            };
-        }
-        
-        // NUEVO: Función para botones con loading
-        function setButtonLoading(button, isLoading) {
-            if (isLoading) {
-                button.classList.add('btn-loading', 'loading');
-                button.disabled = true;
-            } else {
-                button.classList.remove('btn-loading', 'loading');
-                button.disabled = false;
-            }
-        }
-        
-        // Inicializar tooltips de Bootstrap
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-        
-        // Elementos del DOM
         const utilidadNetaInput = document.getElementById('utilidadNeta');
         const ventasInput = document.getElementById('ventas');
         const activoTotalInput = document.getElementById('activoTotal');
         const patrimonioInput = document.getElementById('patrimonio');
         const calcularBtn = document.getElementById('calcularBtn');
         const limpiarBtn = document.getElementById('limpiarBtn');
-        const exportarBtn = document.getElementById('exportarBtn');
-        const guardarBtn = document.getElementById('guardarBtn');
         
-        // Elementos de resultados
         const margenResultado = document.getElementById('margenResultado');
         const rotacionResultado = document.getElementById('rotacionResultado');
         const apalancamientoResultado = document.getElementById('apalancamientoResultado');
         const resultadoDupont = document.getElementById('resultadoDupont');
         const interpretationText = document.getElementById('interpretationText');
         
-        // Función para validar campos
-        function validarCampos() {
-            let isValid = true;
-            const inputs = [
-                { element: utilidadNetaInput, errorId: 'utilidadNetaError' },
-                { element: ventasInput, errorId: 'ventasError' },
-                { element: activoTotalInput, errorId: 'activoTotalError' },
-                { element: patrimonioInput, errorId: 'patrimonioError' }
-            ];
+        const globalLoading = document.getElementById('globalLoading');
+        const progressFill = document.getElementById('progressFill');
+        
+        function showLoading() {
+            globalLoading.classList.add('active');
+            progressFill.style.width = '0%';
             
-            inputs.forEach(input => {
-                const value = parseFloat(input.element.value) || 0;
-                const errorElement = document.getElementById(input.errorId);
-                
-                if (value <= 0) {
-                    input.element.classList.add('input-error');
-                    errorElement.textContent = 'Este valor debe ser mayor a cero';
-                    errorElement.style.display = 'block';
-                    isValid = false;
-                } else {
-                    input.element.classList.remove('input-error');
-                    errorElement.style.display = 'none';
-                }
-            });
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressFill.style.width = progress + '%';
+            }, 200);
             
-            return isValid;
+            return progressInterval;
         }
         
-        // Función para calcular el Sistema Dupont - CON LOADING MEJORADO
-        function calcularDupont() {
-            if (!validarCampos()) {
-                showAlert('Por favor, corrige los errores en los campos', 'error');
-                return;
-            }
-            
-            const loading = showLoading('Calculando Sistema Dupont...', 'Analizando rentabilidad financiera');
-            setButtonLoading(calcularBtn, true);
-            
+        function hideLoading(progressInterval) {
+            clearInterval(progressInterval);
+            progressFill.style.width = '100%';
             setTimeout(() => {
-                // Obtener valores de los inputs
-                const utilidadNeta = parseFloat(utilidadNetaInput.value) || 0;
-                const ventas = parseFloat(ventasInput.value) || 0;
-                const activoTotal = parseFloat(activoTotalInput.value) || 0;
-                const patrimonio = parseFloat(patrimonioInput.value) || 0;
-                
-                // Validar que no haya divisiones por cero
-                if (ventas === 0 || activoTotal === 0 || patrimonio === 0) {
-                    showAlert('Error: Los valores de Ventas, Activo Total y Patrimonio deben ser mayores a cero', 'error');
-                    loading.hide();
-                    setButtonLoading(calcularBtn, false);
-                    return;
-                }
-                
-                // Calcular ratios
-                const margenNeto = utilidadNeta / ventas;
-                const rotacionActivos = ventas / activoTotal;
-                const apalancamiento = activoTotal / patrimonio;
-                
-                // Calcular resultado Dupont
-                const resultado = margenNeto * rotacionActivos * apalancamiento;
-                
-                // Actualizar resultados en la interfaz
-                margenResultado.textContent = margenNeto.toFixed(2);
-                rotacionResultado.textContent = rotacionActivos.toFixed(2);
-                apalancamientoResultado.textContent = apalancamiento.toFixed(2);
-                resultadoDupont.textContent = resultado.toFixed(2);
-                
-                // Actualizar interpretación automática
-                actualizarInterpretacion(resultado);
-                
-                loading.hide();
-                setButtonLoading(calcularBtn, false);
-                showAlert('Cálculo del Sistema Dupont completado', 'success');
-            }, 1500);
+                globalLoading.classList.remove('active');
+            }, 500);
         }
         
-        // Función para actualizar la interpretación del resultado automáticamente
-        function actualizarInterpretacion(roe) {
-            let interpretation = '';
-            let badgeClass = '';
-            let nivelRentabilidad = '';
-            
-            if (roe >= 3.0) {
-                interpretation = `Un resultado de <strong>${roe.toFixed(2)}</strong> indica que por cada unidad monetaria de patrimonio, la empresa genera <strong>${roe.toFixed(2)} unidades</strong> de utilidad neta. Esto representa una <strong>rentabilidad excepcionalmente alta</strong> sobre el patrimonio.`;
-                badgeClass = 'bg-success';
-                nivelRentabilidad = 'Excelente rentabilidad';
-            } else if (roe >= 1.5) {
-                interpretation = `Un resultado de <strong>${roe.toFixed(2)}</strong> indica que por cada unidad monetaria de patrimonio, la empresa genera <strong>${roe.toFixed(2)} unidades</strong> de utilidad neta. Esto representa una <strong>rentabilidad muy alta</strong> sobre el patrimonio.`;
-                badgeClass = 'bg-success';
-                nivelRentabilidad = 'Alta rentabilidad';
-            } else if (roe >= 0.8) {
-                interpretation = `Un resultado de <strong>${roe.toFixed(2)}</strong> indica que por cada unidad monetaria de patrimonio, la empresa genera <strong>${roe.toFixed(2)} unidades</strong> de utilidad neta. Esto representa una <strong>rentabilidad moderada</strong> sobre el patrimonio.`;
-                badgeClass = 'bg-warning';
-                nivelRentabilidad = 'Rentabilidad moderada';
-            } else if (roe > 0) {
-                interpretation = `Un resultado de <strong>${roe.toFixed(2)}</strong> indica que por cada unidad monetaria de patrimonio, la empresa genera <strong>${roe.toFixed(2)} unidades</strong> de utilidad neta. La <strong>rentabilidad es baja</strong> y se recomienda revisar la eficiencia operativa y financiera.`;
-                badgeClass = 'bg-danger';
-                nivelRentabilidad = 'Baja rentabilidad';
-            } else if (roe === 0) {
-                interpretation = `Un resultado de <strong>${roe.toFixed(2)}</strong> indica que la empresa no genera utilidad neta sobre su patrimonio. Se requiere una <strong>revisión urgente</strong> del modelo de negocio.`;
-                badgeClass = 'bg-dark';
-                nivelRentabilidad = 'Sin rentabilidad';
-            } else {
-                interpretation = `Un resultado de <strong>${roe.toFixed(2)}</strong> indica que la empresa está generando <strong>pérdidas</strong> sobre su patrimonio. Se requiere una <strong>reestructuración inmediata</strong> del negocio.`;
-                badgeClass = 'bg-dark';
-                nivelRentabilidad = 'Pérdidas';
-            }
-            
-            interpretationText.innerHTML = `
-                <span class="badge roe-badge ${badgeClass}">${nivelRentabilidad} - ROE: ${(roe * 100).toFixed(2)}%</span>
-                <p class="mb-0">${interpretation}</p>
-            `;
-        }
-        
-        // Función para limpiar campos - CON LOADING MEJORADO
-        function limpiarCampos() {
-            const loading = showLoading('Limpiando campos...', 'Restableciendo formulario');
-            setButtonLoading(limpiarBtn, true);
-            
-            setTimeout(() => {
-                utilidadNetaInput.value = '';
-                ventasInput.value = '';
-                activoTotalInput.value = '';
-                patrimonioInput.value = '';
-                
-                // Limpiar errores de validación
-                document.querySelectorAll('.validation-message').forEach(el => {
-                    el.style.display = 'none';
-                });
-                document.querySelectorAll('.form-control-modern').forEach(el => {
-                    el.classList.remove('input-error');
-                });
-                
-                margenResultado.textContent = '0.00';
-                rotacionResultado.textContent = '0.00';
-                apalancamientoResultado.textContent = '0.00';
-                resultadoDupont.textContent = '0.00';
-                
-                // Restablecer interpretación
-                interpretationText.innerHTML = `
-                    <span class="badge roe-badge bg-secondary">Ingresa datos para calcular</span>
-                    <p class="mb-0">Introduce los datos financieros para obtener el análisis Dupont.</p>
-                `;
-                
-                loading.hide();
-                setButtonLoading(limpiarBtn, false);
-                showAlert('Campos limpiados correctamente', 'info');
-            }, 800);
-        }
-        
-        // Función para exportar resultados - CON LOADING MEJORADO
-        function exportarResultados() {
-            const utilidadNeta = parseFloat(utilidadNetaInput.value) || 0;
-            const ventas = parseFloat(ventasInput.value) || 0;
-            const activoTotal = parseFloat(activoTotalInput.value) || 0;
-            const patrimonio = parseFloat(patrimonioInput.value) || 0;
-            
-            if (ventas === 0 || activoTotal === 0 || patrimonio === 0) {
-                showAlert('No hay datos válidos para exportar', 'error');
-                return;
-            }
-            
-            const loading = showLoading('Exportando resultados...', 'Generando archivo de análisis');
-            setButtonLoading(exportarBtn, true);
-            
-            setTimeout(() => {
-                // Crear contenido para exportar
-                const contenido = `
-ANÁLISIS DUPONT - DICKSON STATISTICS
-=====================================
-
-Fecha de análisis: ${new Date().toLocaleDateString()}
-
-DATOS DE ENTRADA:
------------------
-Utilidad Neta: $${utilidadNeta.toLocaleString()}
-Ventas Netas: $${ventas.toLocaleString()}
-Activo Total: $${activoTotal.toLocaleString()}
-Patrimonio: $${patrimonio.toLocaleString()}
-
-RESULTADOS:
------------
-Margen Neto de Utilidad: ${margenResultado.textContent}
-Rotación de Activos Totales: ${rotacionResultado.textContent}
-Apalancamiento Financiero: ${apalancamientoResultado.textContent}
-Sistema Dupont (ROE): ${resultadoDupont.textContent}
-
-INTERPRETACIÓN:
----------------
-${interpretationText.textContent}
-
--------------------------------------
-Generado por DicksonStatistics
-                `;
-                
-                // Crear y descargar archivo
-                const blob = new Blob([contenido], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `analisis_dupont_${new Date().toISOString().slice(0, 10)}.txt`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                loading.hide();
-                setButtonLoading(exportarBtn, false);
-                showAlert('Resultados exportados correctamente', 'success');
-            }, 1200);
-        }
-        
-        // Función para guardar análisis - CON LOADING MEJORADO
-        function guardarAnalisis() {
-            const utilidadNeta = parseFloat(utilidadNetaInput.value) || 0;
-            const ventas = parseFloat(ventasInput.value) || 0;
-            const activoTotal = parseFloat(activoTotalInput.value) || 0;
-            const patrimonio = parseFloat(patrimonioInput.value) || 0;
-            
-            if (ventas === 0 || activoTotal === 0 || patrimonio === 0) {
-                showAlert('No hay datos válidos para guardar', 'error');
-                return;
-            }
-            
-            const loading = showLoading('Guardando análisis...', 'Almacenando cálculo Dupont');
-            setButtonLoading(guardarBtn, true);
-            
-            setTimeout(() => {
-                // En una aplicación real, aquí se enviarían los datos al servidor
-                // Por ahora, simulamos el guardado en localStorage
-                const analisis = {
-                    fecha: new Date().toISOString(),
-                    utilidadNeta,
-                    ventas,
-                    activoTotal,
-                    patrimonio,
-                    margenNeto: parseFloat(margenResultado.textContent),
-                    rotacionActivos: parseFloat(rotacionResultado.textContent),
-                    apalancamiento: parseFloat(apalancamientoResultado.textContent),
-                    roe: parseFloat(resultadoDupont.textContent)
-                };
-                
-                // Obtener análisis guardados previos
-                let analisisGuardados = JSON.parse(localStorage.getItem('analisisDupont')) || [];
-                analisisGuardados.push(analisis);
-                
-                // Guardar en localStorage (máximo 10 análisis)
-                if (analisisGuardados.length > 10) {
-                    analisisGuardados = analisisGuardados.slice(-10);
-                }
-                
-                localStorage.setItem('analisisDupont', JSON.stringify(analisisGuardados));
-                
-                loading.hide();
-                setButtonLoading(guardarBtn, false);
-                showAlert('Análisis guardado correctamente', 'success');
-            }, 1000);
-        }
-        
-        // Función para mostrar alertas
         function showAlert(message, type) {
-            // Crear elemento de alerta
             const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show`;
-            alertDiv.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                z-index: 9999;
-                min-width: 300px;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-                border-radius: 12px;
-                border: none;
-                background: ${type === 'success' ? 'linear-gradient(135deg, var(--success-color), var(--neon-cyan))' : 
-                          type === 'error' ? 'linear-gradient(135deg, var(--danger-color), #f87171)' : 
-                          type === 'warning' ? 'linear-gradient(135deg, var(--warning-color), #f59e0b)' :
-                          'linear-gradient(135deg, var(--neon-blue), var(--neon-purple))'};
-                color: white;
-            `;
+            const bgColor = type === 'success' ? 'linear-gradient(135deg, var(--success-color), var(--neon-cyan))' : 
+                           type === 'error' ? 'linear-gradient(135deg, var(--danger-color), #f87171)' : 
+                           'linear-gradient(135deg, var(--neon-blue), var(--neon-purple))';
+            
+            alertDiv.className = 'alert-custom';
+            alertDiv.style.background = bgColor;
             alertDiv.innerHTML = `
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : type === 'warning' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                <div class="d-flex align-items-center p-3">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2" style="font-size: 1.5rem;"></i>
                     <div>
-                        <strong class="d-block">${type === 'success' ? 'Éxito' : type === 'error' ? 'Error' : type === 'warning' ? 'Advertencia' : 'Información'}</strong>
+                        <strong class="d-block">${type === 'success' ? 'Éxito' : type === 'error' ? 'Error' : 'Información'}</strong>
                         ${message}
                     </div>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
             
             document.body.appendChild(alertDiv);
             
-            // Auto-remover después de 4 segundos
             setTimeout(() => {
                 if (alertDiv.parentNode) {
                     alertDiv.remove();
@@ -1621,37 +1007,92 @@ Generado por DicksonStatistics
             }, 4000);
         }
         
-        // Event Listeners
-        calcularBtn.addEventListener('click', calcularDupont);
-        limpiarBtn.addEventListener('click', limpiarCampos);
-        exportarBtn.addEventListener('click', exportarResultados);
-        guardarBtn.addEventListener('click', guardarAnalisis);
-        
-        // Validación en tiempo real
-        [utilidadNetaInput, ventasInput, activoTotalInput, patrimonioInput].forEach(input => {
-            input.addEventListener('input', function() {
-                const value = parseFloat(this.value) || 0;
-                if (value > 0) {
-                    this.classList.remove('input-error');
-                    const errorId = this.id + 'Error';
-                    const errorElement = document.getElementById(errorId);
-                    if (errorElement) {
-                        errorElement.style.display = 'none';
-                    }
+        function calcularDupont() {
+            const utilidadNeta = parseFloat(utilidadNetaInput.value) || 0;
+            const ventas = parseFloat(ventasInput.value) || 0;
+            const activoTotal = parseFloat(activoTotalInput.value) || 0;
+            const patrimonio = parseFloat(patrimonioInput.value) || 0;
+            
+            if (ventas === 0 || activoTotal === 0 || patrimonio === 0) {
+                showAlert('Por favor ingresa valores válidos en todos los campos', 'error');
+                return;
+            }
+            
+            calcularBtn.disabled = true;
+            limpiarBtn.disabled = true;
+            
+            const progressInterval = showLoading();
+            
+            setTimeout(() => {
+                const margenNeto = utilidadNeta / ventas;
+                const rotacionActivos = ventas / activoTotal;
+                const apalancamiento = activoTotal / patrimonio;
+                const resultado = margenNeto * rotacionActivos * apalancamiento;
+                
+                margenResultado.textContent = margenNeto.toFixed(2);
+                rotacionResultado.textContent = rotacionActivos.toFixed(2);
+                apalancamientoResultado.textContent = apalancamiento.toFixed(2);
+                resultadoDupont.textContent = resultado.toFixed(2);
+                
+                let interpretation = '';
+                let badge = '';
+                
+                if (resultado >= 3.0) {
+                    interpretation = `Un resultado de <strong>${resultado.toFixed(2)}</strong> indica que por cada unidad monetaria de patrimonio, la empresa genera <strong>${resultado.toFixed(2)} unidades</strong> de utilidad neta. Esto representa una <strong>rentabilidad excepcionalmente alta</strong> sobre el patrimonio.`;
+                    badge = 'bg-success';
+                } else if (resultado >= 1.5) {
+                    interpretation = `Un resultado de <strong>${resultado.toFixed(2)}</strong> indica que por cada unidad monetaria de patrimonio, la empresa genera <strong>${resultado.toFixed(2)} unidades</strong> de utilidad neta. Esto representa una <strong>rentabilidad muy alta</strong> sobre el patrimonio.`;
+                    badge = 'bg-success';
+                } else if (resultado >= 0.8) {
+                    interpretation = `Un resultado de <strong>${resultado.toFixed(2)}</strong> indica que por cada unidad monetaria de patrimonio, la empresa genera <strong>${resultado.toFixed(2)} unidades</strong> de utilidad neta. Esto representa una <strong>rentabilidad moderada</strong> sobre el patrimonio.`;
+                    badge = 'bg-warning';
+                } else if (resultado > 0) {
+                    interpretation = `Un resultado de <strong>${resultado.toFixed(2)}</strong> indica que por cada unidad monetaria de patrimonio, la empresa genera <strong>${resultado.toFixed(2)} unidades</strong> de utilidad neta. La <strong>rentabilidad es baja</strong> y se recomienda revisar la eficiencia operativa.`;
+                    badge = 'bg-danger';
+                } else {
+                    interpretation = `Un resultado de <strong>${resultado.toFixed(2)}</strong> indica que la empresa está generando <strong>pérdidas</strong> sobre su patrimonio. Se requiere una <strong>reestructuración inmediata</strong>.`;
+                    badge = 'bg-dark';
                 }
-            });
-        });
+                
+                interpretationText.innerHTML = `
+                    <span class="info-badge ${badge}">ROE: ${(resultado * 100).toFixed(2)}%</span>
+                    <p class="mb-0">${interpretation}</p>
+                `;
+                
+                hideLoading(progressInterval);
+                calcularBtn.disabled = false;
+                limpiarBtn.disabled = false;
+                showAlert('Cálculo del Sistema Dupont completado exitosamente', 'success');
+            }, 2000);
+        }
         
-        // Permitir calcular con Enter
+        function limpiar() {
+            utilidadNetaInput.value = '';
+            ventasInput.value = '';
+            activoTotalInput.value = '';
+            patrimonioInput.value = '';
+            
+            margenResultado.textContent = '0.00';
+            rotacionResultado.textContent = '0.00';
+            apalancamientoResultado.textContent = '0.00';
+            resultadoDupont.textContent = '0.00';
+            interpretationText.innerHTML = `
+                <span class="info-badge">Ingresa datos</span>
+                <p class="mb-0">Introduce los datos financieros para obtener el análisis.</p>
+            `;
+            
+            showAlert('Campos limpiados correctamente', 'info');
+        }
+        
+        calcularBtn.addEventListener('click', calcularDupont);
+        limpiarBtn.addEventListener('click', limpiar);
+        
         [utilidadNetaInput, ventasInput, activoTotalInput, patrimonioInput].forEach(input => {
             input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    calcularDupont();
-                }
+                if (e.key === 'Enter') calcularDupont();
             });
         });
         
-        // Calcular automáticamente al cargar la página con valores por defecto
         calcularDupont();
     });
 </script>

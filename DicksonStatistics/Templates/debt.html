@@ -1,0 +1,876 @@
+{% extends 'base.html' %}
+{% block title %}Razones de Endeudamiento - RazoNix{% endblock %}
+{% block extra_css %}
+<style>
+  :root {
+    --primary: #00d9ff;
+    --secondary: #0099cc;
+    --accent: #ff006e;
+    --dark-bg: #0a0e27;
+    --card-bg: #1a1f3a;
+    --border-color: #2d3561;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --success: #00ff88;
+    --warning: #ffaa00;
+    --danger: #ff3366;
+  }
+
+  .section-header {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 0, 110, 0.1) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+  }
+
+  .card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 12px 48px rgba(0, 217, 255, 0.2);
+    transform: translateY(-5px);
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .card-body {
+    padding: 25px;
+  }
+
+  .metric-card {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+
+  .metric-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 8px 32px rgba(0, 217, 255, 0.15);
+  }
+
+  .metric-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .metric-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .razon-tabla {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .razon-tabla td {
+    padding: 15px;
+    border: none;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .razon-tabla th {
+    background: rgba(0, 217, 255, 0.1);
+    color: var(--primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    padding: 15px;
+    border: none;
+    border-bottom: 2px solid var(--primary);
+  }
+
+  .razon-nombre {
+    font-weight: 600;
+    color: var(--primary);
+    min-width: 200px;
+  }
+
+  .razon-valor {
+    text-align: right;
+    font-weight: 600;
+    min-width: 120px;
+  }
+
+  .interpretacion-box {
+    background: rgba(0, 217, 255, 0.05);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 25px;
+    color: var(--text-primary);
+    line-height: 1.8;
+  }
+
+  .interpretacion-titulo {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .interpretacion-contenido {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .badge-periodo {
+    background: rgba(0, 217, 255, 0.2);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 15px;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 300px;
+    margin-bottom: 30px;
+  }
+
+  .nav-tabs .nav-link {
+    color: var(--text-secondary);
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+  }
+
+  .nav-tabs .nav-link:hover {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+
+  .nav-tabs .nav-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: transparent;
+  }
+
+  .input-futurista {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+  }
+
+  .input-futurista:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    color: var(--text-primary);
+  }
+
+  .form-label {
+    color: #ffffff !important;
+    font-weight: 600;
+  }
+
+  .btn-primary-glow {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border: none;
+    color: var(--dark-bg);
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+  }
+
+  .btn-primary-glow:hover {
+    box-shadow: 0 0 40px rgba(0, 217, 255, 0.6);
+    transform: translateY(-2px);
+    color: var(--dark-bg);
+  }
+
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+  }
+
+  .resumen-card {
+    background: rgba(0, 217, 255, 0.08);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+  }
+
+  .indicador-positivo {
+    color: var(--success);
+  }
+
+  .indicador-negativo {
+    color: var(--danger);
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 1.5rem;
+    }
+
+    .metric-value {
+      font-size: 1.8rem;
+    }
+
+    .section-header {
+      padding: 25px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4" style="position: relative; z-index: 1;">
+  <section class="section-header">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="section-title"><i class="fas fa-chart-line" style="margin-right: 15px; text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);"></i>Razones Financieras de Endeudamiento</h1>
+        <p class="section-subtitle">Análisis comparativo de estructura de capital y capacidad de pago para 2 períodos</p>
+      </div>
+      <div class="col-lg-4 text-center">
+        <div style="font-size: 4rem; color: var(--primary); text-shadow: 0 0 30px rgba(0, 217, 255, 0.5);">
+          <i class="fas fa-balance-scale"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card mb-5">
+    <div class="card-header">
+      <i class="fas fa-database"></i> Ingreso de Datos Financieros
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <h5 style="color: var(--primary); margin-bottom: 20px;"><span class="badge-periodo">Período 1</span></h5>
+          <div class="mb-3">
+            <label class="form-label">Total Pasivos</label>
+            <input type="number" class="input-futurista form-control" id="p1_pasivos" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Total Activos</label>
+            <input type="number" class="input-futurista form-control" id="p1_activos" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Patrimonio Neto</label>
+            <input type="number" class="input-futurista form-control" id="p1_patrimonio" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Utilidad Operativa</label>
+            <input type="number" class="input-futurista form-control" id="p1_utilidad_op" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Gasto por Intereses</label>
+            <input type="number" class="input-futurista form-control" id="p1_intereses" placeholder="0.00" step="0.01">
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <h5 style="color: var(--primary); margin-bottom: 20px;"><span class="badge-periodo">Período 2</span></h5>
+          <div class="mb-3">
+            <label class="form-label">Total Pasivos</label>
+            <input type="number" class="input-futurista form-control" id="p2_pasivos" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Total Activos</label>
+            <input type="number" class="input-futurista form-control" id="p2_activos" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Patrimonio Neto</label>
+            <input type="number" class="input-futurista form-control" id="p2_patrimonio" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Utilidad Operativa</label>
+            <input type="number" class="input-futurista form-control" id="p2_utilidad_op" placeholder="0.00" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Gasto por Intereses</label>
+            <input type="number" class="input-futurista form-control" id="p2_intereses" placeholder="0.00" step="0.01">
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-12 text-center">
+          <button class="btn btn-primary-glow" onclick="calcularRazones()">
+            <i class="fas fa-calculator"></i> Calcular Razones
+          </button>
+          <button class="btn btn-secondary ms-2" onclick="limpiarDatos()">
+            <i class="fas fa-redo"></i> Limpiar
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="analisis" class="mb-5">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-endeudamiento" data-bs-toggle="tab" data-bs-target="#contenido-endeudamiento" type="button">
+          <i class="fas fa-percent"></i> Razón de Endeudamiento
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-pasivo-capital" data-bs-toggle="tab" data-bs-target="#contenido-pasivo-capital" type="button">
+          <i class="fas fa-exchange-alt"></i> Pasivo/Capital
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-cobertura" data-bs-toggle="tab" data-bs-target="#contenido-cobertura" type="button">
+          <i class="fas fa-shield-alt"></i> Cobertura de Intereses
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <!-- TAB 1: Razón de Endeudamiento -->
+      <div class="tab-pane fade show active" id="contenido-endeudamiento" role="tabpanel">
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-percent"></i> Razón de Endeudamiento (Total Pasivos / Total Activos)
+          </div>
+          <div class="card-body">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 1</div>
+                  <div class="metric-value" id="re_p1">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">Promedio Industrial: 0.3 - 0.5</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 2</div>
+                  <div class="metric-value" id="re_p2">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">Promedio Industrial: 0.3 - 0.5</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="chartEndeudamiento"></canvas>
+            </div>
+
+            <table class="razon-tabla">
+              <thead>
+                <tr>
+                  <th>Concepto</th>
+                  <th>Período 1</th>
+                  <th>Período 2</th>
+                  <th>Variación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="razon-nombre">Razón de Endeudamiento</td>
+                  <td class="razon-valor" id="re_p1_tabla">0.00</td>
+                  <td class="razon-valor" id="re_p2_tabla">0.00</td>
+                  <td class="razon-valor" id="re_var">0.00%</td>
+                </tr>
+                <tr>
+                  <td class="razon-nombre">Porcentaje de Endeudamiento</td>
+                  <td class="razon-valor" id="re_p1_pct">0.00%</td>
+                  <td class="razon-valor" id="re_p2_pct">0.00%</td>
+                  <td class="razon-valor" id="re_var_pct">0.00%</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="interpretacion-box">
+              <div class="interpretacion-titulo">
+                <i class="fas fa-lightbulb"></i> Interpretación Financiera
+              </div>
+              <div class="interpretacion-contenido" id="interp_endeudamiento">
+                Ingrese los datos para obtener el análisis.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: Pasivo/Capital -->
+      <div class="tab-pane fade" id="contenido-pasivo-capital" role="tabpanel">
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-exchange-alt"></i> Razón Pasivo/Capital (Total Pasivos / Patrimonio Neto)
+          </div>
+          <div class="card-body">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 1</div>
+                  <div class="metric-value" id="pc_p1">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">Promedio Industrial: 0.5 - 1.0</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 2</div>
+                  <div class="metric-value" id="pc_p2">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">Promedio Industrial: 0.5 - 1.0</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="chartPasivoCapital"></canvas>
+            </div>
+
+            <table class="razon-tabla">
+              <thead>
+                <tr>
+                  <th>Concepto</th>
+                  <th>Período 1</th>
+                  <th>Período 2</th>
+                  <th>Variación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="razon-nombre">Razón Pasivo/Capital</td>
+                  <td class="razon-valor" id="pc_p1_tabla">0.00</td>
+                  <td class="razon-valor" id="pc_p2_tabla">0.00</td>
+                  <td class="razon-valor" id="pc_var">0.00%</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="interpretacion-box">
+              <div class="interpretacion-titulo">
+                <i class="fas fa-lightbulb"></i> Interpretación Financiera
+              </div>
+              <div class="interpretacion-contenido" id="interp_pasivo_capital">
+                Ingrese los datos para obtener el análisis.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: Cobertura de Intereses -->
+      <div class="tab-pane fade" id="contenido-cobertura" role="tabpanel">
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-shield-alt"></i> Rotación de Intereses a Utilidades (Utilidad Operativa / Gastos por Intereses)
+          </div>
+          <div class="card-body">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 1</div>
+                  <div class="metric-value" id="ci_p1">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">Promedio Industrial: 3 - 5</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="metric-card">
+                  <div class="metric-label">Período 2</div>
+                  <div class="metric-value" id="ci_p2">0.00</div>
+                  <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">Promedio Industrial: 3 - 5</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="chartCobertura"></canvas>
+            </div>
+
+            <table class="razon-tabla">
+              <thead>
+                <tr>
+                  <th>Concepto</th>
+                  <th>Período 1</th>
+                  <th>Período 2</th>
+                  <th>Variación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="razon-nombre">Cobertura de Intereses</td>
+                  <td class="razon-valor" id="ci_p1_tabla">0.00</td>
+                  <td class="razon-valor" id="ci_p2_tabla">0.00</td>
+                  <td class="razon-valor" id="ci_var">0.00%</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="interpretacion-box">
+              <div class="interpretacion-titulo">
+                <i class="fas fa-lightbulb"></i> Interpretación Financiera
+              </div>
+              <div class="interpretacion-contenido" id="interp_cobertura">
+                Ingrese los datos para obtener el análisis.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header">
+      <i class="fas fa-chart-pie"></i> Resumen Ejecutivo
+    </div>
+    <div class="card-body">
+      <div id="resumen-ejecutivo">
+        <div class="text-center" style="color: var(--text-secondary); padding: 40px;">
+          <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 15px;"></i>
+          <p>Ingrese los datos para obtener el resumen ejecutivo</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  let charts = {};
+
+  function calcularRazones() {
+    const p1 = {
+      pasivos: parseFloat(document.getElementById('p1_pasivos').value) || 0,
+      activos: parseFloat(document.getElementById('p1_activos').value) || 0,
+      patrimonio: parseFloat(document.getElementById('p1_patrimonio').value) || 0,
+      utilidad_op: parseFloat(document.getElementById('p1_utilidad_op').value) || 0,
+      intereses: parseFloat(document.getElementById('p1_intereses').value) || 0
+    };
+
+    const p2 = {
+      pasivos: parseFloat(document.getElementById('p2_pasivos').value) || 0,
+      activos: parseFloat(document.getElementById('p2_activos').value) || 0,
+      patrimonio: parseFloat(document.getElementById('p2_patrimonio').value) || 0,
+      utilidad_op: parseFloat(document.getElementById('p2_utilidad_op').value) || 0,
+      intereses: parseFloat(document.getElementById('p2_intereses').value) || 0
+    };
+
+    const razones = calcularTodasLasRazones(p1, p2);
+    actualizarUI(razones, p1, p2);
+    crearGraficos(razones);
+    generarInterpretaciones(razones);
+    generarResumen(razones);
+  }
+
+  function calcularTodasLasRazones(p1, p2) {
+    return {
+      re_p1: p1.activos > 0 ? p1.pasivos / p1.activos : 0,
+      re_p2: p2.activos > 0 ? p2.pasivos / p2.activos : 0,
+      pc_p1: p1.patrimonio > 0 ? p1.pasivos / p1.patrimonio : 0,
+      pc_p2: p2.patrimonio > 0 ? p2.pasivos / p2.patrimonio : 0,
+      ci_p1: p1.intereses > 0 ? p1.utilidad_op / p1.intereses : 0,
+      ci_p2: p2.intereses > 0 ? p2.utilidad_op / p2.intereses : 0
+    };
+  }
+
+  function actualizarUI(razones, p1, p2) {
+    document.getElementById('re_p1').textContent = razones.re_p1.toFixed(2);
+    document.getElementById('re_p2').textContent = razones.re_p2.toFixed(2);
+    document.getElementById('re_p1_tabla').textContent = razones.re_p1.toFixed(2);
+    document.getElementById('re_p2_tabla').textContent = razones.re_p2.toFixed(2);
+    document.getElementById('re_p1_pct').textContent = (razones.re_p1 * 100).toFixed(2) + '%';
+    document.getElementById('re_p2_pct').textContent = (razones.re_p2 * 100).toFixed(2) + '%';
+    
+    const re_var = razones.re_p1 !== 0 ? ((razones.re_p2 - razones.re_p1) / razones.re_p1 * 100) : 0;
+    document.getElementById('re_var').textContent = re_var.toFixed(2) + '%';
+    document.getElementById('re_var_pct').textContent = (razones.re_p2 * 100 - razones.re_p1 * 100).toFixed(2) + '%';
+
+    document.getElementById('pc_p1').textContent = razones.pc_p1.toFixed(2);
+    document.getElementById('pc_p2').textContent = razones.pc_p2.toFixed(2);
+    document.getElementById('pc_p1_tabla').textContent = razones.pc_p1.toFixed(2);
+    document.getElementById('pc_p2_tabla').textContent = razones.pc_p2.toFixed(2);
+    
+    const pc_var = razones.pc_p1 !== 0 ? ((razones.pc_p2 - razones.pc_p1) / razones.pc_p1 * 100) : 0;
+    document.getElementById('pc_var').textContent = pc_var.toFixed(2) + '%';
+
+    document.getElementById('ci_p1').textContent = razones.ci_p1.toFixed(2);
+    document.getElementById('ci_p2').textContent = razones.ci_p2.toFixed(2);
+    document.getElementById('ci_p1_tabla').textContent = razones.ci_p1.toFixed(2);
+    document.getElementById('ci_p2_tabla').textContent = razones.ci_p2.toFixed(2);
+    
+    const ci_var = razones.ci_p1 !== 0 ? ((razones.ci_p2 - razones.ci_p1) / razones.ci_p1 * 100) : 0;
+    document.getElementById('ci_var').textContent = ci_var.toFixed(2) + '%';
+  }
+
+  function crearGraficos(razones) {
+    crearOActualizarGrafico('chartEndeudamiento', {
+      labels: ['Período 1', 'Período 2'],
+      datasets: [{
+        label: 'Razón de Endeudamiento',
+        data: [razones.re_p1, razones.re_p2],
+        borderColor: '#ff006e',
+        backgroundColor: 'rgba(255, 0, 110, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    }, 'chartEndeudamiento');
+
+    crearOActualizarGrafico('chartPasivoCapital', {
+      labels: ['Período 1', 'Período 2'],
+      datasets: [{
+        label: 'Razón Pasivo/Capital',
+        data: [razones.pc_p1, razones.pc_p2],
+        borderColor: '#00d9ff',
+        backgroundColor: 'rgba(0, 217, 255, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    }, 'chartPasivoCapital');
+
+    crearOActualizarGrafico('chartCobertura', {
+      labels: ['Período 1', 'Período 2'],
+      datasets: [{
+        label: 'Cobertura de Intereses',
+        data: [razones.ci_p1, razones.ci_p2],
+        borderColor: '#00ff88',
+        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    }, 'chartCobertura');
+  }
+
+  function crearOActualizarGrafico(canvasId, data, chartId) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    
+    if (charts[chartId]) {
+      charts[chartId].data = data;
+      charts[chartId].update();
+    } else {
+      charts[chartId] = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#e0e0e0',
+                font: { size: 12, weight: 'bold' }
+              }
+            }
+          },
+          scales: {
+            y: {
+              ticks: { color: '#a0a0a0' },
+              grid: { color: 'rgba(45, 53, 97, 0.3)' }
+            },
+            x: {
+              ticks: { color: '#a0a0a0' },
+              grid: { color: 'rgba(45, 53, 97, 0.3)' }
+            }
+          }
+        }
+      });
+    }
+  }
+
+  function generarInterpretaciones(razones) {
+    let interp_endeudamiento = '';
+    if (razones.re_p1 < 0.3) {
+      interp_endeudamiento = `<strong>Período 1:</strong> Razón de ${razones.re_p1.toFixed(2)} (${(razones.re_p1*100).toFixed(2)}%) - <span class="indicador-positivo">Excelente</span>. La empresa tiene un bajo nivel de endeudamiento, lo que indica una estructura de capital conservadora y bajo riesgo financiero.<br><br>`;
+    } else if (razones.re_p1 <= 0.5) {
+      interp_endeudamiento = `<strong>Período 1:</strong> Razón de ${razones.re_p1.toFixed(2)} (${(razones.re_p1*100).toFixed(2)}%) - <span class="indicador-positivo">Óptimo</span>. La empresa mantiene un nivel de endeudamiento dentro del rango industrial recomendado, equilibrando el uso de deuda y capital propio.<br><br>`;
+    } else {
+      interp_endeudamiento = `<strong>Período 1:</strong> Razón de ${razones.re_p1.toFixed(2)} (${(razones.re_p1*100).toFixed(2)}%) - <span class="indicador-negativo">Elevado</span>. La empresa tiene un nivel de endeudamiento superior al promedio industrial, lo que aumenta el riesgo financiero.<br><br>`;
+    }
+
+    if (razones.re_p2 < 0.3) {
+      interp_endeudamiento += `<strong>Período 2:</strong> Razón de ${razones.re_p2.toFixed(2)} (${(razones.re_p2*100).toFixed(2)}%) - <span class="indicador-positivo">Excelente</span>. Mejora significativa en la estructura de capital.`;
+    } else if (razones.re_p2 <= 0.5) {
+      interp_endeudamiento += `<strong>Período 2:</strong> Razón de ${razones.re_p2.toFixed(2)} (${(razones.re_p2*100).toFixed(2)}%) - <span class="indicador-positivo">Óptimo</span>. Se mantiene el equilibrio en la estructura de capital.`;
+    } else {
+      interp_endeudamiento += `<strong>Período 2:</strong> Razón de ${razones.re_p2.toFixed(2)} (${(razones.re_p2*100).toFixed(2)}%) - <span class="indicador-negativo">Elevado</span>. Continúa el alto nivel de endeudamiento.`;
+    }
+
+    document.getElementById('interp_endeudamiento').innerHTML = interp_endeudamiento;
+
+    let interp_pc = '';
+    if (razones.pc_p1 < 0.5) {
+      interp_pc = `<strong>Período 1:</strong> Razón de ${razones.pc_p1.toFixed(2)} - <span class="indicador-positivo">Favorable</span>. Por cada unidad de capital propio, la empresa tiene menos de 0.5 unidades de deuda, indicando una estructura conservadora.<br><br>`;
+    } else if (razones.pc_p1 <= 1.0) {
+      interp_pc = `<strong>Período 1:</strong> Razón de ${razones.pc_p1.toFixed(2)} - <span class="indicador-positivo">Aceptable</span>. La proporción de deuda respecto al capital se encuentra dentro del rango recomendado.<br><br>`;
+    } else {
+      interp_pc = `<strong>Período 1:</strong> Razón de ${razones.pc_p1.toFixed(2)} - <span class="indicador-negativo">Preocupante</span>. La deuda supera el capital propio, aumentando el riesgo financiero.<br><br>`;
+    }
+
+    if (razones.pc_p2 < 0.5) {
+      interp_pc += `<strong>Período 2:</strong> Razón de ${razones.pc_p2.toFixed(2)} - <span class="indicador-positivo">Favorable</span>. Mantiene una estructura de capital conservadora.`;
+    } else if (razones.pc_p2 <= 1.0) {
+      interp_pc += `<strong>Período 2:</strong> Razón de ${razones.pc_p2.toFixed(2)} - <span class="indicador-positivo">Aceptable</span>. Se mantiene el equilibrio adecuado.`;
+    } else {
+      interp_pc += `<strong>Período 2:</strong> Razón de ${razones.pc_p2.toFixed(2)} - <span class="indicador-negativo">Preocupante</span>. Aumenta el riesgo de insolvencia.`;
+    }
+
+    document.getElementById('interp_pasivo_capital').innerHTML = interp_pc;
+
+    let interp_ci = '';
+    if (razones.ci_p1 < 3) {
+      interp_ci = `<strong>Período 1:</strong> Cobertura de ${razones.ci_p1.toFixed(2)}x - <span class="indicador-negativo">Insuficiente</span>. La empresa tiene dificultad para cubrir sus gastos de intereses con su utilidad operativa.<br><br>`;
+    } else if (razones.ci_p1 <= 5) {
+      interp_ci = `<strong>Período 1:</strong> Cobertura de ${razones.ci_p1.toFixed(2)}x - <span class="indicador-positivo">Adecuada</span>. La empresa puede cubrir cómodamente sus obligaciones de intereses.<br><br>`;
+    } else {
+      interp_ci = `<strong>Período 1:</strong> Cobertura de ${razones.ci_p1.toFixed(2)}x - <span class="indicador-positivo">Excelente</span>. La empresa tiene una capacidad muy sólida para pagar sus intereses.<br><br>`;
+    }
+
+    if (razones.ci_p2 < 3) {
+      interp_ci += `<strong>Período 2:</strong> Cobertura de ${razones.ci_p2.toFixed(2)}x - <span class="indicador-negativo">Insuficiente</span>. Empeora la capacidad de pago de intereses.`;
+    } else if (razones.ci_p2 <= 5) {
+      interp_ci += `<strong>Período 2:</strong> Cobertura de ${razones.ci_p2.toFixed(2)}x - <span class="indicador-positivo">Adecuada</span>. Se mantiene la capacidad de pago.`;
+    } else {
+      interp_ci += `<strong>Período 2:</strong> Cobertura de ${razones.ci_p2.toFixed(2)}x - <span class="indicador-positivo">Excelente</span>. Mejora significativa en la capacidad de pago.`;
+    }
+
+    document.getElementById('interp_cobertura').innerHTML = interp_ci;
+  }
+
+  function generarResumen(razones) {
+    let html = '<div class="row">';
+    
+    html += '<div class="col-md-6 mb-3"><div class="resumen-card">';
+    html += '<h6 style="color: var(--primary); margin-bottom: 10px;"><i class="fas fa-percent"></i> Razón de Endeudamiento</h6>';
+    html += `<p>Período 1: <strong>${razones.re_p1.toFixed(2)}</strong> (${(razones.re_p1*100).toFixed(2)}%)</p>`;
+    html += `<p>Período 2: <strong>${razones.re_p2.toFixed(2)}</strong> (${(razones.re_p2*100).toFixed(2)}%)</p>`;
+    const re_cambio = razones.re_p1 !== 0 ? ((razones.re_p2 - razones.re_p1) / razones.re_p1 * 100) : 0;
+    if (re_cambio < 0) {
+      html += `<p><span class="indicador-positivo">Mejora: ${Math.abs(re_cambio).toFixed(2)}%</span></p>`;
+    } else if (re_cambio > 0) {
+      html += `<p><span class="indicador-negativo">Empeora: ${re_cambio.toFixed(2)}%</span></p>`;
+    }
+    html += '</div></div>';
+
+    html += '<div class="col-md-6 mb-3"><div class="resumen-card">';
+    html += '<h6 style="color: var(--primary); margin-bottom: 10px;"><i class="fas fa-exchange-alt"></i> Razón Pasivo/Capital</h6>';
+    html += `<p>Período 1: <strong>${razones.pc_p1.toFixed(2)}</strong></p>`;
+    html += `<p>Período 2: <strong>${razones.pc_p2.toFixed(2)}</strong></p>`;
+    const pc_cambio = razones.pc_p1 !== 0 ? ((razones.pc_p2 - razones.pc_p1) / razones.pc_p1 * 100) : 0;
+    if (pc_cambio < 0) {
+      html += `<p><span class="indicador-positivo">Mejora: ${Math.abs(pc_cambio).toFixed(2)}%</span></p>`;
+    } else if (pc_cambio > 0) {
+      html += `<p><span class="indicador-negativo">Empeora: ${pc_cambio.toFixed(2)}%</span></p>`;
+    }
+    html += '</div></div>';
+
+    html += '<div class="col-md-6 mb-3"><div class="resumen-card">';
+    html += '<h6 style="color: var(--primary); margin-bottom: 10px;"><i class="fas fa-shield-alt"></i> Cobertura de Intereses</h6>';
+    html += `<p>Período 1: <strong>${razones.ci_p1.toFixed(2)}x</strong></p>`;
+    html += `<p>Período 2: <strong>${razones.ci_p2.toFixed(2)}x</strong></p>`;
+    const ci_cambio = razones.ci_p1 !== 0 ? ((razones.ci_p2 - razones.ci_p1) / razones.ci_p1 * 100) : 0;
+    if (ci_cambio > 0) {
+      html += `<p><span class="indicador-positivo">Mejora: ${ci_cambio.toFixed(2)}%</span></p>`;
+    } else if (ci_cambio < 0) {
+      html += `<p><span class="indicador-negativo">Empeora: ${Math.abs(ci_cambio).toFixed(2)}%</span></p>`;
+    }
+    html += '</div></div>';
+
+    html += '<div class="col-md-6 mb-3"><div class="resumen-card">';
+    html += '<h6 style="color: var(--primary); margin-bottom: 10px;"><i class="fas fa-info-circle"></i> Conclusión General</h6>';
+    let conclusion = 'La empresa presenta ';
+    if (razones.re_p2 < 0.5 && razones.pc_p2 < 1.0 && razones.ci_p2 > 3) {
+      conclusion += '<span class="indicador-positivo">una estructura financiera saludable</span> con bajo riesgo de insolvencia.';
+    } else if (razones.re_p2 > 0.5 || razones.pc_p2 > 1.0 || razones.ci_p2 < 3) {
+      conclusion += '<span class="indicador-negativo">riesgos financieros moderados a altos</span> que requieren atención.';
+    } else {
+      conclusion += 'una estructura financiera <span class="indicador-positivo">dentro de los parámetros aceptables</span>.';
+    }
+    html += '<p>' + conclusion + '</p>';
+    html += '</div></div>';
+
+    html += '</div>';
+    document.getElementById('resumen-ejecutivo').innerHTML = html;
+  }
+
+  function limpiarDatos() {
+    document.querySelectorAll('.input-futurista').forEach(input => {
+      input.value = '';
+    });
+  }
+</script>
+{% endblock %}

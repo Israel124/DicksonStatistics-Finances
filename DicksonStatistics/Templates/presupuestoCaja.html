@@ -1,0 +1,1031 @@
+{% extends 'base.html' %}
+
+{% block title %}Presupuesto de Caja - RazoNix{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --primary: #00d9ff;
+    --secondary: #0099cc;
+    --accent: #ff006e;
+    --dark-bg: #0a0e27;
+    --card-bg: #1a1f3a;
+    --border-color: #2d3561;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --success: #00ff88;
+    --warning: #ffaa00;
+    --danger: #ff3366;
+  }
+
+  .section-header {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 0, 110, 0.1) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+  }
+
+  .card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 12px 48px rgba(0, 217, 255, 0.2);
+    transform: translateY(-5px);
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .card-body {
+    padding: 25px;
+  }
+
+  .btn-primary-glow {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border: none;
+    color: var(--dark-bg);
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+    cursor: pointer;
+  }
+
+  .btn-primary-glow:hover {
+    box-shadow: 0 0 40px rgba(0, 217, 255, 0.6);
+    transform: translateY(-2px);
+    color: var(--dark-bg);
+  }
+
+  .input-futurista {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+
+  .input-futurista:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    color: var(--text-primary);
+    outline: none;
+  }
+
+  .input-futurista::placeholder {
+    color: var(--text-secondary);
+  }
+
+  .presupuesto-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    overflow-x: auto;
+  }
+
+  .presupuesto-tabla td {
+    padding: 12px 10px;
+    border: none;
+    color: var(--text-primary);
+    text-align: right;
+    font-size: 0.9rem;
+  }
+
+  .presupuesto-tabla .concepto {
+    text-align: left;
+    font-weight: 500;
+    min-width: 250px;
+  }
+
+  .presupuesto-tabla .mes {
+    min-width: 120px;
+    font-weight: 600;
+  }
+
+  .presupuesto-tabla .titulo-seccion {
+    background: rgba(0, 217, 255, 0.1);
+    font-weight: 700;
+    color: var(--primary);
+    border-top: 2px solid var(--primary);
+    border-bottom: 2px solid var(--primary);
+  }
+
+  .presupuesto-tabla .subtotal {
+    background: rgba(0, 217, 255, 0.05);
+    font-weight: 600;
+    border-bottom: 1px dashed var(--border-color);
+  }
+
+  .presupuesto-tabla .total-final {
+    background: rgba(0, 217, 255, 0.15);
+    font-weight: 800;
+    border-top: 2px solid var(--primary);
+    border-bottom: 3px solid var(--primary);
+  }
+
+  .presupuesto-tabla .positivo {
+    color: var(--success);
+  }
+
+  .presupuesto-tabla .negativo {
+    color: var(--danger);
+  }
+
+  .metric-card {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 8px 32px rgba(0, 217, 255, 0.15);
+  }
+
+  .metric-value {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .metric-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 8px;
+  }
+
+  .config-section {
+    background: rgba(0, 217, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+  }
+
+  .config-title {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .meses-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .mes-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .mes-checkbox:hover {
+    border-color: var(--primary);
+    background: rgba(0, 217, 255, 0.1);
+  }
+
+  .mes-checkbox input[type="checkbox"] {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+  }
+
+  .mes-checkbox label {
+    cursor: pointer;
+    margin: 0;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 0;
+  }
+
+  .form-label {
+    display: block;
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+  }
+
+  .tabla-wrapper {
+    overflow-x: auto;
+    border-radius: 15px;
+    border: 1px solid var(--border-color);
+  }
+
+  .btn-success-glow {
+    background: linear-gradient(90deg, var(--success), #00cc66);
+    border: none;
+    color: var(--dark-bg);
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    cursor: pointer;
+  }
+
+  .btn-success-glow:hover {
+    box-shadow: 0 0 40px rgba(0, 255, 136, 0.6);
+    transform: translateY(-2px);
+    color: var(--dark-bg);
+  }
+
+  .btn-danger-glow {
+    background: linear-gradient(90deg, var(--danger), #ff1744);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 51, 102, 0.3);
+    cursor: pointer;
+  }
+
+  .btn-danger-glow:hover {
+    box-shadow: 0 0 40px rgba(255, 51, 102, 0.6);
+    transform: translateY(-2px);
+    color: white;
+  }
+
+  .modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+  }
+
+  .modal-header {
+    border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+  }
+
+  .modal-header .btn-close {
+    filter: invert(1);
+  }
+
+  .modal-title {
+    color: var(--primary);
+    font-weight: 700;
+  }
+
+  .modal-body {
+    color: var(--text-primary);
+  }
+
+  .input-monto-modal {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid var(--primary);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    width: 100%;
+    text-align: right;
+  }
+
+  .input-monto-modal:focus {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+    outline: none;
+  }
+
+  .info-box {
+    background: rgba(0, 217, 255, 0.1);
+    border: 1px solid var(--primary);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+  }
+
+  .info-box i {
+    color: var(--primary);
+    margin-right: 10px;
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 1.5rem;
+    }
+
+    .presupuesto-tabla .concepto {
+      min-width: 150px;
+      font-size: 0.85rem;
+    }
+
+    .presupuesto-tabla td {
+      padding: 8px 5px;
+      font-size: 0.8rem;
+    }
+
+    .meses-selector {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4" style="position: relative; z-index: 1;">
+  <!-- Hero Section -->
+  <section class="section-header">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="section-title"><i class="fas fa-money-bill-wave" style="margin-right: 15px; text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);"></i>Presupuesto de Caja</h1>
+        <p class="section-subtitle">Planifica y controla el flujo de efectivo con datos del análisis vertical</p>
+      </div>
+      <div class="col-lg-4 text-center">
+        <div style="font-size: 4rem; color: var(--primary); text-shadow: 0 0 30px rgba(0, 217, 255, 0.5);">
+          <i class="fas fa-chart-line"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Info Box -->
+  <div class="info-box">
+    <i class="fas fa-info-circle"></i>
+    <strong>Nota:</strong> Los datos de entradas y desembolsos se calculan automáticamente desde el análisis vertical. Ajusta los porcentajes según tus necesidades.
+  </div>
+
+  <!-- Configuración -->
+  <div class="config-section">
+    <div class="config-title">
+      <i class="fas fa-cog"></i> Configurar Presupuesto
+    </div>
+
+    <!-- Seleccionar Meses -->
+    <div>
+      <label class="form-label" style="margin-bottom: 15px;">Selecciona los meses a presupuestar:</label>
+      <div class="meses-selector" id="mesesSelector">
+        <!-- Se genera dinámicamente -->
+      </div>
+    </div>
+
+    <!-- Parámetros Base -->
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="saldoMinimo">Saldo Mínimo de Efectivo</label>
+        <input type="number" class="input-futurista" id="saldoMinimo" placeholder="0.00" value="5000" step="100">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="efectivoInicial">Efectivo Inicial</label>
+        <input type="number" class="input-futurista" id="efectivoInicial" placeholder="0.00" value="10000" step="100">
+      </div>
+    </div>
+
+    <!-- Porcentajes de Entradas -->
+    <div style="margin-bottom: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+      <h5 style="color: var(--primary); font-weight: 700; margin-bottom: 15px;">
+        <i class="fas fa-arrow-down"></i> Porcentajes de Entradas (% de Ventas Netas)
+      </h5>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="pctVentasContado">% Ventas al Contado</label>
+          <input type="number" class="input-futurista" id="pctVentasContado" placeholder="0.00" value="60" step="1" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pctCuentasCobrar">% Cuentas por Cobrar</label>
+          <input type="number" class="input-futurista" id="pctCuentasCobrar" placeholder="0.00" value="40" step="1" min="0" max="100">
+        </div>
+      </div>
+    </div>
+
+    <!-- Porcentajes de Desembolsos -->
+    <div style="margin-bottom: 25px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+      <h5 style="color: var(--primary); font-weight: 700; margin-bottom: 15px;">
+        <i class="fas fa-arrow-up"></i> Porcentajes de Desembolsos
+      </h5>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="pctCompras">% Compras (% del Costo de Ventas)</label>
+          <input type="number" class="input-futurista" id="pctCompras" placeholder="0.00" value="80" step="1" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pctSueldos">% Sueldos (% de Gastos Admin)</label>
+          <input type="number" class="input-futurista" id="pctSueldos" placeholder="0.00" value="70" step="1" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pctServicios">% Servicios (% de Gastos Admin)</label>
+          <input type="number" class="input-futurista" id="pctServicios" placeholder="0.00" value="30" step="1" min="0" max="100">
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+      <button class="btn-primary-glow" onclick="generarPresupuesto()">
+        <i class="fas fa-play me-2"></i>Generar Presupuesto
+      </button>
+      <button class="btn-danger-glow" onclick="limpiarPresupuesto()">
+        <i class="fas fa-trash me-2"></i>Limpiar
+      </button>
+    </div>
+  </div>
+
+  <!-- Presupuesto de Caja -->
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-table"></i> Presupuesto de Caja Proyectado
+    </div>
+    <div class="card-body">
+      <div class="tabla-wrapper">
+        <table class="presupuesto-tabla" id="presupuestoTabla">
+          <thead>
+            <tr class="titulo-seccion">
+              <td class="concepto">CONCEPTO</td>
+              <td class="mes" id="headerMeses"><!-- Se genera dinámicamente --></td>
+            </tr>
+          </thead>
+          <tbody id="presupuestoBody">
+            <tr>
+              <td colspan="13" class="empty-state">
+                <i class="fas fa-inbox"></i> Configura los parámetros y haz clic en "Generar Presupuesto"
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Indicadores Clave -->
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-tachometer-alt"></i> Indicadores Clave
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3">
+          <div class="metric-card">
+            <div class="metric-value" id="totalEntradas">$0.00</div>
+            <div class="metric-label">Total Entradas</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="metric-card">
+            <div class="metric-value" id="totalDesembolsos">$0.00</div>
+            <div class="metric-label">Total Desembolsos</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="metric-card">
+            <div class="metric-value" id="saldoFinal">$0.00</div>
+            <div class="metric-label">Saldo Final</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="metric-card">
+            <div class="metric-value" id="financiamientoRequerido">$0.00</div>
+            <div class="metric-label">Financiamiento Requerido</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Edición -->
+<div class="modal fade" id="modalEdicion" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-edit"></i> Editar Monto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label" style="color: var(--primary); font-weight: 700;" id="labelConcepto"></label>
+        <input type="number" id="inputMonto" class="input-monto-modal" placeholder="0.00" step="0.01">
+      </div>
+      <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary-glow" onclick="guardarEdicion()">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+  let mesesSeleccionados = [0, 1, 2]; // Por defecto: Enero, Febrero, Marzo
+  let datosPresupuesto = {};
+  let conceptoActual = null;
+  let mesActual = null;
+
+  // Datos del análisis vertical (se traerían del servidor)
+  let datosAnalisisVertical = {
+    ventasNetas: 100000,
+    costoVentas: 60000,
+    gastosAdministracion: 15000,
+    gastosVentas: 10000,
+    gastosFinancieros: 2000,
+    otrosIngresos: 1000,
+    utilidadAntesISR: 14000,
+    impuestoRenta: 2800
+  };
+
+  // Inicializar selector de meses
+  function inicializarMesesSelector() {
+    const selector = document.getElementById('mesesSelector');
+    selector.innerHTML = '';
+    
+    meses.forEach((mes, index) => {
+      const isSelected = mesesSeleccionados.includes(index);
+      const html = `
+        <div class="mes-checkbox">
+          <input type="checkbox" id="mes${index}" ${isSelected ? 'checked' : ''} onchange="toggleMes(${index})">
+          <label for="mes${index}">${mes}</label>
+        </div>
+      `;
+      selector.innerHTML += html;
+    });
+  }
+
+  function toggleMes(index) {
+    if (mesesSeleccionados.includes(index)) {
+      mesesSeleccionados = mesesSeleccionados.filter(m => m !== index);
+    } else {
+      mesesSeleccionados.push(index);
+    }
+    mesesSeleccionados.sort((a, b) => a - b);
+  }
+
+  function generarPresupuesto() {
+    if (mesesSeleccionados.length === 0) {
+      alert('Selecciona al menos un mes');
+      return;
+    }
+
+    // Obtener porcentajes
+    const pctVentasContado = parseFloat(document.getElementById('pctVentasContado').value) / 100 || 0.6;
+    const pctCuentasCobrar = parseFloat(document.getElementById('pctCuentasCobrar').value) / 100 || 0.4;
+    const pctCompras = parseFloat(document.getElementById('pctCompras').value) / 100 || 0.8;
+    const pctSueldos = parseFloat(document.getElementById('pctSueldos').value) / 100 || 0.7;
+    const pctServicios = parseFloat(document.getElementById('pctServicios').value) / 100 || 0.3;
+
+    // Calcular montos mensuales basados en análisis vertical
+    const ventasMensuales = datosAnalisisVertical.ventasNetas / 12;
+    const costoMensual = datosAnalisisVertical.costoVentas / 12;
+    const gastosAdminMensuales = datosAnalisisVertical.gastosAdministracion / 12;
+    const gastosVentasMensuales = datosAnalisisVertical.gastosVentas / 12;
+    const impuestoMensual = datosAnalisisVertical.impuestoRenta / 12;
+
+    // Inicializar datos
+    datosPresupuesto = {};
+    const conceptos = [
+      'Ventas al Contado',
+      'Cuentas por Cobrar',
+      'Otros Ingresos',
+      'Compras',
+      'Sueldos y Salarios',
+      'Servicios',
+      'Impuestos',
+      'Otros Desembolsos'
+    ];
+
+    conceptos.forEach(concepto => {
+      datosPresupuesto[concepto] = {};
+      mesesSeleccionados.forEach(mes => {
+        switch(concepto) {
+          case 'Ventas al Contado':
+            datosPresupuesto[concepto][mes] = ventasMensuales * pctVentasContado;
+            break;
+          case 'Cuentas por Cobrar':
+            datosPresupuesto[concepto][mes] = ventasMensuales * pctCuentasCobrar;
+            break;
+          case 'Otros Ingresos':
+            datosPresupuesto[concepto][mes] = (datosAnalisisVertical.gastosFinancieros + datosAnalisisVertical.otrosIngresos) / 12;
+            break;
+          case 'Compras':
+            datosPresupuesto[concepto][mes] = costoMensual * pctCompras;
+            break;
+          case 'Sueldos y Salarios':
+            datosPresupuesto[concepto][mes] = gastosAdminMensuales * pctSueldos;
+            break;
+          case 'Servicios':
+            datosPresupuesto[concepto][mes] = gastosAdminMensuales * pctServicios;
+            break;
+          case 'Impuestos':
+            datosPresupuesto[concepto][mes] = impuestoMensual;
+            break;
+          case 'Otros Desembolsos':
+            datosPresupuesto[concepto][mes] = gastosVentasMensuales * 0.5;
+            break;
+        }
+      });
+    });
+
+    actualizarTabla();
+  }
+
+  function actualizarTabla() {
+    if (mesesSeleccionados.length === 0) return;
+
+    // Generar headers de meses
+    let headerHTML = mesesSeleccionados.map(mes => 
+      `<td class="mes">${meses[mes].substring(0, 3)}</td>`
+    ).join('');
+    document.getElementById('headerMeses').innerHTML = headerHTML;
+
+    // Generar tabla
+    let tableHTML = '';
+    const saldoMinimo = parseFloat(document.getElementById('saldoMinimo').value) || 0;
+    let efectivoActual = parseFloat(document.getElementById('efectivoInicial').value) || 0;
+
+    // ENTRADAS DE EFECTIVO
+    tableHTML += `
+      <tr class="titulo-seccion">
+        <td class="concepto">ENTRADAS DE EFECTIVO</td>
+        ${mesesSeleccionados.map(mes => '<td class="mes">-</td>').join('')}
+      </tr>
+      <tr>
+        <td class="concepto">Ventas al Contado</td>
+        ${mesesSeleccionados.map(mes => 
+          `<td class="mes"><span class="monto-editable" onclick="abrirModalEdicion('Ventas al Contado', ${mes})">${(datosPresupuesto['Ventas al Contado'][mes] || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}</span></td>`
+        ).join('')}
+      </tr>
+      <tr>
+        <td class="concepto">Cuentas por Cobrar</td>
+        ${mesesSeleccionados.map(mes => 
+          `<td class="mes"><span class="monto-editable" onclick="abrirModalEdicion('Cuentas por Cobrar', ${mes})">${(datosPresupuesto['Cuentas por Cobrar'][mes] || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}</span></td>`
+        ).join('')}
+      </tr>
+      <tr>
+        <td class="concepto">Otros Ingresos</td>
+        ${mesesSeleccionados.map(mes => 
+          `<td class="mes"><span class="monto-editable" onclick="abrirModalEdicion('Otros Ingresos', ${mes})">${(datosPresupuesto['Otros Ingresos'][mes] || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}</span></td>`
+        ).join('')}
+      </tr>
+    `;
+
+    // Total Entradas
+    tableHTML += `
+      <tr class="subtotal">
+        <td class="concepto"><strong>= TOTAL ENTRADAS DE EFECTIVO</strong></td>
+        ${mesesSeleccionados.map(mes => {
+          const total = (datosPresupuesto['Ventas al Contado'][mes] || 0) + 
+                       (datosPresupuesto['Cuentas por Cobrar'][mes] || 0) + 
+                       (datosPresupuesto['Otros Ingresos'][mes] || 0);
+          return `<td class="mes"><strong>${total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></td>`;
+        }).join('')}
+      </tr>
+    `;
+
+    // DESEMBOLSOS DE EFECTIVO
+    tableHTML += `
+      <tr class="titulo-seccion">
+        <td class="concepto">DESEMBOLSOS DE EFECTIVO</td>
+        ${mesesSeleccionados.map(mes => '<td class="mes">-</td>').join('')}
+      </tr>
+      <tr>
+        <td class="concepto">Compras</td>
+        ${mesesSeleccionados.map(mes => 
+          `<td class="mes"><span class="monto-editable" onclick="abrirModalEdicion('Compras', ${mes})">${(datosPresupuesto['Compras'][mes] || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}</span></td>`
+        ).join('')}
+      </tr>
+      <tr>
+        <td class="concepto">Sueldos y Salarios</td>
+        ${mesesSeleccionados.map(mes => 
+          `<td class="mes"><span class="monto-editable" onclick="abrirModalEdicion('Sueldos y Salarios', ${mes})">${(datosPresupuesto['Sueldos y Salarios'][mes] || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}</span></td>`
+        ).join('')}
+      </tr>
+      <tr>
+        <td class="concepto">Servicios</td>
+        ${mesesSeleccionados.map(mes => 
+          `<td class="mes"><span class="monto-editable" onclick="abrirModalEdicion('Servicios', ${mes})">${(datosPresupuesto['Servicios'][mes] || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}</span></td>`
+        ).join('')}
+      </tr>
+      <tr>
+        <td class="concepto">Impuestos</td>
+        ${mesesSeleccionados.map(mes => 
+          `<td class="mes"><span class="monto-editable" onclick="abrirModalEdicion('Impuestos', ${mes})">${(datosPresupuesto['Impuestos'][mes] || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}</span></td>`
+        ).join('')}
+      </tr>
+      <tr>
+        <td class="concepto">Otros Desembolsos</td>
+        ${mesesSeleccionados.map(mes => 
+          `<td class="mes"><span class="monto-editable" onclick="abrirModalEdicion('Otros Desembolsos', ${mes})">${(datosPresupuesto['Otros Desembolsos'][mes] || 0).toLocaleString('es-ES', { minimumFractionDigits: 2 })}</span></td>`
+        ).join('')}
+      </tr>
+    `;
+
+    // Total Desembolsos
+    tableHTML += `
+      <tr class="subtotal">
+        <td class="concepto"><strong>= TOTAL DESEMBOLSOS DE EFECTIVO</strong></td>
+        ${mesesSeleccionados.map(mes => {
+          const total = (datosPresupuesto['Compras'][mes] || 0) + 
+                       (datosPresupuesto['Sueldos y Salarios'][mes] || 0) + 
+                       (datosPresupuesto['Servicios'][mes] || 0) + 
+                       (datosPresupuesto['Impuestos'][mes] || 0) + 
+                       (datosPresupuesto['Otros Desembolsos'][mes] || 0);
+          return `<td class="mes"><strong>${total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></td>`;
+        }).join('')}
+      </tr>
+    `;
+
+    // FLUJO NETO
+    tableHTML += `
+      <tr class="subtotal">
+        <td class="concepto"><strong>= FLUJO NETO DE EFECTIVO</strong></td>
+        ${mesesSeleccionados.map(mes => {
+          const entradas = (datosPresupuesto['Ventas al Contado'][mes] || 0) + 
+                          (datosPresupuesto['Cuentas por Cobrar'][mes] || 0) + 
+                          (datosPresupuesto['Otros Ingresos'][mes] || 0);
+          const desembolsos = (datosPresupuesto['Compras'][mes] || 0) + 
+                             (datosPresupuesto['Sueldos y Salarios'][mes] || 0) + 
+                             (datosPresupuesto['Servicios'][mes] || 0) + 
+                             (datosPresupuesto['Impuestos'][mes] || 0) + 
+                             (datosPresupuesto['Otros Desembolsos'][mes] || 0);
+          const flujo = entradas - desembolsos;
+          const clase = flujo >= 0 ? 'positivo' : 'negativo';
+          return `<td class="mes ${clase}"><strong>${flujo.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></td>`;
+        }).join('')}
+      </tr>
+    `;
+
+    // EFECTIVO INICIAL
+    tableHTML += `
+      <tr>
+        <td class="concepto">Más: Efectivo Inicial</td>
+        ${mesesSeleccionados.map((mes, index) => {
+          const efectivoInicial = index === 0 ? efectivoActual : 0;
+          return `<td class="mes">${efectivoInicial.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>`;
+        }).join('')}
+      </tr>
+    `;
+
+    // EFECTIVO FINAL
+    tableHTML += `
+      <tr class="subtotal">
+        <td class="concepto"><strong>= EFECTIVO FINAL</strong></td>
+        ${mesesSeleccionados.map((mes, index) => {
+          let efectivoFinal = efectivoActual;
+          for (let i = 0; i <= index; i++) {
+            const mesIndex = mesesSeleccionados[i];
+            const entradas = (datosPresupuesto['Ventas al Contado'][mesIndex] || 0) + 
+                            (datosPresupuesto['Cuentas por Cobrar'][mesIndex] || 0) + 
+                            (datosPresupuesto['Otros Ingresos'][mesIndex] || 0);
+            const desembolsos = (datosPresupuesto['Compras'][mesIndex] || 0) + 
+                               (datosPresupuesto['Sueldos y Salarios'][mesIndex] || 0) + 
+                               (datosPresupuesto['Servicios'][mesIndex] || 0) + 
+                               (datosPresupuesto['Impuestos'][mesIndex] || 0) + 
+                               (datosPresupuesto['Otros Desembolsos'][mesIndex] || 0);
+            efectivoFinal += (entradas - desembolsos);
+          }
+          const clase = efectivoFinal >= saldoMinimo ? 'positivo' : 'negativo';
+          return `<td class="mes ${clase}"><strong>${efectivoFinal.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></td>`;
+        }).join('')}
+      </tr>
+    `;
+
+    // SALDO MÍNIMO
+    tableHTML += `
+      <tr>
+        <td class="concepto">Menos: Saldo Mínimo de Efectivo</td>
+        ${mesesSeleccionados.map(mes => `<td class="mes">${saldoMinimo.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</td>`).join('')}
+      </tr>
+    `;
+
+    // FINANCIAMIENTO REQUERIDO
+    tableHTML += `
+      <tr class="total-final">
+        <td class="concepto"><strong>= FINANCIAMIENTO TOTAL REQUERIDO</strong></td>
+        ${mesesSeleccionados.map((mes, index) => {
+          let efectivoFinal = efectivoActual;
+          for (let i = 0; i <= index; i++) {
+            const mesIndex = mesesSeleccionados[i];
+            const entradas = (datosPresupuesto['Ventas al Contado'][mesIndex] || 0) + 
+                            (datosPresupuesto['Cuentas por Cobrar'][mesIndex] || 0) + 
+                            (datosPresupuesto['Otros Ingresos'][mesIndex] || 0);
+            const desembolsos = (datosPresupuesto['Compras'][mesIndex] || 0) + 
+                               (datosPresupuesto['Sueldos y Salarios'][mesIndex] || 0) + 
+                               (datosPresupuesto['Servicios'][mesIndex] || 0) + 
+                               (datosPresupuesto['Impuestos'][mesIndex] || 0) + 
+                               (datosPresupuesto['Otros Desembolsos'][mesIndex] || 0);
+            efectivoFinal += (entradas - desembolsos);
+          }
+          const financiamiento = Math.max(0, saldoMinimo - efectivoFinal);
+          return `<td class="mes"><strong>${financiamiento.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></td>`;
+        }).join('')}
+      </tr>
+    `;
+
+    // SALDO EN EXCESO
+    tableHTML += `
+      <tr class="subtotal">
+        <td class="concepto"><strong>= SALDO DE EFECTIVO EN EXCESO</strong></td>
+        ${mesesSeleccionados.map((mes, index) => {
+          let efectivoFinal = efectivoActual;
+          for (let i = 0; i <= index; i++) {
+            const mesIndex = mesesSeleccionados[i];
+            const entradas = (datosPresupuesto['Ventas al Contado'][mesIndex] || 0) + 
+                            (datosPresupuesto['Cuentas por Cobrar'][mesIndex] || 0) + 
+                            (datosPresupuesto['Otros Ingresos'][mesIndex] || 0);
+            const desembolsos = (datosPresupuesto['Compras'][mesIndex] || 0) + 
+                               (datosPresupuesto['Sueldos y Salarios'][mesIndex] || 0) + 
+                               (datosPresupuesto['Servicios'][mesIndex] || 0) + 
+                               (datosPresupuesto['Impuestos'][mesIndex] || 0) + 
+                               (datosPresupuesto['Otros Desembolsos'][mesIndex] || 0);
+            efectivoFinal += (entradas - desembolsos);
+          }
+          const exceso = Math.max(0, efectivoFinal - saldoMinimo);
+          return `<td class="mes"><strong>${exceso.toLocaleString('es-ES', { minimumFractionDigits: 2 })}</strong></td>`;
+        }).join('')}
+      </tr>
+    `;
+
+    document.getElementById('presupuestoBody').innerHTML = tableHTML;
+    actualizarIndicadores();
+  }
+
+  function actualizarIndicadores() {
+    let totalEntradas = 0;
+    let totalDesembolsos = 0;
+    let saldoFinal = 0;
+    let financiamientoTotal = 0;
+
+    mesesSeleccionados.forEach((mes, index) => {
+      const entradas = (datosPresupuesto['Ventas al Contado'][mes] || 0) + 
+                      (datosPresupuesto['Cuentas por Cobrar'][mes] || 0) + 
+                      (datosPresupuesto['Otros Ingresos'][mes] || 0);
+      const desembolsos = (datosPresupuesto['Compras'][mes] || 0) + 
+                         (datosPresupuesto['Sueldos y Salarios'][mes] || 0) + 
+                         (datosPresupuesto['Servicios'][mes] || 0) + 
+                         (datosPresupuesto['Impuestos'][mes] || 0) + 
+                         (datosPresupuesto['Otros Desembolsos'][mes] || 0);
+      
+      totalEntradas += entradas;
+      totalDesembolsos += desembolsos;
+
+      let efectivoFinal = parseFloat(document.getElementById('efectivoInicial').value) || 0;
+      for (let i = 0; i <= index; i++) {
+        const mesIndex = mesesSeleccionados[i];
+        const ent = (datosPresupuesto['Ventas al Contado'][mesIndex] || 0) + 
+                   (datosPresupuesto['Cuentas por Cobrar'][mesIndex] || 0) + 
+                   (datosPresupuesto['Otros Ingresos'][mesIndex] || 0);
+        const desem = (datosPresupuesto['Compras'][mesIndex] || 0) + 
+                     (datosPresupuesto['Sueldos y Salarios'][mesIndex] || 0) + 
+                     (datosPresupuesto['Servicios'][mesIndex] || 0) + 
+                     (datosPresupuesto['Impuestos'][mesIndex] || 0) + 
+                     (datosPresupuesto['Otros Desembolsos'][mesIndex] || 0);
+        efectivoFinal += (ent - desem);
+      }
+      saldoFinal = efectivoFinal;
+      const saldoMinimo = parseFloat(document.getElementById('saldoMinimo').value) || 0;
+      financiamientoTotal = Math.max(0, saldoMinimo - efectivoFinal);
+    });
+
+    document.getElementById('totalEntradas').textContent = '$' + totalEntradas.toLocaleString('es-ES', { minimumFractionDigits: 2 });
+    document.getElementById('totalDesembolsos').textContent = '$' + totalDesembolsos.toLocaleString('es-ES', { minimumFractionDigits: 2 });
+    document.getElementById('saldoFinal').textContent = '$' + saldoFinal.toLocaleString('es-ES', { minimumFractionDigits: 2 });
+    document.getElementById('financiamientoRequerido').textContent = '$' + financiamientoTotal.toLocaleString('es-ES', { minimumFractionDigits: 2 });
+  }
+
+  function abrirModalEdicion(concepto, mes) {
+    conceptoActual = concepto;
+    mesActual = mes;
+    document.getElementById('labelConcepto').textContent = `${concepto} - ${meses[mes]}`;
+    document.getElementById('inputMonto').value = datosPresupuesto[concepto][mes] || 0;
+    
+    const modal = new bootstrap.Modal(document.getElementById('modalEdicion'));
+    modal.show();
+    
+    setTimeout(() => {
+      document.getElementById('inputMonto').focus();
+      document.getElementById('inputMonto').select();
+    }, 300);
+  }
+
+  function guardarEdicion() {
+    const monto = parseFloat(document.getElementById('inputMonto').value) || 0;
+    datosPresupuesto[conceptoActual][mesActual] = monto;
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modalEdicion'));
+    modal.hide();
+    
+    actualizarTabla();
+  }
+
+  function limpiarPresupuesto() {
+    if (confirm('¿Estás seguro de que deseas limpiar el presupuesto?')) {
+      datosPresupuesto = {};
+      document.getElementById('presupuestoBody').innerHTML = `
+        <tr>
+          <td colspan="13" class="empty-state">
+            <i class="fas fa-inbox"></i> Configura los parámetros y haz clic en "Generar Presupuesto"
+          </td>
+        </tr>
+      `;
+      document.getElementById('totalEntradas').textContent = '$0.00';
+      document.getElementById('totalDesembolsos').textContent = '$0.00';
+      document.getElementById('saldoFinal').textContent = '$0.00';
+      document.getElementById('financiamientoRequerido').textContent = '$0.00';
+    }
+  }
+
+  // Inicializar
+  document.addEventListener('DOMContentLoaded', function() {
+    inicializarMesesSelector();
+  });
+</script>
+{% endblock %}
