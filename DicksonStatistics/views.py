@@ -380,3 +380,6 @@ def presupuestocaja(request):
 
 def presupuestocaja(request):
     return render(request, 'presupuestocaja.html')
+
+def export_analysis(request):
+    return render(request, 'export.html')

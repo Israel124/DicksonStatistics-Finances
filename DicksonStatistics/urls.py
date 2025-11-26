@@ -26,4 +26,5 @@ urlpatterns = [
     path('settings/', views.configuracion, name= 'settings'),
     path('proforma/', views.prof, name= 'proforma'),
     path('cash_budget/', views.presupuestocaja, name= 'cash_budget'),
+    path('exportanalysis/', views.export_analysis, name='exportanalysis'),
 ]

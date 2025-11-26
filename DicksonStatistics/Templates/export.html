@@ -1,0 +1,1279 @@
+{% extends 'base.html' %}
+
+{% block title %}Exportación de Datos - DicksonStatistics{% endblock %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --primary: #00d9ff;
+    --secondary: #0099cc;
+    --accent: #ff006e;
+    --dark-bg: #0a0e27;
+    --card-bg: #1a1f3a;
+    --border-color: #2d3561;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --success: #ff6b35; /* Cambiado de verde a naranja */
+    --warning: #ffaa00;
+    --danger: #ff3366;
+  }
+
+  .section-header {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(255, 0, 110, 0.1) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 217, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(0, 217, 255, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(0, 217, 255, 0.6); }
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    margin-bottom: 30px;
+    animation: slideInUp 0.6s ease-out;
+  }
+
+  .card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 12px 48px rgba(0, 217, 255, 0.2);
+    transform: translateY(-5px);
+  }
+
+  .card-header {
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+    border-bottom: 1px solid var(--border-color);
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .card-body {
+    padding: 25px;
+  }
+
+  .btn-primary-glow {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border: none;
+    color: var(--dark-bg);
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+    cursor: pointer;
+  }
+
+  .btn-primary-glow:hover {
+    box-shadow: 0 0 40px rgba(0, 217, 255, 0.6);
+    transform: translateY(-2px);
+    color: var(--dark-bg);
+  }
+
+  .btn-danger-glow {
+    background: var(--danger);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 0, 110, 0.3);
+    cursor: pointer;
+  }
+
+  .btn-danger-glow:hover {
+    box-shadow: 0 0 40px rgba(255, 0, 110, 0.6);
+    transform: translateY(-2px);
+    color: white;
+  }
+
+  .btn-export {
+    background: linear-gradient(90deg, var(--success), #ff8c42); /* Cambiado de verde a naranja */
+    border: none;
+    color: var(--dark-bg);
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.3); /* Cambiado de verde a naranja */
+    cursor: pointer;
+  }
+
+  .btn-export:hover {
+    box-shadow: 0 0 40px rgba(255, 107, 53, 0.6); /* Cambiado de verde a naranja */
+    transform: translateY(-2px);
+    color: var(--dark-bg);
+  }
+
+  .input-futurista {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 10px;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  .input-futurista:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    color: var(--text-primary);
+    outline: none;
+  }
+
+  /* Estilos específicos para el select */
+  .input-futurista option {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    padding: 10px;
+  }
+
+  .input-futurista option:hover {
+    background: var(--primary);
+    color: var(--dark-bg);
+  }
+
+  .input-futurista option:checked {
+    background: var(--primary);
+    color: var(--dark-bg);
+  }
+
+  /* Estilo para el dropdown del select */
+  .input-futurista::-ms-expand {
+    display: none;
+  }
+
+  .metric-card {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    animation: fadeInScale 0.6s ease-out;
+  }
+
+  .metric-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 8px 32px rgba(0, 217, 255, 0.15);
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  .metric-value {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .metric-label {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 8px;
+  }
+
+  .badge-estado {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    animation: fadeInScale 0.6s ease-out;
+  }
+
+  .badge-excelente {
+    background: rgba(255, 107, 53, 0.2); /* Cambiado de verde a naranja */
+    color: var(--success);
+    border: 1px solid var(--success);
+  }
+
+  .badge-aceptable {
+    background: rgba(255, 170, 0, 0.2);
+    color: var(--warning);
+    border: 1px solid var(--warning);
+  }
+
+  .badge-deficiente {
+    background: rgba(255, 51, 102, 0.2);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+  }
+
+  .control-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    animation: slideInUp 0.6s ease-out;
+  }
+
+  .modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+  }
+
+  .modal-header {
+    border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(90deg, rgba(0, 217, 255, 0.1), rgba(255, 0, 110, 0.1));
+  }
+
+  .modal-header .btn-close {
+    filter: invert(1);
+  }
+
+  .modal-title {
+    color: var(--primary);
+    font-weight: 700;
+  }
+
+  .modal-body {
+    color: var(--text-primary);
+  }
+
+  .export-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .export-btn {
+    background: linear-gradient(90deg, var(--success), #ff8c42); /* Cambiado de verde a naranja */
+    border: none;
+    color: var(--dark-bg);
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(255, 107, 53, 0.3); /* Cambiado de verde a naranja */
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .export-btn:hover {
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6); /* Cambiado de verde a naranja */
+    transform: translateY(-2px);
+  }
+
+  .export-btn i {
+    font-size: 1.2rem;
+  }
+
+  .nav-tabs .nav-link {
+    color: var(--text-secondary);
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+  }
+
+  .nav-tabs .nav-link:hover {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+
+  .nav-tabs .nav-link.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: transparent;
+  }
+
+  /* Estilos mejorados para el select */
+  .select-container {
+    position: relative;
+    width: 100%;
+  }
+
+  .select-container::after {
+    content: "▼";
+    font-size: 0.8rem;
+    color: var(--primary);
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 1.5rem;
+    }
+
+    .control-panel {
+      flex-direction: column;
+    }
+
+    .control-panel > * {
+      width: 100%;
+    }
+
+    .export-options {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-4" style="position: relative; z-index: 1;">
+  <section class="section-header">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="section-title"><i class="fas fa-chart-line" style="margin-right: 15px; text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);"></i>Exportar Análisis Financiero Completo</h1>
+        <p class="section-subtitle">Exporta todos tus análisis financieros en un solo documento</p>
+      </div>
+      <div class="col-lg-4 text-center">
+        <div style="font-size: 4rem; color: var(--primary); text-shadow: 0 0 30px rgba(0, 217, 255, 0.5);">
+          <i class="fas fa-file-export"></i>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="control-panel">
+    <div style="flex: 1; min-width: 250px;">
+      <label style="color: var(--primary); font-weight: 700; display: block; margin-bottom: 8px;">Período a Exportar</label>
+      <div class="select-container">
+        <select id="periodSeleccionado" class="input-futurista">
+          <option value="2022">2022</option>
+          <option value="2023" selected>2023</option>
+          <option value="2024">2024</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-export" onclick="abrirModalExportacion()" style="align-self: flex-end;">
+      <i class="fas fa-download"></i> Exportar Análisis Completo
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <i class="fas fa-info-circle"></i> Información de Exportación
+    </div>
+    <div class="card-body">
+      <p style="color: var(--text-secondary); margin-bottom: 15px;">
+        Este sistema exporta todos los análisis financieros disponibles:
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+        <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+          <strong style="color: var(--primary);">📊 Análisis Vertical</strong>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">Estructura porcentual del balance</p>
+        </div>
+        <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+          <strong style="color: var(--primary);">📈 Análisis Horizontal</strong>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">Variación entre periodos</p>
+        </div>
+        <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+          <strong style="color: var(--primary);">💧 Razones de Liquidez</strong>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">CNT, Razón Circulante, Prueba Ácida</p>
+        </div>
+        <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+          <strong style="color: var(--primary);">💰 Razones de Rentabilidad</strong>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">ROA, ROE, Márgenes</p>
+        </div>
+        <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+          <strong style="color: var(--primary);">⚖️ Razones de Endeudamiento</strong>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">Deuda/Patrimonio, Cobertura</p>
+        </div>
+        <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+          <strong style="color: var(--primary);">🔄 Razones de Actividad</strong>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">Rotación de activos, Inventarios</p>
+        </div>
+        <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+          <strong style="color: var(--primary);">💵 EOAF</strong>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">Estado de Origen y Aplicación de Fondos</p>
+        </div>
+        <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+          <strong style="color: var(--primary);">📊 Análisis Dupont</strong>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">Descomposición del ROE</p>
+        </div>
+        <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+          <strong style="color: var(--primary);">💸 Flujo de Efectivo Directo</strong>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">Por cobros y pagos</p>
+        </div>
+        <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+          <strong style="color: var(--primary);">💳 Flujo de Efectivo Indirecto</strong>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">Por conciliación</p>
+        </div>
+        <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+          <strong style="color: var(--primary);">📋 Presupuesto de Caja</strong>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">Proyección de flujo</p>
+        </div>
+        <div style="background: rgba(0, 217, 255, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary);">
+          <strong style="color: var(--primary);">📊 Proforma</strong>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">Estados proyectados</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Exportación -->
+<div class="modal fade" id="modalExportacion" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-download"></i> Exportar Análisis Financiero Completo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">Selecciona el formato en el que deseas exportar todos los análisis financieros:</p>
+        <div class="export-options">
+          <button class="export-btn" onclick="exportarExcelCompleto()">
+            <i class="fas fa-file-excel"></i> 
+            <div style="text-align: left;">
+              <div>Excel</div>
+              <small style="font-size: 0.8rem; opacity: 0.8;">Múltiples hojas</small>
+            </div>
+          </button>
+          <button class="export-btn" onclick="exportarPDFCompleto()">
+            <i class="fas fa-file-pdf"></i>
+            <div style="text-align: left;">
+              <div>PDF</div>
+              <small style="font-size: 0.8rem; opacity: 0.8;">Documento completo</small>
+            </div>
+          </button>
+          <button class="export-btn" onclick="exportarJSONCompleto()">
+            <i class="fas fa-file-code"></i>
+            <div style="text-align: left;">
+              <div>JSON</div>
+              <small style="font-size: 0.8rem; opacity: 0.8;">Datos estructurados</small>
+            </div>
+          </button>
+          <button class="export-btn" onclick="exportarCSVCompleto()">
+            <i class="fas fa-file-csv"></i>
+            <div style="text-align: left;">
+              <div>CSV</div>
+              <small style="font-size: 0.8rem; opacity: 0.8;">Para bases de datos</small>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+  // Datos globales de todos los análisis
+  let datosGlobales = {
+    2022: {
+      balanceGeneral: {
+        activos: {
+          circulantes: { efectivo: 50000, cuentasPorCobrar: 75000, inventarios: 100000 },
+          noCirculantes: { propiedad: 200000, equipo: 150000 }
+        },
+        pasivos: {
+          circulantes: { cuentasPorPagar: 60000, deudaCortoPlazo: 40000, otrosPasivos: 20000 },
+          noCirculantes: { deudaLargoPlazo: 100000 }
+        },
+        patrimonio: { capital: 300000, utilidadesRetenidas: 85000 }
+      },
+      estadoResultados: {
+        ventasNetas: 500000,
+        costoVentas: 300000,
+        gastosOperacionales: 100000,
+        interesPagado: 5000,
+        impuestos: 15000,
+        utilidadNeta: 80000
+      },
+      flujoEfectivo: {
+        operaciones: 100000,
+        inversiones: -50000,
+        financiamiento: 20000
+      },
+      presupuestoCaja: {
+        enero: 10000,
+        febrero: 12000,
+        marzo: 15000,
+        abril: 18000,
+        mayo: 20000,
+        junio: 22000
+      }
+    },
+    2023: {
+      balanceGeneral: {
+        activos: {
+          circulantes: { efectivo: 60000, cuentasPorCobrar: 85000, inventarios: 110000 },
+          noCirculantes: { propiedad: 220000, equipo: 170000 }
+        },
+        pasivos: {
+          circulantes: { cuentasPorPagar: 70000, deudaCortoPlazo: 45000, otrosPasivos: 25000 },
+          noCirculantes: { deudaLargoPlazo: 110000 }
+        },
+        patrimonio: { capital: 300000, utilidadesRetenidas: 130000 }
+      },
+      estadoResultados: {
+        ventasNetas: 600000,
+        costoVentas: 330000,
+        gastosOperacionales: 120000,
+        interesPagado: 6000,
+        impuestos: 18000,
+        utilidadNeta: 126000
+      },
+      flujoEfectivo: {
+        operaciones: 130000,
+        inversiones: -60000,
+        financiamiento: 25000
+      },
+      presupuestoCaja: {
+        enero: 12000,
+        febrero: 14000,
+        marzo: 17000,
+        abril: 20000,
+        mayo: 23000,
+        junio: 25000
+      }
+    },
+    2024: {
+      balanceGeneral: {
+        activos: {
+          circulantes: { efectivo: 70000, cuentasPorCobrar: 95000, inventarios: 120000 },
+          noCirculantes: { propiedad: 240000, equipo: 190000 }
+        },
+        pasivos: {
+          circulantes: { cuentasPorPagar: 80000, deudaCortoPlazo: 50000, otrosPasivos: 30000 },
+          noCirculantes: { deudaLargoPlazo: 120000 }
+        },
+        patrimonio: { capital: 300000, utilidadesRetenidas: 175000 }
+      },
+      estadoResultados: {
+        ventasNetas: 700000,
+        costoVentas: 360000,
+        gastosOperacionales: 140000,
+        interesPagado: 7000,
+        impuestos: 21000,
+        utilidadNeta: 172000
+      },
+      flujoEfectivo: {
+        operaciones: 160000,
+        inversiones: -70000,
+        financiamiento: 30000
+      },
+      presupuestoCaja: {
+        enero: 15000,
+        febrero: 17000,
+        marzo: 20000,
+        abril: 23000,
+        mayo: 26000,
+        junio: 28000
+      }
+    }
+  };
+
+  function calcularTodosLosAnalisis(periodo) {
+    const datos = datosGlobales[periodo];
+    const bg = datos.balanceGeneral;
+    const er = datos.estadoResultados;
+
+    // Totales
+    const totalActivosCirculantes = bg.activos.circulantes.efectivo + bg.activos.circulantes.cuentasPorCobrar + bg.activos.circulantes.inventarios;
+    const totalActivosNoCirculantes = bg.activos.noCirculantes.propiedad + bg.activos.noCirculantes.equipo;
+    const totalActivos = totalActivosCirculantes + totalActivosNoCirculantes;
+
+    const totalPasivosCirculantes = bg.pasivos.circulantes.cuentasPorPagar + bg.pasivos.circulantes.deudaCortoPlazo + bg.pasivos.circulantes.otrosPasivos;
+    const totalPasivosNoCirculantes = bg.pasivos.noCirculantes.deudaLargoPlazo;
+    const totalPasivos = totalPasivosCirculantes + totalPasivosNoCirculantes;
+
+    const totalPatrimonio = bg.patrimonio.capital + bg.patrimonio.utilidadesRetenidas;
+
+    // Análisis Vertical
+    const analisisVertical = {
+      activos: {
+        efectivoPorc: (bg.activos.circulantes.efectivo / totalActivos * 100).toFixed(2),
+        cuentasPorCobrarPorc: (bg.activos.circulantes.cuentasPorCobrar / totalActivos * 100).toFixed(2),
+        inventariosPorc: (bg.activos.circulantes.inventarios / totalActivos * 100).toFixed(2),
+        propiedadPorc: (bg.activos.noCirculantes.propiedad / totalActivos * 100).toFixed(2),
+        equipoPorc: (bg.activos.noCirculantes.equipo / totalActivos * 100).toFixed(2)
+      },
+      pasivos: {
+        cuentasPorPagarPorc: (bg.pasivos.circulantes.cuentasPorPagar / totalPasivos * 100).toFixed(2),
+        deudaCortoPlazoPorc: (bg.pasivos.circulantes.deudaCortoPlazo / totalPasivos * 100).toFixed(2),
+        otrosPasivosPorc: (bg.pasivos.circulantes.otrosPasivos / totalPasivos * 100).toFixed(2),
+        deudaLargoPlazoPorc: (bg.pasivos.noCirculantes.deudaLargoPlazo / totalPasivos * 100).toFixed(2)
+      }
+    };
+
+    // Análisis Horizontal (comparación con periodo anterior)
+    const periodosDisponibles = [2022, 2023, 2024];
+    const indexActual = periodosDisponibles.indexOf(parseInt(periodo));
+    let analisisHorizontal = {};
+    
+    if (indexActual > 0) {
+      const periodoPrevio = periodosDisponibles[indexActual - 1];
+      const datosPrevios = datosGlobales[periodoPrevio];
+      const bgPrevio = datosPrevios.balanceGeneral;
+      const erPrevio = datosPrevios.estadoResultados;
+
+      const totalActivosPrevio = (bgPrevio.activos.circulantes.efectivo + bgPrevio.activos.circulantes.cuentasPorCobrar + bgPrevio.activos.circulantes.inventarios) + (bgPrevio.activos.noCirculantes.propiedad + bgPrevio.activos.noCirculantes.equipo);
+
+      analisisHorizontal = {
+        activosVariacion: ((totalActivos - totalActivosPrevio) / totalActivosPrevio * 100).toFixed(2),
+        ventasVariacion: ((er.ventasNetas - erPrevio.ventasNetas) / erPrevio.ventasNetas * 100).toFixed(2),
+        utilidadVariacion: ((er.utilidadNeta - erPrevio.utilidadNeta) / erPrevio.utilidadNeta * 100).toFixed(2)
+      };
+    }
+
+    // Razones de Liquidez
+    const razonesLiquidez = {
+      cnt: totalActivosCirculantes - totalPasivosCirculantes,
+      razonCirculante: (totalActivosCirculantes / totalPasivosCirculantes).toFixed(2),
+      pruebaAcida: ((totalActivosCirculantes - bg.activos.circulantes.inventarios) / totalPasivosCirculantes).toFixed(2)
+    };
+
+    // Razones de Rentabilidad
+    const utilidadBruta = er.ventasNetas - er.costoVentas;
+    const utilidadOperacional = utilidadBruta - er.gastosOperacionales;
+
+    const razonesRentabilidad = {
+      margenBruto: (utilidadBruta / er.ventasNetas * 100).toFixed(2),
+      margenOperacional: (utilidadOperacional / er.ventasNetas * 100).toFixed(2),
+      margenNeto: (er.utilidadNeta / er.ventasNetas * 100).toFixed(2),
+      roa: (er.utilidadNeta / totalActivos * 100).toFixed(2),
+      roe: (er.utilidadNeta / totalPatrimonio * 100).toFixed(2)
+    };
+
+    // Razones de Endeudamiento
+    const razonesEndeudamiento = {
+      deudaPatrimonio: (totalPasivos / totalPatrimonio).toFixed(2),
+      deudaActivos: (totalPasivos / totalActivos * 100).toFixed(2),
+      cobertura: (utilidadOperacional / er.interesPagado).toFixed(2)
+    };
+
+    // Razones de Actividad
+    const razonesActividad = {
+      rotacionActivos: (er.ventasNetas / totalActivos).toFixed(2),
+      rotacionInventarios: (er.costoVentas / bg.activos.circulantes.inventarios).toFixed(2),
+      diasInventario: (365 / (er.costoVentas / bg.activos.circulantes.inventarios)).toFixed(0)
+    };
+
+    // EOAF (Estado de Origen y Aplicación de Fondos)
+    const eoaf = {
+      origenes: {
+        utilidadNeta: er.utilidadNeta,
+        aumentoDeuda: 10000,
+        ventaActivos: 5000
+      },
+      aplicaciones: {
+        compraActivos: 15000,
+        pagoDividendos: 5000,
+        pagoDeudasCortoPlazo: 8000
+      }
+    };
+
+    // Análisis Dupont
+    const dupont = {
+      margenNeto: (er.utilidadNeta / er.ventasNetas).toFixed(4),
+      rotacionActivos: (er.ventasNetas / totalActivos).toFixed(4),
+      multiplicadorPatrimonio: (totalActivos / totalPatrimonio).toFixed(4),
+      roe: (er.utilidadNeta / totalPatrimonio).toFixed(4)
+    };
+
+    // Flujo de Efectivo Directo
+    const flujoDirecto = {
+      cobrosClientes: er.ventasNetas * 0.9,
+      pagosProveedores: er.costoVentas * 0.8,
+      pagosGastos: er.gastosOperacionales * 0.9,
+      pagosImpuestos: er.impuestos * 0.8
+    };
+
+    // Flujo de Efectivo Indirecto
+    const flujoIndirecto = {
+      utilidadNeta: er.utilidadNeta,
+      depreciacion: 10000,
+      cambiosActivos: -5000,
+      cambiosPasivos: 3000
+    };
+
+    // Proforma (proyección)
+    const proforma = {
+      ventasProyectadas: er.ventasNetas * 1.15,
+      costoProyectado: er.costoVentas * 1.12,
+      gastosProyectados: er.gastosOperacionales * 1.10
+    };
+
+    return {
+      periodo,
+      totales: {
+        totalActivos,
+        totalPasivos,
+        totalPatrimonio,
+        totalActivosCirculantes,
+        totalPasivosCirculantes
+      },
+      analisisVertical,
+      analisisHorizontal,
+      razonesLiquidez,
+      razonesRentabilidad,
+      razonesEndeudamiento,
+      razonesActividad,
+      eoaf,
+      dupont,
+      flujoDirecto,
+      flujoIndirecto,
+      proforma,
+      presupuestoCaja: datos.presupuestoCaja
+    };
+  }
+
+  function abrirModalExportacion() {
+    const modal = new bootstrap.Modal(document.getElementById('modalExportacion'));
+    modal.show();
+  }
+
+  function exportarExcelCompleto() {
+    const periodo = document.getElementById('periodSeleccionado').value;
+    const analisis = calcularTodosLosAnalisis(periodo);
+    
+    const wb = XLSX.utils.book_new();
+
+    // Hoja 1: Resumen General
+    const resumen = [
+      ['ANÁLISIS FINANCIERO COMPLETO - PERÍODO ' + periodo],
+      [],
+      ['RESUMEN DE TOTALES'],
+      ['Concepto', 'Monto'],
+      ['Total Activos', analisis.totales.totalActivos],
+      ['Total Pasivos', analisis.totales.totalPasivos],
+      ['Total Patrimonio', analisis.totales.totalPatrimonio],
+      ['Activos Circulantes', analisis.totales.totalActivosCirculantes],
+      ['Pasivos Circulantes', analisis.totales.totalPasivosCirculantes]
+    ];
+    let ws = XLSX.utils.aoa_to_sheet(resumen);
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Resumen');
+
+    // Hoja 2: Análisis Vertical
+    const vertical = [
+      ['ANÁLISIS VERTICAL'],
+      [],
+      ['ACTIVOS (% del Total)'],
+      ['Concepto', 'Porcentaje'],
+      ['Efectivo', analisis.analisisVertical.activos.efectivoPorc + '%'],
+      ['Cuentas por Cobrar', analisis.analisisVertical.activos.cuentasPorCobrarPorc + '%'],
+      ['Inventarios', analisis.analisisVertical.activos.inventariosPorc + '%'],
+      ['Propiedad', analisis.analisisVertical.activos.propiedadPorc + '%'],
+      ['Equipo', analisis.analisisVertical.activos.equipoPorc + '%']
+    ];
+    ws = XLSX.utils.aoa_to_sheet(vertical);
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Análisis Vertical');
+
+    // Hoja 3: Análisis Horizontal
+    if (Object.keys(analisis.analisisHorizontal).length > 0) {
+      const horizontal = [
+        ['ANÁLISIS HORIZONTAL'],
+        [],
+        ['Concepto', 'Variación %'],
+        ['Activos', analisis.analisisHorizontal.activosVariacion + '%'],
+        ['Ventas', analisis.analisisHorizontal.ventasVariacion + '%'],
+        ['Utilidad', analisis.analisisHorizontal.utilidadVariacion + '%']
+      ];
+      ws = XLSX.utils.aoa_to_sheet(horizontal);
+      ws['!cols'] = [{ wch: 30 }, { wch: 20 }];
+      XLSX.utils.book_append_sheet(wb, ws, 'Análisis Horizontal');
+    }
+
+    // Hoja 4: Razones de Liquidez
+    const liquidez = [
+      ['RAZONES DE LIQUIDEZ'],
+      [],
+      ['Razón', 'Valor'],
+      ['Capital Neto de Trabajo', analisis.razonesLiquidez.cnt],
+      ['Razón Circulante', analisis.razonesLiquidez.razonCirculante],
+      ['Prueba Ácida', analisis.razonesLiquidez.pruebaAcida]
+    ];
+    ws = XLSX.utils.aoa_to_sheet(liquidez);
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Liquidez');
+
+    // Hoja 5: Razones de Rentabilidad
+    const rentabilidad = [
+      ['RAZONES DE RENTABILIDAD'],
+      [],
+      ['Razón', 'Porcentaje'],
+      ['Margen Bruto', analisis.razonesRentabilidad.margenBruto + '%'],
+      ['Margen Operacional', analisis.razonesRentabilidad.margenOperacional + '%'],
+      ['Margen Neto', analisis.razonesRentabilidad.margenNeto + '%'],
+      ['ROA', analisis.razonesRentabilidad.roa + '%'],
+      ['ROE', analisis.razonesRentabilidad.roe + '%']
+    ];
+    ws = XLSX.utils.aoa_to_sheet(rentabilidad);
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Rentabilidad');
+
+    // Hoja 6: Razones de Endeudamiento
+    const endeudamiento = [
+      ['RAZONES DE ENDEUDAMIENTO'],
+      [],
+      ['Razón', 'Valor'],
+      ['Deuda/Patrimonio', analisis.razonesEndeudamiento.deudaPatrimonio],
+      ['Deuda/Activos %', analisis.razonesEndeudamiento.deudaActivos + '%'],
+      ['Cobertura de Intereses', analisis.razonesEndeudamiento.cobertura]
+    ];
+    ws = XLSX.utils.aoa_to_sheet(endeudamiento);
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Endeudamiento');
+
+    // Hoja 7: Razones de Actividad
+    const actividad = [
+      ['RAZONES DE ACTIVIDAD'],
+      [],
+      ['Razón', 'Valor'],
+      ['Rotación de Activos', analisis.razonesActividad.rotacionActivos],
+      ['Rotación de Inventarios', analisis.razonesActividad.rotacionInventarios],
+      ['Días de Inventario', analisis.razonesActividad.diasInventario]
+    ];
+    ws = XLSX.utils.aoa_to_sheet(actividad);
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Actividad');
+
+    // Hoja 8: EOAF
+    const eoaf = [
+      ['ESTADO DE ORIGEN Y APLICACIÓN DE FONDOS'],
+      [],
+      ['ORÍGENES'],
+      ['Concepto', 'Monto'],
+      ['Utilidad Neta', analisis.eoaf.origenes.utilidadNeta],
+      ['Aumento de Deuda', analisis.eoaf.origenes.aumentoDeuda],
+      ['Venta de Activos', analisis.eoaf.origenes.ventaActivos],
+      [],
+      ['APLICACIONES'],
+      ['Concepto', 'Monto'],
+      ['Compra de Activos', analisis.eoaf.aplicaciones.compraActivos],
+      ['Pago de Dividendos', analisis.eoaf.aplicaciones.pagoDividendos],
+      ['Pago de Deudas', analisis.eoaf.aplicaciones.pagoDeudasCortoPlazo]
+    ];
+    ws = XLSX.utils.aoa_to_sheet(eoaf);
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'EOAF');
+
+    // Hoja 9: Análisis Dupont
+    const dupont = [
+      ['ANÁLISIS DUPONT'],
+      [],
+      ['Componente', 'Valor'],
+      ['Margen Neto', analisis.dupont.margenNeto],
+      ['Rotación de Activos', analisis.dupont.rotacionActivos],
+      ['Multiplicador de Patrimonio', analisis.dupont.multiplicadorPatrimonio],
+      ['ROE (Resultado)', analisis.dupont.roe]
+    ];
+    ws = XLSX.utils.aoa_to_sheet(dupont);
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Dupont');
+
+    // Hoja 10: Flujo de Efectivo Directo
+    const flujoDirecto = [
+      ['FLUJO DE EFECTIVO - MÉTODO DIRECTO'],
+      [],
+      ['Concepto', 'Monto'],
+      ['Cobros a Clientes', analisis.flujoDirecto.cobrosClientes],
+      ['Pagos a Proveedores', -analisis.flujoDirecto.pagosProveedores],
+      ['Pagos de Gastos', -analisis.flujoDirecto.pagosGastos],
+      ['Pagos de Impuestos', -analisis.flujoDirecto.pagosImpuestos]
+    ];
+    ws = XLSX.utils.aoa_to_sheet(flujoDirecto);
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Flujo Directo');
+
+    // Hoja 11: Flujo de Efectivo Indirecto
+    const flujoIndirecto = [
+      ['FLUJO DE EFECTIVO - MÉTODO INDIRECTO'],
+      [],
+      ['Concepto', 'Monto'],
+      ['Utilidad Neta', analisis.flujoIndirecto.utilidadNeta],
+      ['Depreciación', analisis.flujoIndirecto.depreciacion],
+      ['Cambios en Activos', analisis.flujoIndirecto.cambiosActivos],
+      ['Cambios en Pasivos', analisis.flujoIndirecto.cambiosPasivos]
+    ];
+    ws = XLSX.utils.aoa_to_sheet(flujoIndirecto);
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Flujo Indirecto');
+
+    // Hoja 12: Presupuesto de Caja
+    const presupuesto = [
+      ['PRESUPUESTO DE CAJA'],
+      [],
+      ['Mes', 'Monto'],
+      ['Enero', analisis.presupuestoCaja.enero],
+      ['Febrero', analisis.presupuestoCaja.febrero],
+      ['Marzo', analisis.presupuestoCaja.marzo],
+      ['Abril', analisis.presupuestoCaja.abril],
+      ['Mayo', analisis.presupuestoCaja.mayo],
+      ['Junio', analisis.presupuestoCaja.junio]
+    ];
+    ws = XLSX.utils.aoa_to_sheet(presupuesto);
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Presupuesto Caja');
+
+    // Hoja 13: Proforma
+    const proforma = [
+      ['ESTADOS PROFORMA (PROYECTADOS)'],
+      [],
+      ['Concepto', 'Monto'],
+      ['Ventas Proyectadas', analisis.proforma.ventasProyectadas],
+      ['Costo Proyectado', analisis.proforma.costoProyectado],
+      ['Gastos Proyectados', analisis.proforma.gastosProyectados]
+    ];
+    ws = XLSX.utils.aoa_to_sheet(proforma);
+    ws['!cols'] = [{ wch: 30 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws, 'Proforma');
+
+    XLSX.writeFile(wb, `Análisis_Financiero_Completo_${periodo}.xlsx`);
+    
+    // Cerrar modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modalExportacion'));
+    modal.hide();
+
+    // Mostrar notificación
+    alert('✅ Archivo Excel exportado exitosamente');
+  }
+
+  function exportarPDFCompleto() {
+    const periodo = document.getElementById('periodSeleccionado').value;
+    const analisis = calcularTodosLosAnalisis(periodo);
+    
+    const element = document.createElement('div');
+    element.style.padding = '20px';
+    element.style.backgroundColor = '#0a0e27';
+    element.style.color = '#e0e0e0';
+    element.style.fontFamily = 'Arial, sans-serif';
+
+    element.innerHTML = `
+      <h1 style="text-align: center; color: #00d9ff; margin-bottom: 5px;">ANÁLISIS FINANCIERO COMPLETO</h1>
+      <p style="text-align: center; color: #a0a0a0; margin-bottom: 30px;">Período: ${periodo}</p>
+      
+      <h2 style="color: #00d9ff; margin-top: 30px; page-break-before: always;">RESUMEN DE TOTALES</h2>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="background-color: #1a1f3a; border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;"><strong>Concepto</strong></td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;"><strong>Monto</strong></td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Total Activos</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">$${analisis.totales.totalActivos.toLocaleString('es-ES')}</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Total Pasivos</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">$${analisis.totales.totalPasivos.toLocaleString('es-ES')}</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Total Patrimonio</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">$${analisis.totales.totalPatrimonio.toLocaleString('es-ES')}</td>
+        </tr>
+      </table>
+
+      <h2 style="color: #00d9ff; margin-top: 30px; page-break-before: always;">ANÁLISIS VERTICAL</h2>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="background-color: #1a1f3a; border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;"><strong>Activo</strong></td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;"><strong>% del Total</strong></td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Efectivo</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.analisisVertical.activos.efectivoPorc}%</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Cuentas por Cobrar</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.analisisVertical.activos.cuentasPorCobrarPorc}%</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Inventarios</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.analisisVertical.activos.inventariosPorc}%</td>
+        </tr>
+      </table>
+
+      <h2 style="color: #00d9ff; margin-top: 30px; page-break-before: always;">RAZONES FINANCIERAS</h2>
+      
+      <h3 style="color: #00d9ff;">Liquidez</h3>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="background-color: #1a1f3a; border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;"><strong>Razón</strong></td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;"><strong>Valor</strong></td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Razón Circulante</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.razonesLiquidez.razonCirculante}</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Prueba Ácida</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.razonesLiquidez.pruebaAcida}</td>
+        </tr>
+      </table>
+
+      <h3 style="color: #00d9ff;">Rentabilidad</h3>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="background-color: #1a1f3a; border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;"><strong>Razón</strong></td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;"><strong>Porcentaje</strong></td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Margen Neto</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.razonesRentabilidad.margenNeto}%</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">ROA</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.razonesRentabilidad.roa}%</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">ROE</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.razonesRentabilidad.roe}%</td>
+        </tr>
+      </table>
+
+      <h3 style="color: #00d9ff;">Endeudamiento</h3>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="background-color: #1a1f3a; border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;"><strong>Razón</strong></td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;"><strong>Valor</strong></td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Deuda/Patrimonio</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.razonesEndeudamiento.deudaPatrimonio}</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Cobertura de Intereses</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.razonesEndeudamiento.cobertura}</td>
+        </tr>
+      </table>
+
+      <h3 style="color: #00d9ff;">Actividad</h3>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="background-color: #1a1f3a; border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;"><strong>Razón</strong></td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;"><strong>Valor</strong></td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Rotación de Activos</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.razonesActividad.rotacionActivos}</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Rotación de Inventarios</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.razonesActividad.rotacionInventarios}</td>
+        </tr>
+      </table>
+
+      <h2 style="color: #00d9ff; margin-top: 30px; page-break-before: always;">ANÁLISIS DUPONT</h2>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="background-color: #1a1f3a; border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;"><strong>Componente</strong></td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;"><strong>Valor</strong></td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Margen Neto</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.dupont.margenNeto}</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Rotación de Activos</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.dupont.rotacionActivos}</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Multiplicador de Patrimonio</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.dupont.multiplicadorPatrimonio}</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">ROE (Resultado)</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">${analisis.dupont.roe}</td>
+        </tr>
+      </table>
+
+      <h2 style="color: #00d9ff; margin-top: 30px; page-break-before: always;">PRESUPUESTO DE CAJA</h2>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <tr style="background-color: #1a1f3a; border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;"><strong>Mes</strong></td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;"><strong>Monto</strong></td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Enero</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">$${analisis.presupuestoCaja.enero.toLocaleString('es-ES')}</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Febrero</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">$${analisis.presupuestoCaja.febrero.toLocaleString('es-ES')}</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Marzo</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">$${analisis.presupuestoCaja.marzo.toLocaleString('es-ES')}</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Abril</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">$${analisis.presupuestoCaja.abril.toLocaleString('es-ES')}</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Mayo</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">$${analisis.presupuestoCaja.mayo.toLocaleString('es-ES')}</td>
+        </tr>
+        <tr style="border: 1px solid #2d3561;">
+          <td style="padding: 10px; border: 1px solid #2d3561;">Junio</td>
+          <td style="padding: 10px; border: 1px solid #2d3561; text-align: right;">$${analisis.presupuestoCaja.junio.toLocaleString('es-ES')}</td>
+        </tr>
+      </table>
+
+      <div style="margin-top: 50px; text-align: center; color: #a0a0a0; font-size: 0.9rem;">
+        <p>Generado automáticamente por DicksonStatistics - Sistema de Análisis Financiero</p>
+        <p>Fecha de generación: ${new Date().toLocaleDateString('es-ES')}</p>
+      </div>
+    `;
+
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: `Analisis_Financiero_Completo_${periodo}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+      const modal = bootstrap.Modal.getInstance(document.getElementById('modalExportacion'));
+      modal.hide();
+      alert('✅ Archivo PDF exportado exitosamente');
+    });
+  }
+
+  function exportarJSONCompleto() {
+    const periodo = document.getElementById('periodSeleccionado').value;
+    const analisis = calcularTodosLosAnalisis(periodo);
+    
+    const dataStr = JSON.stringify(analisis, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `Analisis_Financiero_${periodo}.json`;
+    link.click();
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modalExportacion'));
+    modal.hide();
+    alert('✅ Archivo JSON exportado exitosamente');
+  }
+
+  function exportarCSVCompleto() {
+    const periodo = document.getElementById('periodSeleccionado').value;
+    const analisis = calcularTodosLosAnalisis(periodo);
+    
+    let csvContent = 'ANÁLISIS FINANCIERO COMPLETO - PERÍODO ' + periodo + '\n\n';
+    
+    // Resumen de Totales
+    csvContent += 'RESUMEN DE TOTALES\n';
+    csvContent += 'Concepto,Monto\n';
+    csvContent += `Total Activos,${analisis.totales.totalActivos}\n`;
+    csvContent += `Total Pasivos,${analisis.totales.totalPasivos}\n`;
+    csvContent += `Total Patrimonio,${analisis.totales.totalPatrimonio}\n\n`;
+    
+    // Razones de Liquidez
+    csvContent += 'RAZONES DE LIQUIDEZ\n';
+    csvContent += 'Razón,Valor\n';
+    csvContent += `Razón Circulante,${analisis.razonesLiquidez.razonCirculante}\n`;
+    csvContent += `Prueba Ácida,${analisis.razonesLiquidez.pruebaAcida}\n\n`;
+    
+    // Razones de Rentabilidad
+    csvContent += 'RAZONES DE RENTABILIDAD\n';
+    csvContent += 'Razón,Porcentaje\n';
+    csvContent += `Margen Neto,${analisis.razonesRentabilidad.margenNeto}%\n`;
+    csvContent += `ROA,${analisis.razonesRentabilidad.roa}%\n`;
+    csvContent += `ROE,${analisis.razonesRentabilidad.roe}%\n`;
+    
+    const dataBlob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `Analisis_Financiero_${periodo}.csv`;
+    link.click();
+    
+    const modal = bootstrap.Modal.getInstance(document.getElementById('modalExportacion'));
+    modal.hide();
+    alert('✅ Archivo CSV exportado exitosamente');
+  }
+</script>
+{% endblock %}

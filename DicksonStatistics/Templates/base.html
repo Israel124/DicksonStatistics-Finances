@@ -687,6 +687,11 @@
                                         <i class="fas fa-user me-2"></i>Mi Perfil
                                     </a>
                                 </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'exportanalysis' %}">
+                                        <i class="fas fa-download me-2"></i>Exportar Análisis
+                                    </a>
+                                </li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item text-danger" href="{% url 'logout' %}">
@@ -937,6 +942,7 @@
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <!-- Custom JS -->
     <script>
